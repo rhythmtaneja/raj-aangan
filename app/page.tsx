@@ -3,6 +3,8 @@ import IntroSection from "@/components/sections/IntroSection";
 import FeaturedSection from "@/components/sections/FeaturedSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import CuisineSection from "@/components/sections/CuisineSection";
+import AboutSection from "@/components/sections/AboutSection";
+import EventsSection from "@/components/sections/EventsSection";
 
 export default function Home() {
   return (
@@ -12,6 +14,8 @@ export default function Home() {
       <FeaturedSection />
       <ServicesSection />
       <CuisineSection />
+      <AboutSection />
+      <EventsSection />
     </main>
   );
 }
