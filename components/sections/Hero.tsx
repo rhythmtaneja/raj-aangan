@@ -3,7 +3,11 @@
 import { useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { EASE, DUR, MOVE } from "@/components/anim/anim.config";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const NAV_LINKS = ["ABOUT US", "CATERING", "EVENTS", "VENUE", "GALLERY", "CONTACT", "BLOG"];
 
@@ -12,22 +16,33 @@ export default function Hero() {
 
   useGSAP(
     () => {
-      // Users who prefer reduced motion just see the final state
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      // Establish hidden starting states explicitly, then animate TO visible.
-      // This guarantees elements always end visible, even with dev-mode re-runs.
+      gsap.set(".hero-bg", { scale: 1, x: MOVE.heroDrift, transformOrigin: "center center" });
       gsap.set(".hero-top", { opacity: 0, y: -20 });
+      gsap.set([".hero-logo", ".hero-cta", ".hero-sub"], { opacity: 0, y: 30 });
       gsap.set(".hero-title", { yPercent: 100 });
-      gsap.set([".hero-cta", ".hero-sub"], { opacity: 0, y: 30 });
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      // Background + navbar entrance — plays ONCE on load, then stays.
+      const tlIn = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tlIn
+        .to(".hero-bg", { scale: 1.3, duration: DUR.heroZoom, ease: EASE.inOutCirc }, 0)
+        .to(".hero-bg", { x: -MOVE.heroDrift, duration: DUR.heroDrift, ease: EASE.inOutCubic }, 0)
+        .to(".hero-top", { opacity: 1, y: 0, duration: 0.8, stagger: 0.08 }, 0.2);
 
-      tl.from(".hero-bg", { scale: 1.18, duration: 2.4, ease: "power2.out" }, 0)
-        .to(".hero-top", { opacity: 1, y: 0, duration: 0.8, stagger: 0.08 }, 0.2)
-        .to(".hero-title", { yPercent: 0, duration: 1.2, ease: "power4.out" }, 0.45)
-        .to(".hero-cta", { opacity: 1, y: 0, duration: 0.8 }, 0.95)
-        .to(".hero-sub", { opacity: 1, y: 0, duration: 0.8 }, 1.05);
+      // Logo + headline + cta + subline — REPLAYS when you scroll back up to the hero.
+      const tlText = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tlText
+        .to(".hero-logo", { opacity: 1, y: 0, duration: 0.8 }, 0)
+        .to(".hero-title", { yPercent: 0, duration: 1.2, ease: "power4.out" }, 0.2)
+        .to(".hero-cta", { opacity: 1, y: 0, duration: 0.8 }, 0.75)
+        .to(".hero-sub", { opacity: 1, y: 0, duration: 0.8 }, 0.85);
+
+      ScrollTrigger.create({
+        trigger: container.current,
+        start: "top 60%",
+        onEnterBack: () => tlText.restart(),
+      });
     },
     { scope: container }
   );
@@ -36,14 +51,7 @@ export default function Hero() {
     <section ref={container} className="relative h-screen w-full overflow-hidden">
       {/* Background photo */}
       <div className="hero-bg absolute inset-0">
-        <Image
-          src="/images/hero-pool.jpg"
-          alt="Luxury resort pool at Raj Aangan"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <Image src="/images/hero-pool.jpg" alt="Luxury resort pool at Raj Aangan" fill priority sizes="100vw" className="object-cover object-center" />
       </div>
 
       {/* Dark overlay */}
@@ -57,8 +65,9 @@ export default function Hero() {
             <span className="font-semibold text-[clamp(1rem,1.25vw,24px)]">Menu</span>
           </button>
 
-          <div className="hero-top absolute left-1/2 top-4 -translate-x-1/2">
-            <Image src="/images/logo.png" alt="Raj Aangan Events and Caterers" width={146} height={146} priority />
+          {/* Top-centre round logo (swap /images/logo-round.png with your file) */}
+          <div className="hero-top absolute left-1/2 top-2 -translate-x-1/2">
+            <Image src="/images/logo-round.png" alt="Raj Aangan Events and Caterers" width={110} height={110} priority />
           </div>
 
           <button className="hero-top flex items-center gap-3 rounded-full bg-[#2d2d2d] px-7 py-3.5 transition-opacity hover:opacity-90">
@@ -82,6 +91,13 @@ export default function Hero() {
 
       {/* Center content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+        {/* Logo lockup above the headline: round logo + wordmark.
+            Add /images/logo-round.png (round) — /images/logo.png is your RAEC wordmark. */}
+       <div className="hero-logo mt-12 mb-4 flex flex-col items-center -space-y-2">
+  {/* <Image src="/images/logo-round.png" alt="" width={70} height={70} priority /> */}
+  <Image src="/images/logo.png" alt="Raj Aangan Events and Caterers" width={220} height={70} priority />
+</div>
+
         <div className="overflow-hidden">
           <h1 className="hero-title max-w-275 font-bold leading-[0.92] text-white text-[clamp(2.75rem,6.25vw,120px)]">
             The Crown of Heritage Hospitality
@@ -94,12 +110,12 @@ export default function Hero() {
         >
           Plan Your Event
         </a>
+        <p className="hero-sub mt-10 max-w-4xl text-center font-medium leading-relaxed text-white text-[clamp(1.125rem,1.56vw,30px)]">
+          Where ancient architecture
+          <br />
+          meets modern comfort to create unforgettable royal experience
+        </p>
       </div>
-
-      {/* Subline */}
-      <p className="hero-sub absolute inset-x-0 bottom-12 z-10 px-6 text-center font-medium text-white text-[clamp(1.125rem,1.56vw,30px)]">
-        meets modern comfort to create unforgettable royal experience
-      </p>
     </section>
   );
 }
