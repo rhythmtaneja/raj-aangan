@@ -11,7 +11,16 @@ export default function Home() {
   return (
     <main className="bg-[#191919]">
       <Hero />
-      <IntroSection />
+      <IntroSection
+        numeral="I"
+        title="A Royal Destination where celebrations come alive."
+        secondaryLines={[
+          "Luxury Weddings · Refined Catering ·",
+          "Memories Forever",
+        ]}
+        buttonText="View"
+      />
+
       <FeaturedSection />
       <ServicesSection />
       <CuisineSection />

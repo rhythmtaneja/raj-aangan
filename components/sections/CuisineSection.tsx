@@ -21,18 +21,18 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // Services ends at "#d4dad3" (sage) → Cuisine eases to its own beige.
 // Both sections read the same --page-bg variable → no visible seam.
 const BG_START_COLOR = "#d4dad3"; // = ServicesSection's BG_END_COLOR
-const BG_END_COLOR   = "#ebe5db"; // Cuisine's resting beige
+const BG_END_COLOR = "#ebe5db"; // Cuisine's resting beige
 
 const COLOR_TRANSITION_START = "top bottom";
-const COLOR_TRANSITION_END   = "top top";
+const COLOR_TRANSITION_END = "top top";
 
 // ─ Heading "Our Cuisine" ──
 // ↑ FONT_SIZE bigger  → bigger title (reference "Stay packages" is ~140px)
 // ↑ TRACKING bigger   → letters spread wider
 // Change the className further down to swap uppercase ↔ titlecase.
-const TITLE_FONT_SIZE     = "clamp(2.5rem, 7vw, 140px)";
-const TITLE_TRACKING      = "0.15em";
-const TITLE_COLOR         = "#6b4f3a";
+const TITLE_FONT_SIZE = "clamp(2.5rem, 7vw, 140px)";
+const TITLE_TRACKING = "0.15em";
+const TITLE_COLOR = "#6b4f3a";
 const TITLE_MARGIN_BOTTOM = "4rem";
 
 // ─ Slider horizontal padding (shift cards right/left) ──
@@ -51,12 +51,12 @@ const CARD_GAP = "1.5rem";
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CUISINES = [
-  { name: "Rajasthani",   img: "/images/cuisine-rajasthani.jpg",   price: "from ₹3499 / person" },
-  { name: "Punjabi",      img: "/images/cuisine-punjabi.jpg",      price: "from ₹3499 / person" },
-  { name: "Dessert",      img: "/images/cuisine-dessert.jpg",      price: "from ₹3499 / person" },
+  { name: "Rajasthani", img: "/images/cuisine-rajasthani.jpg", price: "from ₹3499 / person" },
+  { name: "Punjabi", img: "/images/cuisine-punjabi.jpg", price: "from ₹3499 / person" },
+  { name: "Dessert", img: "/images/cuisine-dessert.jpg", price: "from ₹3499 / person" },
   { name: "South Indian", img: "/images/cuisine-south-indian.jpg", price: "from ₹3499 / person" },
-  { name: "Chinese",      img: "/images/cuisine-chinese.jpg",      price: "from ₹3499 / person" },
-  { name: "Italian",      img: "/images/cuisine-italian.jpg",      price: "from ₹3499 / person" },
+  { name: "Chinese", img: "/images/cuisine-chinese.jpg", price: "from ₹3499 / person" },
+  { name: "Italian", img: "/images/cuisine-italian.jpg", price: "from ₹3499 / person" },
 ];
 
 export default function CuisineSection() {
@@ -73,7 +73,7 @@ export default function CuisineSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: COLOR_TRANSITION_START,
-          end:   COLOR_TRANSITION_END,
+          end: COLOR_TRANSITION_END,
           scrub: true,
         },
         onUpdate: () => {
@@ -111,7 +111,7 @@ export default function CuisineSection() {
       */}
       <DragSlider
         marqueeWord="Cuisine"
-        marqueeClassName="text-white opacity-30"
+        marqueeClassName="text-white opacity-70"
         gap={CARD_GAP}
         className={`w-full ${SLIDER_PADDING_CLASS} py-4`}
       >

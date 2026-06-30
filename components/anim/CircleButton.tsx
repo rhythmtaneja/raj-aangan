@@ -38,6 +38,13 @@ type CircleButtonProps = {
   circleSize?: number;
   /** Magnetic pull, 0–1 (how far the ball drifts toward the cursor). */
   magnet?: number;
+  /**
+   * Direction of the chevron that appears on hover.
+   *   "right" (default) — used for navigational / CTA buttons.
+   *   "down"            — used when the button scrolls the user downward
+   *                       (e.g. the about-page hero down-arrow).
+   */
+  arrowDirection?: "right" | "down";
 };
 
 export default function CircleButton({
@@ -48,6 +55,7 @@ export default function CircleButton({
   arrowColor = "#ffffff",
   circleSize = 84,
   magnet = 0.4,
+  arrowDirection = "right",
 }: CircleButtonProps) {
   const root = useRef<HTMLAnchorElement>(null);
   const wrap = useRef<HTMLSpanElement>(null);    // magnetic layer (ball + arrow)
@@ -71,7 +79,13 @@ export default function CircleButton({
       }
 
       gsap.set(circle.current, { scale: 0, transformOrigin: "center center" });
-      gsap.set(arrow.current, { autoAlpha: 0, x: 6 });
+      // Resting position of the arrow: nudged in the OPPOSITE direction of travel
+      // so it "enters" into its final spot on hover.
+      if (arrowDirection === "down") {
+        gsap.set(arrow.current, { autoAlpha: 0, y: -6, x: 0 });
+      } else {
+        gsap.set(arrow.current, { autoAlpha: 0, x: 6, y: 0 });
+      }
 
       if (prefersReducedMotion()) return;
 
@@ -93,16 +107,27 @@ export default function CircleButton({
     });
     gsap.to(label.current, { autoAlpha: 0, duration: 0.25, ease: "power1.out", overwrite: "auto" });
 
-    // (2) Ball + arrow appear.
+    // (2) Ball + arrow appear. Arrow animates IN along its travel axis.
     gsap.to(circle.current, { scale: 1, duration: 0.5, ease: "circ.inOut", overwrite: "auto" });
-    gsap.to(arrow.current, {
-      autoAlpha: 1,
-      x: 0,
-      duration: 0.35,
-      ease: "power2.out",
-      delay: 0.06,
-      overwrite: "auto",
-    });
+    if (arrowDirection === "down") {
+      gsap.to(arrow.current, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.35,
+        ease: "power2.out",
+        delay: 0.06,
+        overwrite: "auto",
+      });
+    } else {
+      gsap.to(arrow.current, {
+        autoAlpha: 1,
+        x: 0,
+        duration: 0.35,
+        ease: "power2.out",
+        delay: 0.06,
+        overwrite: "auto",
+      });
+    }
   };
 
   const leave = () => {
@@ -124,15 +149,25 @@ export default function CircleButton({
       overwrite: "auto",
     });
 
-    // Collapse the ball + arrow.
+    // Collapse the ball + arrow back to their resting positions.
     gsap.to(circle.current, { scale: 0, duration: 0.45, ease: "circ.inOut", overwrite: "auto" });
-    gsap.to(arrow.current, {
-      autoAlpha: 0,
-      x: 6,
-      duration: 0.25,
-      ease: "power1.in",
-      overwrite: "auto",
-    });
+    if (arrowDirection === "down") {
+      gsap.to(arrow.current, {
+        autoAlpha: 0,
+        y: -6,
+        duration: 0.25,
+        ease: "power1.in",
+        overwrite: "auto",
+      });
+    } else {
+      gsap.to(arrow.current, {
+        autoAlpha: 0,
+        x: 6,
+        duration: 0.25,
+        ease: "power1.in",
+        overwrite: "auto",
+      });
+    }
 
     xTo.current?.(0);
     yTo.current?.(0);
@@ -178,7 +213,13 @@ export default function CircleButton({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M9 6l6 6-6 6" />
+            {arrowDirection === "down" ? (
+              // Down chevron
+              <path d="M6 9l6 6 6-6" />
+            ) : (
+              // Right chevron
+              <path d="M9 6l6 6-6 6" />
+            )}
           </svg>
         </span>
       </span>
