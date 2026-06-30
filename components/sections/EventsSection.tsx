@@ -69,7 +69,7 @@ export default function EventsSection() {
       <div ref={track} className="relative h-[260vh]">
         <div className="sticky top-0 flex h-screen items-center justify-center">
           {/* Contained background image (with margins, like Featured) */}
-          <div className="relative h-[82vh] w-[92%] max-w-[1180px] overflow-hidden">
+          <div className="relative h-[82vh] w-[92%] max-w-295 overflow-hidden">
             {BG_IMAGES.map((src, i) => (
               <Image key={src} src={src} alt="" fill priority={i === 0} sizes="92vw" className="object-cover transition-opacity duration-1000" style={{ opacity: i === active ? 1 : 0 }} />
             ))}
@@ -94,7 +94,7 @@ export default function EventsSection() {
 
             {/* Cards — anchored to the LOWER area, scrubbed upward */}
             <div className="absolute inset-x-0 bottom-[-2%] z-30 overflow-visible">
-              <div ref={cards} className="mx-auto flex w-[88%] max-w-[560px] flex-col items-center gap-[8vh]">
+              <div ref={cards} className="mx-auto flex w-[88%] max-w-140 flex-col items-center gap-[8vh]">
                 {CARDS.map((card) => (
                   <div key={card.title} className="relative w-full p-3">
                     <div className="pointer-events-none absolute inset-0 border border-white/60" />
