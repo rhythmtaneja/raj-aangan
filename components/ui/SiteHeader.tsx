@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { label: "CATERING",  href: "#"        },
   { label: "EVENTS",    href: "#"        },
   { label: "VENUE",     href: "#"        },
-  { label: "GALLERY",   href: "#"        },
+  { label: "GALLERY",   href: "/gallery" },
   { label: "CONTACT",   href: "#"        },
   { label: "BLOG",      href: "#"        },
 ];
