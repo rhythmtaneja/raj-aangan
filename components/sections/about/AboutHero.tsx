@@ -16,18 +16,27 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BG_IMAGE = "/images/about-hero.jpg";
+const BG_IMAGE        = "/images/about-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
-const TITLE_TEXT = "One of the most premium resort for wedding & events";
-const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 86px)";
-const TITLE_MAX_W = "1200px";
+// ─ Bottom fade — blends hero photo INTO AboutStorySection's bg colour ──
+// MUST match SECTION_BG in AboutStorySection.tsx. If they diverge, a colour
+// seam appears where the hero ends and the next section begins.
+const HERO_BLEND_TO_COLOR = "#081b24"; // ← keep in sync with AboutStorySection.SECTION_BG
+const HERO_BLEND_HEIGHT   = "40vh";    // ↑ for longer, gentler blend
 
-const LETTER_STAGGER = 0.03;
-const LETTER_DURATION = 0.9;
-const LETTER_INITIAL_Y = 28;
+// ─ Title ──
+const TITLE_TEXT      = "One of the most premium resort for wedding & events";
+const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 86px)";
+const TITLE_MAX_W     = "1200px";
+
+// ─ Letter-by-letter reveal ──
+const LETTER_STAGGER     = 0.03;
+const LETTER_DURATION    = 0.9;
+const LETTER_INITIAL_Y   = 28;
 const LETTER_START_DELAY = 0.4;
 
+// ─ Down-arrow CTA ──
 const CTA_DELAY = 2.2;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -62,7 +71,7 @@ export default function AboutHero() {
       if (prefersReducedMotion()) return;
 
       const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
-      const cta = root.current?.querySelector<HTMLElement>(".about-hero-cta");
+      const cta     = root.current?.querySelector<HTMLElement>(".about-hero-cta");
 
       if (letters && letters.length > 0) {
         gsap.set(letters, { autoAlpha: 0, y: LETTER_INITIAL_Y });
@@ -91,6 +100,7 @@ export default function AboutHero() {
 
   return (
     <section ref={root} className="relative h-screen w-full overflow-hidden">
+      {/* Background photo */}
       <div className="absolute inset-0">
         <Image
           src={BG_IMAGE}
@@ -102,9 +112,24 @@ export default function AboutHero() {
         />
       </div>
 
+      {/* Dark overlay */}
       <div
         className="absolute inset-0"
         style={{ backgroundColor: `rgba(25, 25, 25, ${OVERLAY_OPACITY})` }}
+      />
+
+      {/*
+        BOTTOM BLEND — dissolves the hero photo into AboutStorySection's dark
+        navy so the transition is seamless (matches reference image 2).
+      */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0"
+        style={{
+          height: HERO_BLEND_HEIGHT,
+          zIndex: 5,
+          background: `linear-gradient(to bottom, transparent, ${HERO_BLEND_TO_COLOR} 100%)`,
+        }}
       />
 
       <SiteHeader />

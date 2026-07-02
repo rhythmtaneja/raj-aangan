@@ -10,24 +10,34 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ─ Section bg (dark teal matches figma image 1) ──
-const SECTION_BG = "#0f3a4a";
-const TEXT_COLOR = "#ffffff";
+// ─ Section bg (darker navy, matches reference image 2) ──
+// MUST match HERO_BLEND_TO_COLOR in AboutHero.tsx. If they diverge, a colour
+// seam appears at the hero → story boundary.
+const SECTION_BG  = "#081b24"; // ↓ closer to "#040e14" for near-black navy
+                                //  ↑ closer to "#0f3a4a" to lighten
+const TEXT_COLOR  = "#ffffff";
 
-// ─ Trust title (LEFT column of the top 2-col section) ──
+// ─ Trust title & paragraph (LEFT column, now CENTRED) ──
 const STORY_TITLE = "One of Jaipur's most trusted names in luxury events and premium catering";
 const TITLE_ITALIC_PORTION = "most trusted";
-
-// ─ Paragraph copy (below the title in the LEFT column) ──
 const STORY_PARAGRAPH =
   "At Raj Aangan Events & Caterers, we believe every celebration tells its own story. From intimate gatherings to grand royal weddings, we bring together heritage elegance, exceptional cuisine, and meticulous planning to create moments that last a lifetime.";
 
-// ─ Photo on the RIGHT of the top 2-col section ──
-// Tall vertical photo (matches reference image 1).
-const TOP_PHOTO = "/images/about-story-1.jpg";
-const TOP_PHOTO_ASPECT = "aspect-[3/4]"; // try aspect-[4/5] for shorter
+// Gap between numeral and title (bigger = more breathing room above heading)
+const NUMERAL_TO_TITLE_GAP = "3.5rem";
 
-// ─ Sticky bullet box (LEFT, stays in place in the SECOND row) ──
+// Gap between title and paragraph — matches reference site's 1.5em spec
+// (dev-tools screenshot showed `h2 { margin-bottom: 1.5em }`).
+const TITLE_TO_PARA_GAP = "1.5em";
+
+// ─ Photo on the RIGHT of the top 2-col section ──
+const TOP_PHOTO        = "/images/about-story-1.jpg";
+const TOP_PHOTO_ASPECT = "aspect-[3/4]";
+// Nudge the top photo down slightly if you want it to start BELOW the numeral.
+// Leave at "0" to align photo top exactly with numeral top.
+const TOP_PHOTO_TOP_OFFSET = "0";
+
+// ─ Sticky bullet box (LEFT, stays in place in SECOND row) ──
 const BULLETS = [
   "Luxury with Hospitality",
   "Attention to Detail",
@@ -36,17 +46,32 @@ const BULLETS = [
   "Commitment & Reliability",
 ];
 
+// ─── BULLET BOX DIMENSIONS ──────────────────────────────────────
+// These three knobs stretch the box. Bump them to match the tall reference
+// (image 6). All three combine: padding adds outer air, gap spreads items,
+// min-height forces a floor even with few items.
+//
+//   BOX_PADDING_Y  = top+bottom inner padding      (was py-14 ≈ 3.5rem)
+//   BOX_ITEM_GAP   = space between each bullet     (was gap-6 ≈ 1.5rem)
+//   BOX_MIN_HEIGHT = minimum overall box height    (new — the "stretch")
+//
+// If you want it even taller: bump BOX_MIN_HEIGHT to "48rem" / "56rem".
+// If it looks too airy: drop BOX_ITEM_GAP to "2rem" and BOX_MIN_HEIGHT to "32rem".
+const BOX_PADDING_Y  = "5rem";
+const BOX_ITEM_GAP   = "3rem";
+const BOX_MIN_HEIGHT = "40rem";
+
 // ─ Scrolling photo stack (RIGHT, scrolls past the sticky box) ──
 const PHOTOS = [
   "/images/about-story-2.jpg",
   "/images/about-story-3.jpg",
 ];
 
-// ─ Bullet-box frame styling (matches FeaturedSection outline pattern) ──
+// ─ Bullet-box frame styling ──
 const BOX_OUTER_OFFSET = "14px";
-const BOX_INNER_INSET = "12px";
-const BOX_OUTER_COLOR = "rgba(255,255,255,0.30)";
-const BOX_INNER_COLOR = "rgba(255,255,255,0.50)";
+const BOX_INNER_INSET  = "12px";
+const BOX_OUTER_COLOR  = "rgba(255,255,255,0.30)";
+const BOX_INNER_COLOR  = "rgba(255,255,255,0.50)";
 
 // ─ Sticky offset from viewport top ──
 const STICKY_TOP_OFFSET = "8rem";
@@ -62,23 +87,29 @@ export default function AboutStorySection() {
     >
       {/*
         TOP ROW — 2-col grid.
-        LEFT  = numeral + title + paragraph
-        RIGHT = tall photo
-        Matches reference image 1 (the "Dear guests, we would like to welcome
-        you in our wellness hotel Kaskady" + paragraph + photo layout).
+        LEFT  = numeral + title + paragraph, all CENTRED horizontally within col
+        RIGHT = tall photo aligned to top of the row (starts at numeral level)
+
+        Key change: `md:items-start` instead of `md:items-center` — this
+        aligns both columns to the TOP. Previously the shorter left column
+        was vertically centred against the taller right photo, which made the
+        photo appear to start ABOVE the numeral. Now they start together.
       */}
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 md:grid-cols-2 md:gap-20 md:items-center">
-        <div className="flex flex-col">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 md:grid-cols-2 md:gap-20 md:items-start">
+        <div className="flex flex-col items-center text-center">
           <Reveal>
-            <div className="mb-12">
+            <div style={{ marginBottom: NUMERAL_TO_TITLE_GAP }}>
               <NumeralMarker numeral="I" light />
             </div>
           </Reveal>
 
           <Reveal>
             <h2
-              style={serif}
-              className="font-semibold leading-[1.15] text-[clamp(1.8rem,2.8vw,54px)]"
+              style={{
+                ...serif,
+                marginBottom: TITLE_TO_PARA_GAP,
+              }}
+              className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,50px)]"
             >
               {renderItalicEmphasis(STORY_TITLE, TITLE_ITALIC_PORTION)}
             </h2>
@@ -87,7 +118,7 @@ export default function AboutStorySection() {
           <Reveal>
             <p
               style={serif}
-              className="mt-8 leading-relaxed text-white/85 text-[clamp(0.95rem,1.15vw,22px)]"
+              className="max-w-lg leading-relaxed text-white/85 text-[clamp(0.95rem,1.15vw,22px)]"
             >
               {STORY_PARAGRAPH}
             </p>
@@ -95,7 +126,10 @@ export default function AboutStorySection() {
         </div>
 
         <Reveal>
-          <div className={`relative ${TOP_PHOTO_ASPECT} w-full overflow-hidden`}>
+          <div
+            className={`relative ${TOP_PHOTO_ASPECT} w-full overflow-hidden`}
+            style={{ marginTop: TOP_PHOTO_TOP_OFFSET }}
+          >
             <Image
               src={TOP_PHOTO}
               alt="Raj Aangan story"
@@ -114,9 +148,8 @@ export default function AboutStorySection() {
 
       {/*
         BOTTOM ROW — 2-col grid.
-        LEFT  = bullet box that STICKS in place.
-        RIGHT = photo column that SCROLLS past it.
-        Same pattern as homepage AboutSection (flipped: text sticks, photos scroll).
+        LEFT  = stretched bullet box that STICKS in place while user scrolls.
+        RIGHT = photo column that scrolls past.
       */}
       <div className="mx-auto mt-32 grid w-full max-w-6xl grid-cols-1 gap-16 md:grid-cols-2 md:items-start">
         <div
@@ -159,7 +192,7 @@ function renderItalicEmphasis(text: string, italicPortion: string) {
   const idx = text.indexOf(italicPortion);
   if (idx === -1) return text;
   const before = text.slice(0, idx);
-  const after = text.slice(idx + italicPortion.length);
+  const after  = text.slice(idx + italicPortion.length);
   return (
     <>
       {before}
@@ -171,7 +204,15 @@ function renderItalicEmphasis(text: string, italicPortion: string) {
 
 function BulletBox({ bullets }: { bullets: string[] }) {
   return (
-    <div className="relative px-10 py-14">
+    <div
+      className="relative px-10"
+      style={{
+        paddingTop:    BOX_PADDING_Y,
+        paddingBottom: BOX_PADDING_Y,
+        minHeight:     BOX_MIN_HEIGHT,
+      }}
+    >
+      {/* Outer frame — extends beyond the box */}
       <div
         aria-hidden
         className="absolute pointer-events-none"
@@ -180,6 +221,7 @@ function BulletBox({ bullets }: { bullets: string[] }) {
           border: `1px solid ${BOX_OUTER_COLOR}`,
         }}
       />
+      {/* Inner frame — inset inside the box */}
       <div
         aria-hidden
         className="absolute pointer-events-none"
@@ -189,7 +231,16 @@ function BulletBox({ bullets }: { bullets: string[] }) {
         }}
       />
 
-      <ul className="relative flex flex-col items-center gap-6 text-center">
+      {/*
+        h-full + justify-center fills the box vertically and distributes
+        the bullets in the vertical middle with BOX_ITEM_GAP between them.
+        Combined with the min-height above, this gives the tall/stretched
+        look from reference image 6.
+      */}
+      <ul
+        className="relative flex h-full flex-col items-center justify-center text-center"
+        style={{ gap: BOX_ITEM_GAP }}
+      >
         {bullets.map((b) => (
           <li
             key={b}

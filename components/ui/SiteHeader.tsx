@@ -13,21 +13,16 @@ gsap.registerPlugin(useGSAP);
 // Single source of truth for nav links — edit here, propagates to every page.
 // ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
-  { label: "ABOUT US",  href: "/about"   },
-  { label: "CATERING",  href: "#"        },
-  { label: "EVENTS",    href: "#"        },
-  { label: "VENUE",     href: "#"        },
-  { label: "GALLERY",   href: "/gallery" },
-  { label: "CONTACT",   href: "#"        },
-  { label: "BLOG",      href: "#"        },
+  { label: "ABOUT US",  href: "/about"    },
+  { label: "CATERING",  href: "#"         },
+  { label: "EVENTS",    href: "#"         },
+  { label: "VENUE",     href: "#"         },
+  { label: "GALLERY",   href: "/gallery"  },
+  { label: "CONTACT",   href: "/contact"  },
+  { label: "BLOG",      href: "/blog"     },
 ];
 
 type SiteHeaderProps = {
-  /**
-   * When true, header elements start invisible and fade in. Use this ONLY on
-   * the homepage's first load. On any other page the navbar should "already
-   * be there" because the user navigated here from somewhere.
-   */
   animateEntrance?: boolean;
 };
 
