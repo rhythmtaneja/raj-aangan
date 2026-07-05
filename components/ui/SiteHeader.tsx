@@ -11,11 +11,12 @@ gsap.registerPlugin(useGSAP);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Single source of truth for nav links — edit here, propagates to every page.
+// EVENTS now wired to /events. CATERING and VENUE still placeholder.
 // ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
   { label: "ABOUT US",  href: "/about"    },
   { label: "CATERING",  href: "#"         },
-  { label: "EVENTS",    href: "#"         },
+  { label: "EVENTS",    href: "/events"   }, // ← changed from "#"
   { label: "VENUE",     href: "#"         },
   { label: "GALLERY",   href: "/gallery"  },
   { label: "CONTACT",   href: "/contact"  },
