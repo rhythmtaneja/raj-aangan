@@ -1,18 +1,26 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/anim/CircleButton.tsx
+// ══════════════════════════════════════════════════════════════════
+
 "use client";
 
 /**
  * CircleButton.tsx
  * ---------------------------------------------------------------------------
- * The reference site's signature button: at rest it's a bordered pill with a
- * label. On hover a coloured ball grows from the centre (circ.inOut), the
- * label fades, the BORDER also fades to transparent (so the outline pill
- * disappears cleanly — only the ball + arrow remain), and the ball follows
- * the cursor magnetically.
+ * Signature button used site-wide. Pill outline + label at rest → on hover
+ * the border fades to transparent, label fades out, ball grows from centre,
+ * arrow appears, ball follows cursor magnetically.
  *
- * arrowDirection prop controls the chevron on hover:
- *   "right" (default) — most CTAs / navigational buttons
- *   "down"            — scroll-down cues (e.g. about-page hero CTA)
- *   "left"            — back navigation (e.g. gallery's Back button)
+ * BACKWARD-COMPATIBLE ADDITIONS (Nov 2025):
+ *   • asStatic?: boolean
+ *       When true, renders as <span> instead of <a>. Use when the button is
+ *       nested inside another Link/anchor to avoid invalid <a>-inside-<a>
+ *       HTML. The outer Link handles navigation; the button is visual only.
+ *
+ *   • onClick?: (e) => void
+ *       Standard click handler passed through to the root element. Useful
+ *       for smooth-scroll interception (call e.preventDefault() then scroll
+ *       programmatically).
  * ---------------------------------------------------------------------------
  */
 
@@ -40,6 +48,16 @@ type CircleButtonProps = {
   magnet?: number;
   /** Chevron direction shown on hover. Defaults to "right". */
   arrowDirection?: ArrowDirection;
+  /**
+   * NEW: render as <span> instead of <a>. Use when this button is nested
+   * inside another Link/anchor (outer Link handles navigation).
+   */
+  asStatic?: boolean;
+  /**
+   * NEW: click handler passed to the root. Call e.preventDefault() inside
+   * if you want to intercept navigation (e.g. for smooth scroll).
+   */
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
 /** Resting offset for the arrow (where it starts before entering to centre). */
@@ -58,8 +76,10 @@ export default function CircleButton({
   circleSize = 84,
   magnet = 0.4,
   arrowDirection = "right",
+  asStatic = false,
+  onClick,
 }: CircleButtonProps) {
-  const root = useRef<HTMLAnchorElement>(null);
+  const root = useRef<HTMLElement>(null);
   const wrap = useRef<HTMLSpanElement>(null);
   const circle = useRef<HTMLSpanElement>(null);
   const arrow = useRef<HTMLSpanElement>(null);
@@ -154,15 +174,20 @@ export default function CircleButton({
     yTo.current?.(dy * magnet);
   };
 
-  return (
-    <a
-      ref={root}
-      href={href}
-      onMouseEnter={enter}
-      onMouseLeave={leave}
-      onMouseMove={move}
-      className={"relative inline-flex items-center justify-center isolate " + (className ?? "")}
-    >
+  // ─ Render root element ────────────────────────────────────────────────
+  // asStatic=false → <a href=...>   (default; standalone navigation button)
+  // asStatic=true  → <span>         (visual-only; use inside another Link)
+  const commonProps = {
+    ref: root as React.RefObject<HTMLElement>,
+    onMouseEnter: enter,
+    onMouseLeave: leave,
+    onMouseMove: move,
+    onClick,
+    className: "relative inline-flex items-center justify-center isolate " + (className ?? ""),
+  };
+
+  const content = (
+    <>
       <span
         ref={wrap}
         aria-hidden
@@ -198,6 +223,18 @@ export default function CircleButton({
       <span ref={label} className="relative z-10">
         {children}
       </span>
+    </>
+  );
+
+  if (asStatic) {
+    return <span {...(commonProps as React.HTMLAttributes<HTMLSpanElement> & { ref: React.Ref<HTMLElement> })}>{content}</span>;
+  }
+  return (
+    <a
+      href={href}
+      {...(commonProps as React.AnchorHTMLAttributes<HTMLAnchorElement> & { ref: React.Ref<HTMLElement> })}
+    >
+      {content}
     </a>
   );
 }

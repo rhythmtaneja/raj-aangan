@@ -10,14 +10,14 @@ import { prefersReducedMotion } from "@/components/anim/anim.config";
 gsap.registerPlugin(useGSAP);
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Single source of truth for nav links — edit here, propagates to every page.
-// EVENTS now wired to /events. CATERING and VENUE still placeholder.
+// Single source of truth for nav links.
+// VENUE now wired to /venue. CATERING still placeholder.
 // ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
   { label: "ABOUT US",  href: "/about"    },
   { label: "CATERING",  href: "#"         },
-  { label: "EVENTS",    href: "/events"   }, // ← changed from "#"
-  { label: "VENUE",     href: "#"         },
+  { label: "EVENTS",    href: "/events"   },
+  { label: "VENUE",     href: "/venue"    }, // ← changed from "#"
   { label: "GALLERY",   href: "/gallery"  },
   { label: "CONTACT",   href: "/contact"  },
   { label: "BLOG",      href: "/blog"     },
@@ -25,9 +25,27 @@ const NAV_LINKS = [
 
 type SiteHeaderProps = {
   animateEntrance?: boolean;
+  /**
+   * "full"    → default. Menu + centered RAEC logo + Booking + nav row.
+   *              Used on the hero of every page.
+   * "minimal" → just Menu (left) + Booking (right). No logo, no nav row.
+   *              Used on sub-pages that don't have a big photo hero
+   *              (partners, resort detail, packages detail, etc.).
+   */
+  variant?: "full" | "minimal";
+  /**
+   * "light" (default) → white text/icons — for use over dark hero photos.
+   * "dark"            → dark text/icons — for use over WHITE backgrounds
+   *                     (needed on minimal sub-pages that sit on white).
+   */
+  colorScheme?: "light" | "dark";
 };
 
-export default function SiteHeader({ animateEntrance = false }: SiteHeaderProps) {
+export default function SiteHeader({
+  animateEntrance = false,
+  variant = "full",
+  colorScheme = "light",
+}: SiteHeaderProps) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -51,48 +69,63 @@ export default function SiteHeader({ animateEntrance = false }: SiteHeaderProps)
     { scope: root }
   );
 
+  // ─ Colour tokens per scheme ─────────────────────────────────────────────
+  const isDark = colorScheme === "dark";
+  const pillBg = isDark ? "bg-[#191919] text-white" : "bg-[#2d2d2d] text-white";
+  const textColor = isDark ? "text-[#191919]" : "text-white";
+  const dividerColor = isDark ? "bg-black/20" : "bg-white/30";
+
   return (
-    <header ref={root} className="absolute inset-x-0 top-0 z-30 text-white">
-      <div className="relative flex items-center justify-between px-12 pt-9 pb-4">
-        <button className="site-header-item flex items-center gap-3 rounded-full bg-[#2d2d2d] px-7 py-3.5 transition-opacity hover:opacity-90">
-          <DehazeIcon className="h-6 w-6" />
-          <span className="font-semibold text-[clamp(1rem,1.25vw,24px)]">Menu</span>
+    <header
+      ref={root}
+      className={`absolute inset-x-0 top-0 z-30 ${textColor}`}
+    >
+      <div className="relative flex items-center justify-between px-6 pt-9 pb-4 md:px-12">
+        <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
+          <DehazeIcon className="h-5 w-5 md:h-6 md:w-6" />
+          <span className="font-semibold text-[clamp(0.9rem,1.15vw,22px)]">Menu</span>
         </button>
 
-        <Link
-          href="/"
-          className="site-header-item absolute left-1/2 top-2 -translate-x-1/2"
-        >
-          <Image
-            src="/images/logo-round.png"
-            alt="Raj Aangan Events and Caterers"
-            width={110}
-            height={110}
-            priority
-          />
-        </Link>
+        {variant === "full" && (
+          <Link
+            href="/"
+            className="site-header-item absolute left-1/2 top-2 -translate-x-1/2"
+          >
+            <Image
+              src="/images/logo-round.png"
+              alt="Raj Aangan Events and Caterers"
+              width={110}
+              height={110}
+              priority
+            />
+          </Link>
+        )}
 
-        <button className="site-header-item flex items-center gap-3 rounded-full bg-[#2d2d2d] px-7 py-3.5 transition-opacity hover:opacity-90">
-          <TripIcon className="h-6 w-6" />
-          <span className="font-semibold text-[clamp(1rem,1.25vw,24px)]">Booking</span>
+        <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
+          <TripIcon className="h-5 w-5 md:h-6 md:w-6" />
+          <span className="font-semibold text-[clamp(0.9rem,1.15vw,22px)]">Booking</span>
         </button>
       </div>
 
-      <div className="site-header-item h-px w-full bg-white/30" />
+      {variant === "full" && (
+        <>
+          <div className={`site-header-item h-px w-full ${dividerColor}`} />
 
-      <nav className="flex items-center justify-center gap-10 py-4 font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,15px)]">
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            className="site-header-item transition-opacity duration-300 hover:opacity-60"
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+          <nav className="flex items-center justify-center gap-10 py-4 font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,15px)]">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="site-header-item transition-opacity duration-300 hover:opacity-60"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-      <div className="site-header-item h-px w-full bg-white/30" />
+          <div className={`site-header-item h-px w-full ${dividerColor}`} />
+        </>
+      )}
     </header>
   );
 }
