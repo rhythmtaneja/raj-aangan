@@ -1,3 +1,14 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/ui/SiteHeader.tsx
+// ══════════════════════════════════════════════════════════════════
+// CHANGES vs previous version:
+//   • Menu button (top-left pill) is now a <Link> to /menu-builder,
+//     matching the "Plan Your Event" CTA behaviour. Applies site-wide
+//     since SiteHeader is used on every top-level page.
+//   • Booking button unchanged — still a plain button (wire it up later
+//     when the booking flow is ready).
+// ══════════════════════════════════════════════════════════════════
+
 "use client";
 
 import { useRef } from "react";
@@ -11,33 +22,23 @@ gsap.registerPlugin(useGSAP);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Single source of truth for nav links.
-// VENUE now wired to /venue. CATERING still placeholder.
 // ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
   { label: "ABOUT US",  href: "/about"    },
-  { label: "CATERING",  href: "#"         },
+  { label: "CATERING",  href: "/catering" },
   { label: "EVENTS",    href: "/events"   },
-  { label: "VENUE",     href: "/venue"    }, // ← changed from "#"
+  { label: "VENUE",     href: "/venue"    },
   { label: "GALLERY",   href: "/gallery"  },
   { label: "CONTACT",   href: "/contact"  },
   { label: "BLOG",      href: "/blog"     },
 ];
 
+// Menu button destination — the catering menu builder wizard.
+const MENU_BUTTON_HREF = "/menu-builder";
+
 type SiteHeaderProps = {
   animateEntrance?: boolean;
-  /**
-   * "full"    → default. Menu + centered RAEC logo + Booking + nav row.
-   *              Used on the hero of every page.
-   * "minimal" → just Menu (left) + Booking (right). No logo, no nav row.
-   *              Used on sub-pages that don't have a big photo hero
-   *              (partners, resort detail, packages detail, etc.).
-   */
   variant?: "full" | "minimal";
-  /**
-   * "light" (default) → white text/icons — for use over dark hero photos.
-   * "dark"            → dark text/icons — for use over WHITE backgrounds
-   *                     (needed on minimal sub-pages that sit on white).
-   */
   colorScheme?: "light" | "dark";
 };
 
@@ -69,7 +70,6 @@ export default function SiteHeader({
     { scope: root }
   );
 
-  // ─ Colour tokens per scheme ─────────────────────────────────────────────
   const isDark = colorScheme === "dark";
   const pillBg = isDark ? "bg-[#191919] text-white" : "bg-[#2d2d2d] text-white";
   const textColor = isDark ? "text-[#191919]" : "text-white";
@@ -81,10 +81,14 @@ export default function SiteHeader({
       className={`absolute inset-x-0 top-0 z-30 ${textColor}`}
     >
       <div className="relative flex items-center justify-between px-6 pt-9 pb-4 md:px-12">
-        <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
+        {/* MENU — now a Link to the menu builder wizard */}
+        <Link
+          href={MENU_BUTTON_HREF}
+          className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}
+        >
           <DehazeIcon className="h-5 w-5 md:h-6 md:w-6" />
           <span className="font-semibold text-[clamp(0.9rem,1.15vw,22px)]">Menu</span>
-        </button>
+        </Link>
 
         {variant === "full" && (
           <Link
@@ -101,6 +105,7 @@ export default function SiteHeader({
           </Link>
         )}
 
+        {/* BOOKING — still a plain button (no route yet) */}
         <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
           <TripIcon className="h-5 w-5 md:h-6 md:w-6" />
           <span className="font-semibold text-[clamp(0.9rem,1.15vw,22px)]">Booking</span>

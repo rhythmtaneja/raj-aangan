@@ -27,7 +27,7 @@ const OVERLAY_OPACITY = 0.35;
 // ─ Bottom blend — dissolves hero photo INTO the WHITE next section ──
 // MUST match the bg of VenuePropertiesSection (currently #ffffff).
 const HERO_BLEND_TO_COLOR = "#ffffff";
-const HERO_BLEND_HEIGHT = "35vh";
+const HERO_BLEND_HEIGHT = "0vh";
 
 // ─ Title ──
 const TITLE_TEXT = "Venue";
