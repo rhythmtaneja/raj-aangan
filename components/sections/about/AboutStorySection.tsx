@@ -13,9 +13,9 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─ Section bg (darker navy, matches reference image 2) ──
 // MUST match HERO_BLEND_TO_COLOR in AboutHero.tsx. If they diverge, a colour
 // seam appears at the hero → story boundary.
-const SECTION_BG  = "#081b24"; // ↓ closer to "#040e14" for near-black navy
-                                //  ↑ closer to "#0f3a4a" to lighten
-const TEXT_COLOR  = "#ffffff";
+const SECTION_BG = "#081b24"; // ↓ closer to "#040e14" for near-black navy
+//  ↑ closer to "#0f3a4a" to lighten
+const TEXT_COLOR = "#ffffff";
 
 // ─ Trust title & paragraph (LEFT column, now CENTRED) ──
 const STORY_TITLE = "One of Jaipur's most trusted names in luxury events and premium catering";
@@ -31,7 +31,7 @@ const NUMERAL_TO_TITLE_GAP = "3.5rem";
 const TITLE_TO_PARA_GAP = "1.5em";
 
 // ─ Photo on the RIGHT of the top 2-col section ──
-const TOP_PHOTO        = "/images/about-story-1.jpg";
+const TOP_PHOTO = "/images/about-story-1.jpg";
 const TOP_PHOTO_ASPECT = "aspect-[3/4]";
 // Nudge the top photo down slightly if you want it to start BELOW the numeral.
 // Leave at "0" to align photo top exactly with numeral top.
@@ -57,8 +57,8 @@ const BULLETS = [
 //
 // If you want it even taller: bump BOX_MIN_HEIGHT to "48rem" / "56rem".
 // If it looks too airy: drop BOX_ITEM_GAP to "2rem" and BOX_MIN_HEIGHT to "32rem".
-const BOX_PADDING_Y  = "5rem";
-const BOX_ITEM_GAP   = "3rem";
+const BOX_PADDING_Y = "9rem";
+const BOX_ITEM_GAP = "3rem";
 const BOX_MIN_HEIGHT = "40rem";
 
 // ─ Scrolling photo stack (RIGHT, scrolls past the sticky box) ──
@@ -69,9 +69,9 @@ const PHOTOS = [
 
 // ─ Bullet-box frame styling ──
 const BOX_OUTER_OFFSET = "14px";
-const BOX_INNER_INSET  = "12px";
-const BOX_OUTER_COLOR  = "rgba(255,255,255,0.30)";
-const BOX_INNER_COLOR  = "rgba(255,255,255,0.50)";
+const BOX_INNER_INSET = "12px";
+const BOX_OUTER_COLOR = "rgba(255,255,255,0.30)";
+const BOX_INNER_COLOR = "rgba(255,255,255,0.50)";
 
 // ─ Sticky offset from viewport top ──
 const STICKY_TOP_OFFSET = "8rem";
@@ -192,7 +192,7 @@ function renderItalicEmphasis(text: string, italicPortion: string) {
   const idx = text.indexOf(italicPortion);
   if (idx === -1) return text;
   const before = text.slice(0, idx);
-  const after  = text.slice(idx + italicPortion.length);
+  const after = text.slice(idx + italicPortion.length);
   return (
     <>
       {before}
@@ -207,9 +207,9 @@ function BulletBox({ bullets }: { bullets: string[] }) {
     <div
       className="relative px-10"
       style={{
-        paddingTop:    BOX_PADDING_Y,
+        paddingTop: BOX_PADDING_Y,
         paddingBottom: BOX_PADDING_Y,
-        minHeight:     BOX_MIN_HEIGHT,
+        minHeight: BOX_MIN_HEIGHT,
       }}
     >
       {/* Outer frame — extends beyond the box */}

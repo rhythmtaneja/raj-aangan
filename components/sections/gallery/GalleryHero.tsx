@@ -16,7 +16,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BG_IMAGE        = "/images/gallery-hero.jpg";
+const BG_IMAGE = "/images/gallery-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
 // ─ Bottom fade — blends hero photo INTO the page bg colour ──
@@ -26,7 +26,7 @@ const HERO_BLEND_TO_COLOR = "#0a1e26";
 
 // How tall the fade region is. Bigger = longer, gentler blend.
 // Smaller = shorter, more abrupt.
-const HERO_BLEND_HEIGHT = "40vh";
+const HERO_BLEND_HEIGHT = "25vh";
 
 // Where the fade STARTS being visible inside its own container. 0% = fade
 // begins immediately (softest start); 25% = fade area's top ¼ stays fully
@@ -34,17 +34,17 @@ const HERO_BLEND_HEIGHT = "40vh";
 const HERO_BLEND_START = "0%";
 
 // ─ Title ──
-const TITLE_TEXT      = "Resort Gallery";
+const TITLE_TEXT = "Resort Gallery";
 const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 120px)";
 
 // ─ Letter-by-letter reveal ──
-const LETTER_STAGGER     = 0.05;
-const LETTER_DURATION    = 0.9;
-const LETTER_INITIAL_Y   = 28;
+const LETTER_STAGGER = 0.05;
+const LETTER_DURATION = 0.9;
+const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA (appears after the title finishes) ──
-const CTA_DELAY = 1.6;
+const CTA_DELAY = 1;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -78,7 +78,7 @@ export default function GalleryHero() {
       if (prefersReducedMotion()) return;
 
       const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
-      const cta     = root.current?.querySelector<HTMLElement>(".gallery-hero-cta");
+      const cta = root.current?.querySelector<HTMLElement>(".gallery-hero-cta");
 
       if (letters && letters.length > 0) {
         gsap.set(letters, { autoAlpha: 0, y: LETTER_INITIAL_Y });

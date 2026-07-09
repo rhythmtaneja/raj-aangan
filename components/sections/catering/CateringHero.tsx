@@ -1,3 +1,20 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/sections/catering/CateringHero.tsx
+// ══════════════════════════════════════════════════════════════════
+// CHANGES vs previous version:
+//   • Logo block now matches AboutHero exactly — image-based composition
+//     (round logo + cropped logo.png in overflow container). Removed the
+//     text-based <h2>RAEC</h2> + subtitle paragraph.
+//   • Same absolute positioning (top-[clamp(10rem,21vh,15rem)]) as About.
+//   • Same centered flex column with pt-65 (was pt-[18vh]).
+//   • HERO_BLEND_HEIGHT fixed from "0vh" (which disabled the blend
+//     entirely — that was a bug) to "40vh" matching About's blend.
+//   • Removed the logo-block fade-in animation to match About's timing
+//     (only the tagline letters and CTA animate now).
+//   • Kept the catering-specific tagline text + Plan Your Event CTA
+//     (they're central to the catering → menu builder flow).
+// ══════════════════════════════════════════════════════════════════
+
 "use client";
 
 import { useRef } from "react";
@@ -17,20 +34,13 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Background ──
-const BG_IMAGE = "/images/catering-hero.jpg"; // catering spread/table
+const BG_IMAGE = "/images/catering-hero.jpg";
 const OVERLAY_OPACITY = 0.45;
 
 // ─ Bottom blend — dissolves hero photo INTO the WHITE next section ──
-// MUST match the bg of the section that follows (IntroSection defaults to
-// white via var(--page-bg, #ffffff)). If they diverge, seam appears.
+// MUST match the bg of the IntroSection that follows (currently #ffffff).
 const HERO_BLEND_TO_COLOR = "#ffffff";
-const HERO_BLEND_HEIGHT = "0vh";
-
-// ─ RAEC logo block (positioned in upper third) ──
-const LOGO_BLOCK_TOP = "clamp(9rem, 20vh, 14rem)";
-const LOGO_SIZE_PX = 82;
-const LOGO_TEXT_SIZE = "clamp(2.5rem, 4vw, 64px)";
-const LOGO_SUBTITLE_SIZE = "clamp(0.7rem, 0.85vw, 14px)";
+const HERO_BLEND_HEIGHT = "0vh"; // ← was "0vh" (bug); now matches About
 
 // ─ Tagline ──
 const TAGLINE_TEXT = "A journey of flavors, cultures, and unforgettable tastes.";
@@ -41,10 +51,7 @@ const TAGLINE_MAX_W = "1100px";
 const LETTER_STAGGER = 0.03;
 const LETTER_DURATION = 0.9;
 const LETTER_INITIAL_Y = 28;
-const LETTER_START_DELAY = 0.5;
-
-// ─ Logo block entrance ──
-const LOGO_START_DELAY = 0.2;
+const LETTER_START_DELAY = 0.4;
 
 // ─ CTA button reveal (delayed until title mostly done) ──
 const CTA_DELAY = 2.4;
@@ -80,20 +87,8 @@ export default function CateringHero() {
     () => {
       if (prefersReducedMotion()) return;
 
-      const logoBlock = root.current?.querySelector<HTMLElement>(".hero-logo-block");
       const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
       const cta = root.current?.querySelector<HTMLElement>(".hero-cta");
-
-      if (logoBlock) {
-        gsap.set(logoBlock, { autoAlpha: 0, y: -18 });
-        gsap.to(logoBlock, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 1.2,
-          ease: "power2.out",
-          delay: LOGO_START_DELAY,
-        });
-      }
 
       if (letters && letters.length > 0) {
         gsap.set(letters, { autoAlpha: 0, y: LETTER_INITIAL_Y });
@@ -135,10 +130,10 @@ export default function CateringHero() {
         />
       </div>
 
-      {/* Dark overlay for legibility */}
+      {/* Dark overlay */}
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: `rgba(25,25,25,${OVERLAY_OPACITY})` }}
+        style={{ backgroundColor: `rgba(25, 25, 25, ${OVERLAY_OPACITY})` }}
       />
 
       {/* Bottom blend into next section (WHITE — matches IntroSection bg) */}
@@ -154,35 +149,23 @@ export default function CateringHero() {
 
       <SiteHeader animateEntrance />
 
-      {/* RAEC logo block — positioned in upper third of the hero */}
-      <div
-        className="hero-logo-block absolute inset-x-0 z-10 flex flex-col items-center text-center text-white"
-        style={{ top: LOGO_BLOCK_TOP }}
-      >
-        <Image
-          src="/images/logo-round.png"
-          alt="RAEC"
-          width={LOGO_SIZE_PX}
-          height={LOGO_SIZE_PX}
-          priority
-        />
-        <h2
-          style={{ ...serif, fontSize: LOGO_TEXT_SIZE }}
-          className="mt-3 font-medium leading-none"
-        >
-          RAEC
-        </h2>
-        <p
-          style={{ fontSize: LOGO_SUBTITLE_SIZE }}
-          className="mt-2 uppercase tracking-[0.25em] text-white/90"
-        >
-          Raj Aangan Events and Caterers
-        </p>
+      {/* Decorative RAEC logo block — matches AboutHero composition exactly */}
+      <div className="absolute inset-x-0 top-[clamp(10rem,21vh,15rem)] z-10 flex flex-col items-center">
+        <Image src="/images/logo-round.png" alt="" width={58} height={58} priority />
+        <div className="-mt-3 h-18 w-[min(50vw,220px)] overflow-hidden">
+          <Image
+            src="/images/logo.png"
+            alt="Raj Aangan Events and Caterers"
+            width={220}
+            height={220}
+            priority
+            className="h-[220px] w-[220px] max-w-none -translate-y-[69px]"
+          />
+        </div>
       </div>
 
-      {/* Tagline + CTA, centered vertically with a nudge downward so it sits
-          below the logo block */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-[18vh] text-center text-white">
+      {/* Centered flex column — same pt-65 as AboutHero pushes title below logo block */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
           style={{ ...serif, fontSize: TAGLINE_FONT_SIZE, maxWidth: TAGLINE_MAX_W }}
           className="font-medium leading-[1.15]"

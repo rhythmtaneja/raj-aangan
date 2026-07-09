@@ -40,7 +40,7 @@ const LETTER_INITIAL_Y = 32;
 const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA ──
-const CTA_DELAY = 1.6;
+const CTA_DELAY = 1;
 
 // ─ Smooth scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "properties";

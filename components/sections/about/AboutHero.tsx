@@ -1,3 +1,16 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/sections/about/AboutHero.tsx
+// ══════════════════════════════════════════════════════════════════
+// CHANGES vs previous version:
+//   • Down-arrow CircleButton now smooth-scrolls to #story instead of
+//     browser-default instant jump. Uses window.lenis.scrollTo if the
+//     Lenis instance is exposed globally (see SmoothScroll.tsx setup
+//     notes at the bottom of this file), else falls back to native
+//     scrollIntoView({ behavior: "smooth" }).
+//   • Same pattern already in use on VenueHero — see that file if you
+//     want to change the smooth-scroll duration in one place.
+// ══════════════════════════════════════════════════════════════════
+
 "use client";
 
 import { useRef } from "react";
@@ -16,28 +29,32 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const BG_IMAGE        = "/images/about-hero.jpg";
+const BG_IMAGE = "/images/about-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
 // ─ Bottom fade — blends hero photo INTO AboutStorySection's bg colour ──
 // MUST match SECTION_BG in AboutStorySection.tsx. If they diverge, a colour
 // seam appears where the hero ends and the next section begins.
 const HERO_BLEND_TO_COLOR = "#081b24"; // ← keep in sync with AboutStorySection.SECTION_BG
-const HERO_BLEND_HEIGHT   = "40vh";    // ↑ for longer, gentler blend
+const HERO_BLEND_HEIGHT = "30vh";    // ↑ for longer, gentler blend
 
 // ─ Title ──
-const TITLE_TEXT      = "One of the most premium resort for wedding & events";
+const TITLE_TEXT = "One of the most premium resort for wedding & events";
 const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 86px)";
-const TITLE_MAX_W     = "1200px";
+const TITLE_MAX_W = "1200px";
 
 // ─ Letter-by-letter reveal ──
-const LETTER_STAGGER     = 0.03;
-const LETTER_DURATION    = 0.9;
-const LETTER_INITIAL_Y   = 28;
+const LETTER_STAGGER = 0.03;
+const LETTER_DURATION = 0.9;
+const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA ──
-const CTA_DELAY = 2.2;
+const CTA_DELAY = 1.5;
+
+// ─ Smooth-scroll target + timing when the down arrow is clicked ──
+const SCROLL_TARGET_ID = "story";
+const SCROLL_DURATION = 2.5;   // seconds — used only when Lenis is available
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -63,6 +80,30 @@ function Letters({ text }: { text: string }) {
   );
 }
 
+/**
+ * Intercepts the click on the down-arrow and smooth-scrolls to #story.
+ *   1. If Lenis is exposed on window.lenis → use its scrollTo (buttery,
+ *      matches the site's overall scroll feel).
+ *   2. Otherwise fall back to native scrollIntoView({ behavior: "smooth" }).
+ *
+ * TIP: For (1) to work, expose Lenis globally from your SmoothScroll.tsx:
+ *          (window as any).lenis = lenis;
+ *      (See notes at the bottom of this file for the full one-time fix
+ *       that makes ALL "#anchor" links across the site smooth-scroll.)
+ */
+function handleDownClick(e: React.MouseEvent) {
+  e.preventDefault();
+  const target = document.getElementById(SCROLL_TARGET_ID);
+  if (!target) return;
+
+  const w = window as unknown as { lenis?: { scrollTo: (t: HTMLElement, o?: { duration?: number }) => void } };
+  if (w.lenis && typeof w.lenis.scrollTo === "function") {
+    w.lenis.scrollTo(target, { duration: SCROLL_DURATION });
+  } else {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 export default function AboutHero() {
   const root = useRef<HTMLElement>(null);
 
@@ -71,7 +112,7 @@ export default function AboutHero() {
       if (prefersReducedMotion()) return;
 
       const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
-      const cta     = root.current?.querySelector<HTMLElement>(".about-hero-cta");
+      const cta = root.current?.querySelector<HTMLElement>(".about-hero-cta");
 
       if (letters && letters.length > 0) {
         gsap.set(letters, { autoAlpha: 0, y: LETTER_INITIAL_Y });
@@ -120,7 +161,7 @@ export default function AboutHero() {
 
       {/*
         BOTTOM BLEND — dissolves the hero photo into AboutStorySection's dark
-        navy so the transition is seamless (matches reference image 2).
+        navy so the transition is seamless.
       */}
       <div
         aria-hidden
@@ -159,7 +200,8 @@ export default function AboutHero() {
 
         <div className="about-hero-cta mt-14">
           <CircleButton
-            href="#story"
+            href={`#${SCROLL_TARGET_ID}`}
+            onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
             circleSize={68}
