@@ -15,8 +15,8 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SECTION_BG   = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
-const SECTION_PAD  = "py-24 md:py-32";
+const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
+const SECTION_PAD = "py-24 md:py-32";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller
@@ -39,14 +39,14 @@ type Property = {
 
 const PROPERTIES: Property[] = [
   {
-    name:  "Raj Aangan Resort",
+    name: "Raj Aangan Resort",
     image: "/images/venue-raj-aangan.jpg",
-    href:  "/venue/raj-aangan",
+    href: "/venue/raj-aangan",
   },
   {
-    name:  "Raj Gharana",
+    name: "Raj Gharana",
     image: "/images/venue-raj-gharana.jpg",
-    href:  "/venue/raj-gharana",
+    href: "/venue/raj-gharana",
   },
 ];
 
@@ -73,7 +73,7 @@ export default function VenuePropertiesSection() {
             href="/venue/partners"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={64}
+            circleSize={100}
             magnet={0.35}
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,20px)]"
           >
@@ -118,7 +118,7 @@ function PropertyCard({ name, image, href }: Property) {
               asStatic
               circleColor="#ffffff"
               arrowColor="#191919"
-              circleSize={58}
+              circleSize={100}
               magnet={0.3}
               className="rounded-full border border-white/85 px-7 py-2.5 text-white text-[clamp(0.85rem,0.95vw,17px)]"
             >

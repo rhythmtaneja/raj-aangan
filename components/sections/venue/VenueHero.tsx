@@ -162,7 +162,7 @@ export default function VenueHero() {
             onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={72}
+            circleSize={120}
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-8 py-3 text-white"

@@ -20,10 +20,10 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 //
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SECTION_BG   = "#ffffff";
-const SECTION_PAD  = "py-16 md:py-20";
-const TEXT_COLOR   = "#191919";
-const BACK_HREF    = "/venue"; // where the button navigates
+const SECTION_BG = "#ffffff";
+const SECTION_PAD = "py-16 md:py-20";
+const TEXT_COLOR = "#191919";
+const BACK_HREF = "/venue"; // where the button navigates
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -47,7 +47,7 @@ export default function BackToVenueNav({
             href={BACK_HREF}
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={56}
+            circleSize={150}
             magnet={0.3}
             arrowDirection="left"
             className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"

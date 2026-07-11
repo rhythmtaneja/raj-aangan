@@ -17,15 +17,15 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Text tilt-zoom (entire text block enters with rotateY + scale) ──
-const TILT_DEG          = 40;
-const INITIAL_SCALE     = 0.78;
-const TILT_DURATION     = 2.4;
-const TILT_EASE         = "power3.out";
+const TILT_DEG = -55;
+const INITIAL_SCALE = 0.78;
+const TILT_DURATION = 6;
+const TILT_EASE = "power3.out";
 
 // ─ Word-by-word reveal (first scroll-in only) ──
-const WORD_STAGGER       = 0.09;
-const WORD_FADE_DURATION = 0.7;
-const WORD_REVEAL_DELAY  = 0.2;
+const WORD_STAGGER = 0.15;
+const WORD_FADE_DURATION = 2;
+const WORD_REVEAL_DELAY = 0.4;
 
 // ─ Subsequent en-bloc reveal (on re-enter) ──
 const ENBLOC_FADE_DURATION = 1.2;
@@ -95,7 +95,7 @@ export default function IntroSection({
   buttonText,
   buttonHref = "#",
 }: IntroSectionProps) {
-  const sectionRef   = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const textBlockRef = useRef<HTMLDivElement>(null);
   const buttonWrapRef = useRef<HTMLDivElement>(null);
 
@@ -104,13 +104,13 @@ export default function IntroSection({
   useGSAP(
     () => {
       const text = textBlockRef.current;
-      const btn  = buttonWrapRef.current;
+      const btn = buttonWrapRef.current;
       if (!text) return;
 
       const words = text.querySelectorAll<HTMLElement>(".word");
 
       if (prefersReducedMotion()) {
-        gsap.set(text,  { autoAlpha: 1, rotateY: 0, scale: 1 });
+        gsap.set(text, { autoAlpha: 1, rotateY: 0, scale: 1 });
         gsap.set(words, { autoAlpha: 1, y: 0 });
         if (btn) gsap.set(btn, { autoAlpha: 1, y: 0 });
         hasPlayedWordReveal.current = true;
@@ -221,7 +221,7 @@ export default function IntroSection({
             href={buttonHref}
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={80}
+            circleSize={150}
             magnet={0.4}
             className="rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,24px)]"
           >

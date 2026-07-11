@@ -87,22 +87,22 @@ export default function Hero() {
           </h1>
         </div>
 
-        <CircleButton
-          href="#"
-          circleColor="#6c7c7b"
-          arrowColor="#ffffff"
-          circleSize={88}
-          magnet={0.4}
-          className="hero-cta mt-12 rounded-full border border-white px-8 py-3.75 text-[12px] font-medium uppercase tracking-[0.18em] text-white"
-        >
-          Plan Your Event
-        </CircleButton>
-
         <p className="hero-sub mt-10 max-w-4xl text-center font-medium leading-relaxed text-white text-[clamp(1.125rem,1.56vw,30px)]">
           Where ancient architecture
           <br />
           meets modern comfort to create unforgettable royal experience
         </p>
+
+        <CircleButton
+          href="#"
+          circleColor="#6c7c7b"
+          arrowColor="#ffffff"
+          circleSize={150}
+          magnet={0.6}
+          className="hero-cta mt-12 rounded-full border border-white px-8 py-3.75 text-[12px] font-medium uppercase tracking-[0.18em] text-white"
+        >
+          Plan Your Event
+        </CircleButton>
       </div>
     </section>
   );

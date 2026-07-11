@@ -17,22 +17,22 @@ const TEXT_COLOR = "#191919";
 
 // ─ Content ──
 const SMALL_LABEL_TEXT = "Address";
-const TITLE_LINE_1     = "For Luxury";
-const TITLE_LINE_2     = "Wedding & Event";
-const ADDRESS_LINES    = [
+const TITLE_LINE_1 = "For Luxury";
+const TITLE_LINE_2 = "Wedding & Event";
+const ADDRESS_LINES = [
   "Raj Aangan Resort, The Haveli Ralawata,",
   "Near SBI Bank, Patrakar colony, Mansarover,",
   "Jaipur, Rajasthan",
 ];
-const MAP_HREF         = "https://maps.google.com/?q=Raj+Aangan+Resort+Jaipur"; // ← replace with real link
+const MAP_HREF = "https://maps.google.com/?q=Raj+Aangan+Resort+Jaipur"; // ← replace with real link
 
 // ─ Typography ──
 const SMALL_LABEL_SIZE = "clamp(1rem, 1.2vw, 22px)";
-const TITLE_SIZE       = "clamp(2.2rem, 4vw, 72px)";
-const ADDRESS_SIZE     = "clamp(1rem, 1.2vw, 22px)";
+const TITLE_SIZE = "clamp(2.2rem, 4vw, 72px)";
+const ADDRESS_SIZE = "clamp(1rem, 1.2vw, 22px)";
 
 // ─ Photo ──
-const PHOTO_SRC    = "/images/contact-address.jpg";
+const PHOTO_SRC = "/images/contact-address.jpg";
 const PHOTO_ASPECT = "aspect-[4/5]";
 
 // ─ White inner outline frame (same pattern as gallery / about) ──
@@ -40,7 +40,7 @@ const FRAME_INSET = "14px";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.65)";
 
 // ─ Hover zoom on the photo ──
-const HOVER_SCALE      = "group-hover:scale-105";
+const HOVER_SCALE = "group-hover:scale-105";
 const HOVER_TRANSITION = "transition-transform duration-[800ms] ease-out";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -91,7 +91,7 @@ export default function AddressSection() {
               href={MAP_HREF}
               circleColor="#191919"
               arrowColor="#ffffff"
-              circleSize={70}
+              circleSize={120}
               magnet={0.35}
               className="rounded-full border border-[#191919] px-10 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,22px)]"
             >

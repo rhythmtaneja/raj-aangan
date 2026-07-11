@@ -10,10 +10,10 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SECTION_BG   = "#ffffff";
-const TEXT_COLOR   = "#191919";
-const MUTED_COLOR  = "#8a8a8a";
-const SECTION_PAD  = "py-20 md:py-24";
+const SECTION_BG = "#ffffff";
+const TEXT_COLOR = "#191919";
+const MUTED_COLOR = "#8a8a8a";
+const SECTION_PAD = "py-20 md:py-24";
 
 // ─ Card image ──
 const CARD_ASPECT = "aspect-[4/5]"; // matches figma tall card
@@ -23,39 +23,39 @@ const FRAME_COLOR = "rgba(255,255,255,0.55)";
 // ═══════════════════════════════════════════════════════════════════════════
 
 type Partner = {
-  name:        string;
-  location:    string;
-  rooms:       number;
-  guests:      number;
+  name: string;
+  location: string;
+  rooms: number;
+  guests: number;
   description: string;
-  image:       string;
-  href?:       string;
+  image: string;
+  href?: string;
 };
 
 export const PARTNERS: Partner[] = [
   {
-    name:        "Rajmahal Palace, Jaipur",
-    location:    "Jaipur, Rajasthan",
-    rooms:       50,
-    guests:      250,
+    name: "Rajmahal Palace, Jaipur",
+    location: "Jaipur, Rajasthan",
+    rooms: 50,
+    guests: 250,
     description: "Set in the heart of Samode, this majestic destination combines royal heritage, natural beauty, and timeless elegance. With its stunning surroundings and regal ambiance, it creates the perfect backdrop for weddings, celebrations, and memorable occasions.",
-    image:       "/images/partner-rajmahal.jpg",
+    image: "/images/partner-rajmahal.jpg",
   },
   {
-    name:        "Samode Palace, Jaipur",
-    location:    "Jaipur, Rajasthan",
-    rooms:       50,
-    guests:      250,
+    name: "Samode Palace, Jaipur",
+    location: "Jaipur, Rajasthan",
+    rooms: 50,
+    guests: 250,
     description: "Set in the heart of Samode, this majestic destination combines royal heritage, natural beauty, and timeless elegance. With its stunning surroundings and regal ambiance, it creates the perfect backdrop for weddings, celebrations, and memorable occasions.",
-    image:       "/images/partner-samode.jpg",
+    image: "/images/partner-samode.jpg",
   },
   {
-    name:        "Jaipur Marriott, Jaipur",
-    location:    "Jaipur, Rajasthan",
-    rooms:       50,
-    guests:      250,
+    name: "Jaipur Marriott, Jaipur",
+    location: "Jaipur, Rajasthan",
+    rooms: 50,
+    guests: 250,
     description: "Set in the heart of Samode, this majestic destination combines royal heritage, natural beauty, and timeless elegance. With its stunning surroundings and regal ambiance, it creates the perfect backdrop for weddings, celebrations, and memorable occasions.",
-    image:       "/images/partner-marriott.jpg",
+    image: "/images/partner-marriott.jpg",
   },
 ];
 
@@ -140,7 +140,7 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={54}
+          circleSize={150}
           magnet={0.3}
           className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
         >

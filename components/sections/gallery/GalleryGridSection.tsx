@@ -11,14 +11,14 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Section title ──
-const TITLE_FONT_SIZE   = "clamp(2rem, 3.6vw, 68px)";
-const TITLE_COLOR       = "#ffffff";
-const TITLE_TRACKING    = "0.02em";
-const TITLE_MARGIN_BOT  = "3.5rem";
+const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 68px)";
+const TITLE_COLOR = "#ffffff";
+const TITLE_TRACKING = "0.02em";
+const TITLE_MARGIN_BOT = "3.5rem";
 
 // ─ Image grid ──
-const IMAGE_ASPECT       = "aspect-[4/3]";
-const IMAGE_GAP          = "gap-10"; // ↑ from gap-8 — slightly more breathing room between photos
+const IMAGE_ASPECT = "aspect-[4/3]";
+const IMAGE_GAP = "gap-10"; // ↑ from gap-8 — slightly more breathing room between photos
 const RIGHT_COLUMN_OFFSET = "md:mt-24";
 
 // ─ Inner outline frame (inside each image) ──
@@ -29,7 +29,7 @@ const FRAME_INSET = "14px";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.55)";
 
 // ─ Hover zoom ──
-const HOVER_SCALE      = "group-hover:scale-105";
+const HOVER_SCALE = "group-hover:scale-105";
 const HOVER_TRANSITION = "transition-transform duration-[800ms] ease-out";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -47,7 +47,7 @@ export default function GalleryGridSection({
   showMoreButton = false,
   moreButtonHref = "#",
 }: GalleryGridSectionProps) {
-  const leftImages  = images.filter((_, i) => i % 2 === 0);
+  const leftImages = images.filter((_, i) => i % 2 === 0);
   const rightImages = images.filter((_, i) => i % 2 === 1);
 
   return (
@@ -91,7 +91,7 @@ export default function GalleryGridSection({
             href={moreButtonHref}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={62}
+            circleSize={150}
             magnet={0.35}
             className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,20px)]"
           >

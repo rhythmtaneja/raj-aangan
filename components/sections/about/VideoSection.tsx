@@ -7,10 +7,10 @@ import CircleButton from "@/components/anim/CircleButton";
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const VIDEO_SRC  = "/videos/about-video.mp4"; // drop your file in /public/videos/
+const VIDEO_SRC = "/videos/about-video.mp4"; // drop your file in /public/videos/
 const POSTER_SRC = "/images/about-video-poster.jpg";
 
-const SECTION_BG    = "#000000";
+const SECTION_BG = "#000000";
 const SECTION_PAD_Y = "py-20"; // change to py-32 etc. for more breathing room
 
 // Max video width — keep readable on huge displays.
@@ -52,7 +52,7 @@ export default function VideoSection() {
               href="#"
               circleColor="#ffffff"
               arrowColor="#191919"
-              circleSize={78}
+              circleSize={150}
               magnet={0.35}
               className="rounded-full border border-white px-10 py-4 text-white"
             >

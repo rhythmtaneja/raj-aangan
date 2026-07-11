@@ -40,7 +40,7 @@ const OVERLAY_OPACITY = 0.45;
 // ─ Bottom blend — dissolves hero photo INTO the WHITE next section ──
 // MUST match the bg of the IntroSection that follows (currently #ffffff).
 const HERO_BLEND_TO_COLOR = "#ffffff";
-const HERO_BLEND_HEIGHT = "0vh"; // ← was "0vh" (bug); now matches About
+const HERO_BLEND_HEIGHT = "0vh";
 
 // ─ Tagline ──
 const TAGLINE_TEXT = "A journey of flavors, cultures, and unforgettable tastes.";
@@ -178,7 +178,7 @@ export default function CateringHero() {
             href="/menu-builder"
             circleColor="#6c7c7b" /* sage — matches Homepage hero */
             arrowColor="#ffffff"
-            circleSize={84}
+            circleSize={120}
             magnet={0.4}
             className="rounded-full border border-white/80 px-10 py-4 text-white uppercase tracking-[0.15em] text-[clamp(0.9rem,1.05vw,20px)]"
           >

@@ -157,7 +157,7 @@ export default function GalleryHero() {
             href="#gallery"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={68}
+            circleSize={120}
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-7 py-3 text-white"

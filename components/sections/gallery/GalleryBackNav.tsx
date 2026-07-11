@@ -36,7 +36,7 @@ export default function GalleryBackNav() {
             href={BACK_HREF}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={62}
+            circleSize={150}
             magnet={0.35}
             arrowDirection="left"
             className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,20px)]"

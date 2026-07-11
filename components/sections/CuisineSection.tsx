@@ -154,7 +154,7 @@ export default function CuisineSection() {
             href="#"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={88}
+            circleSize={150}
             magnet={0.4}
             className="rounded-full border border-[#191919] px-10 py-4 font-medium text-[#191919] text-[clamp(1rem,1.04vw,20px)]"
           >

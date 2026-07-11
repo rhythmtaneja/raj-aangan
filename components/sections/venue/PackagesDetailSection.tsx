@@ -21,38 +21,38 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 //
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SECTION_BG   = "#ffffff";
-const TEXT_COLOR   = "#191919";
-const MUTED_COLOR  = "#4a4a4a";
-const SECTION_PAD  = "py-16 md:py-24";
+const SECTION_BG = "#ffffff";
+const TEXT_COLOR = "#191919";
+const MUTED_COLOR = "#4a4a4a";
+const SECTION_PAD = "py-16 md:py-24";
 
 const IMAGE_ASPECT = "aspect-[4/3]";
-const FRAME_INSET  = "10px";
-const FRAME_COLOR  = "rgba(255,255,255,0.55)";
+const FRAME_INSET = "10px";
+const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 const IMAGE_STACK_GAP = "gap-y-6";
-const ROW_GAP         = "gap-y-24 md:gap-y-32";
-const COL_GAP         = "gap-8 md:gap-16";
+const ROW_GAP = "gap-y-24 md:gap-y-32";
+const COL_GAP = "gap-8 md:gap-16";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type PackageDetail = {
-  title:       string;
+  title: string;
   description: string;
-  inclusions:  string[];   // bulleted list
-  image1:      string;
-  image2:      string;
+  inclusions: string[];   // bulleted list
+  image1: string;
+  image2: string;
   /** Where "View package" leads. Use "#" while individual pages aren't built. */
-  href?:       string;
+  href?: string;
 };
 
 type PackagesDetailSectionProps = {
   /** Numeral shown at top (e.g. "I", "II"). */
-  numeral:  string;
+  numeral: string;
   /** Uppercase label alongside numeral (defaults to "OUR PACKAGES"). */
-  label?:   string;
+  label?: string;
   /** Big centered title, e.g. "Raj AANGAN" / "Raj GHARANA". */
-  title:    string;
+  title: string;
   packages: PackageDetail[];
 };
 
@@ -149,7 +149,7 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
             href={pkg.href ?? "#"}
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={52}
+            circleSize={150}
             magnet={0.3}
             className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
           >

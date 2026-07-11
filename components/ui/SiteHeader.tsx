@@ -1,6 +1,4 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/ui/SiteHeader.tsx
-// ══════════════════════════════════════════════════════════════════
+
 // CHANGES vs previous version:
 //   • Menu button (top-left pill) is now a <Link> to /menu-builder,
 //     matching the "Plan Your Event" CTA behaviour. Applies site-wide
@@ -24,13 +22,13 @@ gsap.registerPlugin(useGSAP);
 // Single source of truth for nav links.
 // ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
-  { label: "ABOUT US",  href: "/about"    },
-  { label: "CATERING",  href: "/catering" },
-  { label: "EVENTS",    href: "/events"   },
-  { label: "VENUE",     href: "/venue"    },
-  { label: "GALLERY",   href: "/gallery"  },
-  { label: "CONTACT",   href: "/contact"  },
-  { label: "BLOG",      href: "/blog"     },
+  { label: "ABOUT US", href: "/about" },
+  { label: "CATERING", href: "/catering" },
+  { label: "EVENTS", href: "/events" },
+  { label: "VENUE", href: "/venue" },
+  { label: "GALLERY", href: "/gallery" },
+  { label: "CONTACT", href: "/contact" },
+  { label: "BLOG", href: "/blog" },
 ];
 
 // Menu button destination — the catering menu builder wizard.
@@ -138,7 +136,7 @@ export default function SiteHeader({
 function DehazeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-      <line x1="3" y1="7"  x2="21" y2="7"  />
+      <line x1="3" y1="7" x2="21" y2="7" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="17" x2="21" y2="17" />
     </svg>

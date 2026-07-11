@@ -17,21 +17,21 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Three horizontal bands (same split-bg pattern as WeddingPackagesSection) ──
-const TOP_BG    = "#ffffff";
+const TOP_BG = "#ffffff";
 const MIDDLE_BG = "#0f2f3b"; // dark navy — should match ContactForm / WeddingPackages middle
 const BOTTOM_BG = "#ffffff";
 
 const TITLE_COLOR = "#191919";
 
 // ─ Padding per band ──
-const TOP_PAD    = "py-14";
+const TOP_PAD = "py-14";
 const MIDDLE_PAD = "py-16";
 const BOTTOM_PAD = "py-10";
 
 // ─ Card sizing ──
-const CARD_WIDTH  = 320; // px
+const CARD_WIDTH = 320; // px
 const CARD_HEIGHT = 320; // px
-const CARD_GAP    = 32;  // px between cards
+const CARD_GAP = 32;  // px between cards
 
 // ─ Frame on each image ──
 const FRAME_INSET = "12px";
@@ -46,12 +46,12 @@ const SCROLL_DURATION = 40;
 type Theme = { name: string; image: string };
 
 const THEMES: Theme[] = [
-  { name: "Floral Design",     image: "/images/events-decor-floral.jpg"    },
-  { name: "Modern Minimal",    image: "/images/events-decor-modern.jpg"    },
-  { name: "Pastel Romance",    image: "/images/events-decor-pastel.jpg"    },
-  { name: "Poolside Sundowner",image: "/images/events-decor-poolside.jpg"  },
-  { name: "Garden",            image: "/images/events-decor-garden.jpg"    },
-  { name: "Royal Rajput",      image: "/images/events-decor-royal.jpg"     },
+  { name: "Floral Design", image: "/images/events-decor-floral.jpg" },
+  { name: "Modern Minimal", image: "/images/events-decor-modern.jpg" },
+  { name: "Pastel Romance", image: "/images/events-decor-pastel.jpg" },
+  { name: "Poolside Sundowner", image: "/images/events-decor-poolside.jpg" },
+  { name: "Garden", image: "/images/events-decor-garden.jpg" },
+  { name: "Royal Rajput", image: "/images/events-decor-royal.jpg" },
 ];
 
 export default function DecorStylingCarousel() {
@@ -111,7 +111,7 @@ export default function DecorStylingCarousel() {
             href="#request-styling"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={60}
+            circleSize={150}
             magnet={0.3}
             className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.05vw,20px)]"
           >

@@ -17,7 +17,7 @@ const TITLE_COLOR = "#191919";
 // ─ Subtitle (italic emphasis on "Flawlessly") ──
 const SUBTITLE_BEFORE = "End to End Celebration, ";
 const SUBTITLE_ITALIC = "Flawlessly";
-const SUBTITLE_AFTER  = " Executed";
+const SUBTITLE_AFTER = " Executed";
 
 // ─ Card layout ──
 // Cards alternate left/right. Even-index cards sit at the top of their row;
@@ -169,7 +169,7 @@ function OfferCard({
           href="#"
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={68}
+          circleSize={150}
           magnet={0.35}
           className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.04vw,20px)]"
         >

@@ -9,18 +9,21 @@
  * ---------------------------------------------------------------------------
  * Signature button used site-wide. Pill outline + label at rest → on hover
  * the border fades to transparent, label fades out, ball grows from centre,
- * arrow appears, ball follows cursor magnetically.
+ * arrow appears, ball follows cursor magnetically, ARROW follows cursor
+ * *within* the ball for a "pointing at your cursor" feel.
  *
- * BACKWARD-COMPATIBLE ADDITIONS (Nov 2025):
- *   • asStatic?: boolean
- *       When true, renders as <span> instead of <a>. Use when the button is
- *       nested inside another Link/anchor to avoid invalid <a>-inside-<a>
- *       HTML. The outer Link handles navigation; the button is visual only.
+ * UPDATE — Jul 2026:
+ *   • Default size bumped 84 → 140 (matches resortkaskady reference).
+ *   • Enter / leave animation slower & smoother (see DUR_* constants).
+ *   • NEW: arrow has its own magnetic layer, moves *more* than the ball so
+ *     the chevron actively tracks the cursor inside the circle. Tunable
+ *     via `arrowMagnet` prop (default 0.35).
+ *   • Fixed TS error: no more ref-inside-spread cast. Two clean render
+ *     branches, ref narrowed at each call site.
  *
- *   • onClick?: (e) => void
- *       Standard click handler passed through to the root element. Useful
- *       for smooth-scroll interception (call e.preventDefault() then scroll
- *       programmatically).
+ * PROPS (unchanged public API + arrowMagnet added):
+ *   href, className, circleColor, arrowColor, circleSize, magnet,
+ *   arrowDirection, asStatic, onClick, arrowMagnet (NEW)
  * ---------------------------------------------------------------------------
  */
 
@@ -30,6 +33,43 @@ import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "./anim.config";
 
 gsap.registerPlugin(useGSAP);
+
+// ─── TUNE THESE KNOBS ────────────────────────────────────────────────
+// Default ball diameter. Reference site is ~140px. Override per-instance
+// with the `circleSize` prop.
+const DEFAULT_CIRCLE_SIZE = 140;
+
+// How far the whole ball drifts toward the cursor. 0 = locked centre, 1 =
+// ball snaps to cursor. Reference feels ~0.35–0.45. Override with `magnet`.
+const DEFAULT_MAGNET = 0.4;
+
+// How far the ARROW drifts toward the cursor *within* the ball, on top of
+// the ball's own drift. Higher = arrow visibly points at the cursor. Keep
+// lower than magnet so the arrow stays inside the ball. Override with
+// `arrowMagnet`.
+const DEFAULT_ARROW_MAGNET = 0.35;
+
+// Pill→circle open timing. Increase for slower, more cinematic feel.
+// The circle scale ease is the star of the show — `circ.inOut` gives that
+// premium, decelerating expansion. `power3.inOut` is a slightly punchier
+// alternative if you ever want more snap.
+const DUR_CIRCLE_OPEN = 0.6;       // ball grows from 0 → 1
+const DUR_CIRCLE_CLOSE = 0.3;       // ball shrinks 1 → 0
+const DUR_BORDER_FADE = 0.45;       // pill outline fade
+const DUR_LABEL_FADE = 0.45;        // resting label fade
+const DUR_ARROW_ENTER = 0.5;        // arrow slide-in after ball opens
+const DUR_ARROW_EXIT = 0.3;         // arrow slide-out on leave
+const DELAY_ARROW_AFTER_BALL = 0.12;// arrow waits this long after ball starts opening
+const DELAY_BORDER_LABEL_ON_LEAVE = 0.1; // border/label wait this long before restoring
+
+const EASE_CIRCLE = "circ.inOut";
+const EASE_SOFT = "power2.out";
+
+// How quickly the magnetic drift catches up to the cursor. Lower = snappier,
+// higher = lazier/silkier. Reference site feels ~0.55–0.7s.
+const DUR_MAGNET_BODY = 0.6;        // wrap (whole ball) drift
+const DUR_MAGNET_ARROW = 0.45;      // arrow drift within ball
+// ─────────────────────────────────────────────────────────────────────
 
 type ArrowDirection = "right" | "down" | "left";
 
@@ -44,26 +84,22 @@ type CircleButtonProps = {
   arrowColor?: string;
   /** Ball diameter in px. */
   circleSize?: number;
-  /** Magnetic pull, 0–1 (how far the ball drifts toward the cursor). */
+  /** Magnetic pull for the whole ball, 0–1. */
   magnet?: number;
+  /** Magnetic pull for the arrow *within* the ball, 0–1. */
+  arrowMagnet?: number;
   /** Chevron direction shown on hover. Defaults to "right". */
   arrowDirection?: ArrowDirection;
-  /**
-   * NEW: render as <span> instead of <a>. Use when this button is nested
-   * inside another Link/anchor (outer Link handles navigation).
-   */
+  /** Render as <span> instead of <a> — use when nested inside another Link. */
   asStatic?: boolean;
-  /**
-   * NEW: click handler passed to the root. Call e.preventDefault() inside
-   * if you want to intercept navigation (e.g. for smooth scroll).
-   */
+  /** Click handler passed to the root. */
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
 /** Resting offset for the arrow (where it starts before entering to centre). */
 function restingOffset(direction: ArrowDirection): { x: number; y: number } {
-  if (direction === "down")  return { x: 0,  y: -6 };
-  if (direction === "left")  return { x: -6, y: 0  };
+  if (direction === "down") return { x: 0, y: -6 };
+  if (direction === "left") return { x: -6, y: 0 };
   return { x: 6, y: 0 }; // right (default)
 }
 
@@ -73,22 +109,28 @@ export default function CircleButton({
   className,
   circleColor = "#6c7c7b",
   arrowColor = "#ffffff",
-  circleSize = 84,
-  magnet = 0.4,
+  circleSize = DEFAULT_CIRCLE_SIZE,
+  magnet = DEFAULT_MAGNET,
+  arrowMagnet = DEFAULT_ARROW_MAGNET,
   arrowDirection = "right",
   asStatic = false,
   onClick,
 }: CircleButtonProps) {
-  const root = useRef<HTMLElement>(null);
-  const wrap = useRef<HTMLSpanElement>(null);
+  // Root ref is typed loosely; each render branch narrows it locally.
+  const root = useRef<HTMLElement | null>(null);
+  const wrap = useRef<HTMLSpanElement>(null);          // whole ball drift layer
+  const arrowFollow = useRef<HTMLSpanElement>(null);   // NEW arrow-within-ball drift layer
   const circle = useRef<HTMLSpanElement>(null);
   const arrow = useRef<HTMLSpanElement>(null);
   const label = useRef<HTMLSpanElement>(null);
 
   const originalBorderColor = useRef<string>("rgba(0,0,0,0)");
 
-  const xTo = useRef<((v: number) => void) | null>(null);
-  const yTo = useRef<((v: number) => void) | null>(null);
+  // Magnetic drift handles
+  const bodyXTo = useRef<((v: number) => void) | null>(null);
+  const bodyYTo = useRef<((v: number) => void) | null>(null);
+  const arrowFollowXTo = useRef<((v: number) => void) | null>(null);
+  const arrowFollowYTo = useRef<((v: number) => void) | null>(null);
 
   const rest = restingOffset(arrowDirection);
 
@@ -99,13 +141,33 @@ export default function CircleButton({
           window.getComputedStyle(root.current).borderTopColor || "rgba(0,0,0,0)";
       }
 
+      // Initial hidden state
       gsap.set(circle.current, { scale: 0, transformOrigin: "center center" });
       gsap.set(arrow.current, { autoAlpha: 0, x: rest.x, y: rest.y });
+      gsap.set(arrowFollow.current, { x: 0, y: 0 });
 
       if (prefersReducedMotion()) return;
 
-      xTo.current = gsap.quickTo(wrap.current, "x", { duration: 0.5, ease: "power3" });
-      yTo.current = gsap.quickTo(wrap.current, "y", { duration: 0.5, ease: "power3" });
+      // Body (whole ball) magnetic drift
+      bodyXTo.current = gsap.quickTo(wrap.current, "x", {
+        duration: DUR_MAGNET_BODY,
+        ease: "power3",
+      });
+      bodyYTo.current = gsap.quickTo(wrap.current, "y", {
+        duration: DUR_MAGNET_BODY,
+        ease: "power3",
+      });
+
+      // Arrow magnetic drift *within* the ball (separate wrapper so it
+      // doesn't fight the enter/leave x/y animation on the arrow itself).
+      arrowFollowXTo.current = gsap.quickTo(arrowFollow.current, "x", {
+        duration: DUR_MAGNET_ARROW,
+        ease: "power3",
+      });
+      arrowFollowYTo.current = gsap.quickTo(arrowFollow.current, "y", {
+        duration: DUR_MAGNET_ARROW,
+        ease: "power3",
+      });
     },
     { scope: root, dependencies: [arrowDirection] }
   );
@@ -115,20 +177,30 @@ export default function CircleButton({
 
     gsap.to(root.current, {
       borderColor: "rgba(0,0,0,0)",
-      duration: 0.3,
-      ease: "power2.out",
+      duration: DUR_BORDER_FADE,
+      ease: EASE_SOFT,
       overwrite: "auto",
     });
-    gsap.to(label.current, { autoAlpha: 0, duration: 0.25, ease: "power1.out", overwrite: "auto" });
+    gsap.to(label.current, {
+      autoAlpha: 0,
+      duration: DUR_LABEL_FADE,
+      ease: "power1.out",
+      overwrite: "auto",
+    });
 
-    gsap.to(circle.current, { scale: 1, duration: 0.5, ease: "circ.inOut", overwrite: "auto" });
+    gsap.to(circle.current, {
+      scale: 1,
+      duration: DUR_CIRCLE_OPEN,
+      ease: EASE_CIRCLE,
+      overwrite: "auto",
+    });
     gsap.to(arrow.current, {
       autoAlpha: 1,
       x: 0,
       y: 0,
-      duration: 0.35,
-      ease: "power2.out",
-      delay: 0.06,
+      duration: DUR_ARROW_ENTER,
+      ease: EASE_SOFT,
+      delay: DELAY_ARROW_AFTER_BALL,
       overwrite: "auto",
     });
   };
@@ -138,31 +210,39 @@ export default function CircleButton({
 
     gsap.to(root.current, {
       borderColor: originalBorderColor.current,
-      duration: 0.4,
-      ease: "power2.out",
-      delay: 0.1,
+      duration: DUR_BORDER_FADE,
+      ease: EASE_SOFT,
+      delay: DELAY_BORDER_LABEL_ON_LEAVE,
       overwrite: "auto",
     });
     gsap.to(label.current, {
       autoAlpha: 1,
-      duration: 0.3,
+      duration: DUR_LABEL_FADE,
       ease: "power1.out",
-      delay: 0.1,
+      delay: DELAY_BORDER_LABEL_ON_LEAVE,
       overwrite: "auto",
     });
 
-    gsap.to(circle.current, { scale: 0, duration: 0.45, ease: "circ.inOut", overwrite: "auto" });
+    gsap.to(circle.current, {
+      scale: 0,
+      duration: DUR_CIRCLE_CLOSE,
+      ease: EASE_CIRCLE,
+      overwrite: "auto",
+    });
     gsap.to(arrow.current, {
       autoAlpha: 0,
       x: rest.x,
       y: rest.y,
-      duration: 0.25,
+      duration: DUR_ARROW_EXIT,
       ease: "power1.in",
       overwrite: "auto",
     });
 
-    xTo.current?.(0);
-    yTo.current?.(0);
+    // Reset both magnetic layers back to centre
+    bodyXTo.current?.(0);
+    bodyYTo.current?.(0);
+    arrowFollowXTo.current?.(0);
+    arrowFollowYTo.current?.(0);
   };
 
   const move = (e: React.MouseEvent) => {
@@ -170,22 +250,17 @@ export default function CircleButton({
     const r = root.current.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2);
     const dy = e.clientY - (r.top + r.height / 2);
-    xTo.current?.(dx * magnet);
-    yTo.current?.(dy * magnet);
+
+    // Whole ball drifts subtly toward the cursor
+    bodyXTo.current?.(dx * magnet);
+    bodyYTo.current?.(dy * magnet);
+
+    // Arrow drifts *further* within the ball for the "pointing at cursor" feel
+    arrowFollowXTo.current?.(dx * arrowMagnet);
+    arrowFollowYTo.current?.(dy * arrowMagnet);
   };
 
-  // ─ Render root element ────────────────────────────────────────────────
-  // asStatic=false → <a href=...>   (default; standalone navigation button)
-  // asStatic=true  → <span>         (visual-only; use inside another Link)
-  const commonProps = {
-    ref: root as React.RefObject<HTMLElement>,
-    onMouseEnter: enter,
-    onMouseLeave: leave,
-    onMouseMove: move,
-    onClick,
-    className: "relative inline-flex items-center justify-center isolate " + (className ?? ""),
-  };
-
+  // Shared visual content — no root element wrapper.
   const content = (
     <>
       <span
@@ -198,25 +273,29 @@ export default function CircleButton({
           className="absolute rounded-full"
           style={{ width: circleSize, height: circleSize, background: circleColor }}
         />
-        <span ref={arrow} className="absolute" style={{ color: arrowColor }}>
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {arrowDirection === "down" ? (
-              <path d="M6 9l6 6 6-6" />
-            ) : arrowDirection === "left" ? (
-              <path d="M15 6l-6 6 6 6" />
-            ) : (
-              <path d="M9 6l6 6-6 6" />
-            )}
-          </svg>
+        {/* Extra wrapper so the arrow's magnetic drift is independent of its
+            enter/leave x/y offset animation. */}
+        <span ref={arrowFollow} className="absolute inline-flex">
+          <span ref={arrow} className="inline-flex" style={{ color: arrowColor }}>
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {arrowDirection === "down" ? (
+                <path d="M6 9l6 6 6-6" />
+              ) : arrowDirection === "left" ? (
+                <path d="M15 6l-6 6 6 6" />
+              ) : (
+                <path d="M9 6l6 6-6 6" />
+              )}
+            </svg>
+          </span>
         </span>
       </span>
 
@@ -226,13 +305,35 @@ export default function CircleButton({
     </>
   );
 
+  const rootClassName =
+    "relative inline-flex items-center justify-center isolate " + (className ?? "");
+
+  // ─ Render root element ────────────────────────────────────────────────
+  // Two clean branches — no cast gymnastics, no ref-inside-spread.
   if (asStatic) {
-    return <span {...(commonProps as React.HTMLAttributes<HTMLSpanElement> & { ref: React.Ref<HTMLElement> })}>{content}</span>;
+    return (
+      <span
+        ref={root as React.RefObject<HTMLSpanElement>}
+        onMouseEnter={enter}
+        onMouseLeave={leave}
+        onMouseMove={move}
+        onClick={onClick}
+        className={rootClassName}
+      >
+        {content}
+      </span>
+    );
   }
+
   return (
     <a
       href={href}
-      {...(commonProps as React.AnchorHTMLAttributes<HTMLAnchorElement> & { ref: React.Ref<HTMLElement> })}
+      ref={root as React.RefObject<HTMLAnchorElement>}
+      onMouseEnter={enter}
+      onMouseLeave={leave}
+      onMouseMove={move}
+      onClick={onClick}
+      className={rootClassName}
     >
       {content}
     </a>

@@ -15,9 +15,9 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // general services (Theme & Concept, Guest Hospitality etc.). Image 6 uses
 // the same title with actual decor themes. Assuming a paste error — using
 // "Our Services" as placeholder. Change SECTION_TITLE when confirmed.
-const SECTION_BG    = "#ffffff";
+const SECTION_BG = "#ffffff";
 const SECTION_TITLE = "Our Services";        // ← confirm w/ Figma; may be "Decor & Styling"
-const TITLE_COLOR   = "#191919";
+const TITLE_COLOR = "#191919";
 
 // ─ Card image ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; use aspect-[4/5] for taller
@@ -164,7 +164,7 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={56}
+          circleSize={150}
           magnet={0.3}
           className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
         >

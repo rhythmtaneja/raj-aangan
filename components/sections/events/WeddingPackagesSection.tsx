@@ -12,14 +12,14 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
 // ─ Three horizontal bands ──
 // Layout: white title strip → navy card strip → white CTA strip.
-const TOP_BG    = "#ffffff";
+const TOP_BG = "#ffffff";
 const MIDDLE_BG = "#0f2f3b"; // dark navy — same family as ContactForm bg
 const BOTTOM_BG = "#ffffff";
 
 const TITLE_COLOR = "#191919";
 
 // ─ Vertical padding per band ──
-const TOP_PAD    = "py-16";
+const TOP_PAD = "py-16";
 const MIDDLE_PAD = "py-14";
 const BOTTOM_PAD = "py-12";
 
@@ -33,8 +33,8 @@ const FRAME_COLOR = "rgba(255,255,255,0.55)";
 type Pkg = { name: string; image: string };
 
 const PACKAGES: Pkg[] = [
-  { name: "Essence Package",  image: "/images/events-pkg-essence.jpg"  },
-  { name: "Select Package",   image: "/images/events-pkg-select.jpg"   },
+  { name: "Essence Package", image: "/images/events-pkg-essence.jpg" },
+  { name: "Select Package", image: "/images/events-pkg-select.jpg" },
   { name: "Prestige Package", image: "/images/events-pkg-prestige.jpg" },
   { name: "Grandeur Package", image: "/images/events-pkg-grandeur.jpg" },
 ];
@@ -72,7 +72,7 @@ export default function WeddingPackagesSection() {
             href="#plan-wedding"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={64}
+            circleSize={150}
             magnet={0.35}
             arrowDirection="right"
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,20px)]"
@@ -84,7 +84,7 @@ export default function WeddingPackagesSection() {
             href="/brochure.pdf"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={64}
+            circleSize={150}
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,20px)]"

@@ -149,7 +149,7 @@ export default function NumeralMarker({
           }}
         >
           <span
-            className="numeral-glyph block font-normal leading-none"
+            className="numeral-glyph block font-bold leading-none"
             style={{
               ...serif,
               fontSize: GLYPH_SIZE,

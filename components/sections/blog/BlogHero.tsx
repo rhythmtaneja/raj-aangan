@@ -16,24 +16,24 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Title ──
-const TITLE_TEXT      = "Blog";
+const TITLE_TEXT = "Blog";
 const TITLE_FONT_SIZE = "clamp(3rem, 8vw, 160px)";
 
 // ─ Subtitle (single line beneath the title) ──
-const SUBTITLE_TEXT      = "Where every event becomes a cherished memory worth sharing.";
+const SUBTITLE_TEXT = "Where every event becomes a cherished memory worth sharing.";
 const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.6vw, 32px)";
-const SUBTITLE_MAX_W     = "40rem";
+const SUBTITLE_MAX_W = "40rem";
 
 // ─ Letter-by-letter reveal ──
 // STAGGER larger because "Blog" is short — spreads the reveal over more time.
-const LETTER_STAGGER     = 0.09;
-const LETTER_DURATION    = 0.9;
-const LETTER_INITIAL_Y   = 28;
+const LETTER_STAGGER = 0.09;
+const LETTER_DURATION = 0.9;
+const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
 // ─ Subtitle + CTA fade-in timing ──
 const SUBTITLE_DELAY = 1.1;
-const CTA_DELAY      = 1.9;
+const CTA_DELAY = 1.9;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -66,9 +66,9 @@ export default function BlogHero() {
     () => {
       if (prefersReducedMotion()) return;
 
-      const letters  = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
+      const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
       const subtitle = root.current?.querySelector<HTMLElement>(".blog-hero-subtitle");
-      const cta      = root.current?.querySelector<HTMLElement>(".blog-hero-cta");
+      const cta = root.current?.querySelector<HTMLElement>(".blog-hero-cta");
 
       if (letters && letters.length > 0) {
         gsap.set(letters, { autoAlpha: 0, y: LETTER_INITIAL_Y });
@@ -137,7 +137,7 @@ export default function BlogHero() {
             href="#posts"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={68}
+            circleSize={120}
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-7 py-3 text-white"
