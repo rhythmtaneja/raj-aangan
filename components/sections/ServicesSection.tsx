@@ -1,3 +1,15 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/sections/ServicesSection.tsx
+// ══════════════════════════════════════════════════════════════════
+
+// FIX (Jul 2026):
+//   • Same autoAlpha issue as SiteHeader — useGSAP's revert mechanism
+//     can't cleanly reset `autoAlpha` (it's opacity+visibility as one
+//     shorthand). Swapped for plain `opacity` throughout. The image
+//     wraps already have `pointer-events-none`, so no functional loss
+//     from dropping the visibility side of autoAlpha.
+// ══════════════════════════════════════════════════════════════════
+
 "use client";
 
 import { useRef } from "react";
@@ -16,19 +28,14 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ─ BG color SCROLL scrub (chains from Featured, exits to next section) ─
-const BG_START_COLOR = "#dac8b0"; // = FeaturedSection's BG_END_COLOR
+const BG_START_COLOR = "#dac8b0";
 const BG_END_COLOR = "#d4dad3";
 const COLOR_TRANSITION_START = "top bottom";
 const COLOR_TRANSITION_END = "top top";
 
-// ─ BG color HOVER override (per-word accent) ──
 const HOVER_BG_DURATION = 0.75;
 const HOVER_BG_EASE = "power2.out";
 
-// ─ Word row layout ──
-// SMALLER FONT so all three fit on-screen. Bump the middle vw value if it
-// still feels too small on your display: 6vw → 6.5vw for chunkier words.
 const WORD_FONT_SIZE = "clamp(1.75rem, 6vw, 140px)";
 const WORD_GAP = "clamp(1rem, 3vw, 60px)";
 const WORD_LINE_HEIGHT = 1;
@@ -41,28 +48,16 @@ const ACTIVE_LETTER_SPACING = "0.04em";
 const WORD_COLOR_DURATION = 0.6;
 const WORD_COLOR_EASE = "power2.out";
 
-// ─ Per-word image (centred on each word's zone) ──
-// Photo lives inside its word's zone and is centred on it. Because it's
-// wider than the zone, it spills into neighbours — the hovered zone lifts
-// to z-20 to cover their words. Matches the reference exactly.
-// If it feels too spilly, drop IMAGE_WIDTH to 45vw; too shy → bump to 55vw.
 const IMAGE_WIDTH = "50vw";
 const IMAGE_HEIGHT = "70vh";
 
-// SMOOTH crossfade. Both durations kept equal so the transition reads
-// symmetrically. Push both to 0.9 for even more glide.
-const IMAGE_FADE_IN_DUR = 0.6;
-const IMAGE_FADE_OUT_DUR = 0.6;
+const IMAGE_FADE_IN_DUR = 0.75;
+const IMAGE_FADE_OUT_DUR = 0.75;
 
-// Directional entry: on first hover, image slides down from above (if
-// cursor entered from the top) or up from below. Between words, it slides
-// in from the direction of travel (Weddings → Events = enters from the
-// left). Larger offset = more visible slide; smaller = more of a pure fade.
 const IMAGE_ENTER_OFFSET = 50;
 const IMAGE_ENTER_EASE = "power3.out";
 const IMAGE_EXIT_EASE = "power2.inOut";
 
-// ─ Cursor parallax (image drifts with cursor inside its own zone) ──
 const PARALLAX_STRENGTH = 45;
 const PARALLAX_FOLLOW_DURATION = 0.9;
 
@@ -70,7 +65,7 @@ const PARALLAX_FOLLOW_DURATION = 0.9;
 
 const SERVICES = [
   { label: "Weddings", image: "/images/service-weddings.jpg", href: "#", accent: "#cdbfa6" },
-  { label: "Events", image: "/images/service-events.jpg", href: "#", accent: "#d8c3bd" },
+  { label: "Events",   image: "/images/service-events.jpg",   href: "#", accent: "#d8c3bd" },
   { label: "Catering", image: "/images/service-catering.jpg", href: "#", accent: "#bfccbb" },
 ];
 
@@ -78,18 +73,16 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const zoneRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const imgWrapRefs = useRef<(HTMLDivElement | null)[]>([]);       // opacity + entry slide
-  const imgParallaxRefs = useRef<(HTMLDivElement | null)[]>([]);   // cursor drift
+  const imgWrapRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const imgParallaxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Two proxies so scroll scrub and hover accents don't fight over --page-bg.
   const scrollProxy = useRef({ c: BG_START_COLOR });
   const displayProxy = useRef({ c: BG_START_COLOR });
   const activeIdx = useRef<number | null>(null);
 
   useGSAP(
     () => {
-      // ─── BG scroll scrub ───────────────────────────────────────────
       gsap.to(scrollProxy.current, {
         c: BG_END_COLOR,
         ease: "none",
@@ -108,17 +101,18 @@ export default function ServicesSection() {
       });
 
       if (prefersReducedMotion()) {
-        imgWrapRefs.current.forEach((w) => { if (w) gsap.set(w, { autoAlpha: 0 }); });
+        imgWrapRefs.current.forEach((w) => { if (w) gsap.set(w, { opacity: 0 }); });
         return;
       }
 
-      // ─── Hidden initial state ──────────────────────────────────────
-      // Outer wrap owns opacity + entry x/y offset.
-      // xPercent/yPercent do the centering, leaving x/y free for animation.
+      // Hidden initial state — using `opacity` instead of `autoAlpha` so
+      // useGSAP's revert mechanism doesn't throw the "not eligible for
+      // reset" warning. Image wraps have pointer-events-none already, so
+      // dropping the visibility side of autoAlpha changes nothing.
       imgWrapRefs.current.forEach((w) => {
         if (!w) return;
         gsap.set(w, {
-          autoAlpha: 0,
+          opacity: 0,
           xPercent: -50,
           yPercent: -50,
           x: 0,
@@ -126,7 +120,6 @@ export default function ServicesSection() {
         });
       });
 
-      // Inner parallax layer stays at 0,0 — mouseMove drives it.
       imgParallaxRefs.current.forEach((p) => {
         if (!p) return;
         gsap.set(p, { x: 0, y: 0 });
@@ -135,37 +128,26 @@ export default function ServicesSection() {
     { scope: sectionRef }
   );
 
-  // ─── Word enter: called on each zone's mouseenter ─────────────────────
-  // Handles BOTH first entry into the section AND transitions between words.
-  // No per-zone mouseleave — that's on the row (see handleRowLeave).
   const handleWordEnter = (e: React.MouseEvent<HTMLDivElement>, i: number) => {
     const prevIdx = activeIdx.current;
     if (prevIdx === i) return;
     activeIdx.current = i;
 
-    // Bump this zone above the others so its (large, spilling) image can
-    // cover the neighbours' words. Non-hovered zones stay at z-1.
-    // Within the hovered zone: image at auto z, word (anchor) at z-10 →
-    // hovered word reads on top of its own image.
     zoneRefs.current.forEach((z, idx) => {
       if (z) z.style.zIndex = idx === i ? "20" : "1";
     });
 
-    // ─ Determine entry direction ─
     let fromX = 0;
     let fromY = 0;
     if (prevIdx === null) {
-      // First entry to section: slide from the edge the cursor crossed.
       const sectionRect = sectionRef.current?.getBoundingClientRect();
       if (sectionRect) {
         const relY = (e.clientY - sectionRect.top) / sectionRect.height;
         fromY = relY < 0.5 ? -IMAGE_ENTER_OFFSET : IMAGE_ENTER_OFFSET;
       }
     } else if (prevIdx < i) {
-      // Moving right → new image slides in from the left.
       fromX = -IMAGE_ENTER_OFFSET;
     } else {
-      // Moving left → new image slides in from the right.
       fromX = IMAGE_ENTER_OFFSET;
     }
 
@@ -177,7 +159,7 @@ export default function ServicesSection() {
       gsap.set(wrap, { x: fromX, y: fromY });
       if (parallax) gsap.set(parallax, { x: 0, y: 0 });
       gsap.to(wrap, {
-        autoAlpha: 1,
+        opacity: 1,
         x: 0,
         y: 0,
         duration: IMAGE_FADE_IN_DUR,
@@ -186,14 +168,13 @@ export default function ServicesSection() {
       });
     }
 
-    // ─ Fade out the previous word's image, matching direction of travel ─
     if (prevIdx !== null && prevIdx !== i) {
       const prevWrap = imgWrapRefs.current[prevIdx];
       const prevWord = wordRefs.current[prevIdx];
       if (prevWrap) {
         const outX = prevIdx < i ? -IMAGE_ENTER_OFFSET : IMAGE_ENTER_OFFSET;
         gsap.to(prevWrap, {
-          autoAlpha: 0,
+          opacity: 0,
           x: outX,
           y: 0,
           duration: IMAGE_FADE_OUT_DUR,
@@ -222,7 +203,6 @@ export default function ServicesSection() {
       });
     }
 
-    // BG wash to this word's accent
     gsap.to(displayProxy.current, {
       c: SERVICES[i].accent,
       duration: HOVER_BG_DURATION,
@@ -234,9 +214,6 @@ export default function ServicesSection() {
     });
   };
 
-  // ─── Row leave: the ONLY place the section resets to idle ─────────────
-  // Individual zones no longer have mouseleave handlers — moving between
-  // words never triggers a full reset. Only leaving the whole row does.
   const handleRowLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     const idx = activeIdx.current;
     if (idx === null) return;
@@ -244,8 +221,6 @@ export default function ServicesSection() {
     const wrap = imgWrapRefs.current[idx];
     const word = wordRefs.current[idx];
 
-    // Detect which edge the cursor exited through so the image glides out
-    // in that direction — no snap.
     let outX = 0;
     let outY = IMAGE_ENTER_OFFSET;
     const rect = rowRef.current?.getBoundingClientRect();
@@ -263,7 +238,7 @@ export default function ServicesSection() {
 
     if (wrap) {
       gsap.to(wrap, {
-        autoAlpha: 0,
+        opacity: 0,
         x: outX,
         y: outY,
         duration: IMAGE_FADE_OUT_DUR,
@@ -281,7 +256,6 @@ export default function ServicesSection() {
       });
     }
 
-    // Ease BG back to the scroll-scrub value
     gsap.to(displayProxy.current, {
       c: scrollProxy.current.c,
       duration: HOVER_BG_DURATION,
@@ -294,15 +268,11 @@ export default function ServicesSection() {
         activeIdx.current = null;
         displayProxy.current.c = scrollProxy.current.c;
         document.documentElement.style.setProperty("--page-bg", scrollProxy.current.c);
-        // Reset zone z-index baseline
         zoneRefs.current.forEach((z) => { if (z) z.style.zIndex = "1"; });
       },
     });
   };
 
-  // ─── Cursor parallax ─────────────────────────────────────────────────
-  // Normalised against the ZONE (image is inside the zone), so drift feels
-  // anchored to the word you're hovering.
   const handleMove = (e: React.MouseEvent<HTMLDivElement>, i: number) => {
     const zone = zoneRefs.current[i];
     const parallax = imgParallaxRefs.current[i];
@@ -329,20 +299,10 @@ export default function ServicesSection() {
       className="relative flex min-h-screen w-full flex-col items-center justify-center px-6 py-32 text-center overflow-hidden"
       style={{ backgroundColor: `var(--page-bg, ${BG_START_COLOR})` }}
     >
-      {/* TOP — Roman numeral marker */}
       <div className="mb-16" style={{ position: "relative", zIndex: 30 }}>
         <NumeralMarker numeral="II" />
       </div>
 
-      {/*
-        WORD ROW
-        Stacking:
-          z-1  : non-hovered zones (their images and words sit here)
-          z-20 : hovered zone (its image spills into neighbours, covers their words)
-          z-10 (relative to zone): the word/anchor — sits above its own zone's image
-          z-30 : numeral + explore button (always on top)
-        Row-level onMouseLeave is the single source of truth for "we're done".
-      */}
       <div
         ref={rowRef}
         className="relative flex w-full items-center justify-between"
@@ -358,7 +318,6 @@ export default function ServicesSection() {
             onMouseEnter={(e) => handleWordEnter(e, i)}
             onMouseMove={(e) => handleMove(e, i)}
           >
-            {/* Per-zone image — centred on THIS word, spills past zone bounds */}
             <div
               ref={(el) => { imgWrapRefs.current[i] = el; }}
               className="absolute pointer-events-none"
@@ -385,7 +344,6 @@ export default function ServicesSection() {
               </div>
             </div>
 
-            {/* The word — z-10 within the zone so it stays above its own image */}
             <a href={s.href} className="relative block" style={{ zIndex: 10 }}>
               <span
                 ref={(el) => { wordRefs.current[i] = el; }}
@@ -406,7 +364,6 @@ export default function ServicesSection() {
         ))}
       </div>
 
-      {/* BOTTOM — Explore button */}
       <div className="mt-16" style={{ position: "relative", zIndex: 30 }}>
         <CircleButton
           href="#"

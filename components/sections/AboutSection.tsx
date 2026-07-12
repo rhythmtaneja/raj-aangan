@@ -1,3 +1,17 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/sections/AboutSection.tsx
+// ══════════════════════════════════════════════════════════════════
+
+// Hover-zoom recipe (same as GalleryGridSection):
+//   • `group` on the overflow-hidden container
+//   • `transition-transform duration-[1200ms] ease-out group-hover:scale-105`
+//     on the <Image>
+//   • `z-10` on the inner outline frame so it stays put while the image
+//     scales beneath it
+// Row 1's Parallax wrapper untouched — parallax translates the container,
+// hover scales the image element, different DOM nodes, no conflict.
+// ══════════════════════════════════════════════════════════════════
+
 import Image from "next/image";
 import NumeralMarker from "@/components/ui/NumeralMarker";
 import Reveal from "@/components/anim/Reveal";
@@ -6,9 +20,18 @@ import CountUp from "@/components/anim/CountUp";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Hover zoom recipe (shared with GalleryGridSection). Change here to affect
+// every About photo consistently.
+const HOVER_TRANSITION = "transition-transform duration-[1200ms] ease-out";
+const HOVER_SCALE = "group-hover:scale-105";
+
+// ═══════════════════════════════════════════════════════════════════════════
+
 // ── ADD ABOUT IMAGES HERE ───────────────────────────────────────────────────
-// These stack vertically on the LEFT and scroll past while the stats on the
-// right stay pinned. Add 1–2 more filenames to extend the scroll.
 const ABOUT_IMAGES = [
   "/images/about-2.jpg",
   "/images/about-3.jpg",
@@ -33,15 +56,21 @@ export default function AboutSection() {
         </h2>
       </Reveal>
 
-      {/* Row 1: image (parallax) + paragraph */}
+      {/* Row 1: image (parallax + hover zoom) + paragraph */}
       <div className="mt-16 grid w-full max-w-300 grid-cols-1 items-center gap-12 md:grid-cols-2">
-        <div className="relative aspect-square w-full overflow-hidden">
+        <div className="group relative aspect-square w-full overflow-hidden">
           <Parallax distance={30} className="absolute -inset-y-12 inset-x-0">
             <div className="relative h-full w-full">
-              <Image src="/images/about-1.jpg" alt="Chef plating a luxury catering spread" fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
+              <Image
+                src="/images/about-1.jpg"
+                alt="Chef plating a luxury catering spread"
+                fill
+                className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
+                sizes="(max-width: 768px) 100vw, 600px"
+              />
             </div>
           </Parallax>
-          <div className="pointer-events-none absolute inset-5 border border-white/80" />
+          <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
         </div>
         <Reveal>
           <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,28px)] md:px-6">
@@ -50,13 +79,19 @@ export default function AboutSection() {
         </Reveal>
       </div>
 
-      {/* Row 2: SCROLLING image stack (left) + STICKY stats (right) */}
+      {/* Row 2: SCROLLING image stack (left, each with hover zoom) + STICKY stats (right) */}
       <div className="mt-16 grid w-full max-w-300 grid-cols-1 gap-12 md:grid-cols-2 md:items-start">
         <div className="flex flex-col gap-12">
           {ABOUT_IMAGES.map((src, i) => (
-            <div key={src} className="relative aspect-square w-full overflow-hidden">
-              <Image src={src} alt={`Raj Aangan catering ${i + 1}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
-              <div className="pointer-events-none absolute inset-5 border border-white/80" />
+            <div key={src} className="group relative aspect-square w-full overflow-hidden">
+              <Image
+                src={src}
+                alt={`Raj Aangan catering ${i + 1}`}
+                fill
+                className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
+                sizes="(max-width: 768px) 100vw, 600px"
+              />
+              <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
             </div>
           ))}
         </div>

@@ -207,7 +207,7 @@ export default function IntroSection({
                 className={
                   i === 0
                     ? "text-[clamp(1.5rem,3.39vw,65px)]"
-                    : "text-[clamp(1.25rem,2.86vw,55px)]"
+                    : "mt-6 text-[clamp(1.25rem,2.86vw,55px)]"
                 }
               >
                 <Words text={line} />

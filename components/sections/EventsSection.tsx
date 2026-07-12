@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import NumeralMarker from "@/components/ui/NumeralMarker";
 import Marquee from "@/components/anim/Marquee";
+import CircleButton from "@/components/anim/CircleButton";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -94,16 +95,23 @@ export default function EventsSection() {
 
             {/* Cards — anchored to the LOWER area, scrubbed upward */}
             <div className="absolute inset-x-0 bottom-[-2%] z-30 overflow-visible">
-              <div ref={cards} className="mx-auto flex w-[88%] max-w-140 flex-col items-center gap-[8vh]">
+              <div ref={cards} className="mx-auto flex w-[86%] max-w-145 flex-col items-center gap-[8vh]">
                 {CARDS.map((card) => (
                   <div key={card.title} className="relative w-full p-3">
                     <div className="pointer-events-none absolute inset-0 border border-white/60" />
-                    <div className="relative flex flex-col items-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-10 text-center shadow-xl">
+                    <div className="relative flex min-h-[400px] flex-col items-center justify-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-14 text-center shadow-xl">
                       <h3 style={serif} className="text-[#2a2a2a] text-[clamp(1.5rem,2.4vw,44px)]">{card.title}</h3>
                       <p className="mt-4 max-w-md leading-relaxed text-[#555555] text-[clamp(0.85rem,1vw,17px)]">{card.body}</p>
-                      <a href="#" className="mt-7 rounded-full border border-[#191919] px-7 py-2.5 text-sm font-medium text-[#191919] transition-colors duration-300 hover:bg-[#191919] hover:text-white">
+                      <CircleButton
+                        href="#"
+                        circleColor="#191919"
+                        arrowColor="#ffffff"
+                        circleSize={96}
+                        magnet={0.35}
+                        className="mt-8 rounded-full border border-[#191919] px-7 py-2.5 text-sm font-medium text-[#191919]"
+                      >
                         More
-                      </a>
+                      </CircleButton>
                     </div>
                   </div>
                 ))}
