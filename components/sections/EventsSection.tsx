@@ -62,7 +62,7 @@ export default function EventsSection() {
         ── TUNING KNOBS ──
         track height  (h-[260vh])  → longer = slower card scroll / more pin time
         image size    (h-[82vh] max-w-[1180px]) → the contained photo
-        V Events pos  (top-[9%])    → heading height inside the image
+        V Events pos  (top-[6%])    → heading height inside the image
         marquee pos   (top-[40%])   → where the running word sits (the gap)
         cards start   (bottom-[-2%]) + yPercent:8 in the GSAP above → first-card peek
         card gap      (gap-[8vh])    → space between cards (smaller = tighter)
@@ -77,9 +77,9 @@ export default function EventsSection() {
             <div className="absolute inset-0 bg-black/25" />
 
             {/* V Events — upper part of the image */}
-            <div className="absolute inset-x-0 top-[9%] z-20 flex items-center justify-center gap-5">
+            <div className="absolute inset-x-0 top-[6%] z-20 flex items-center justify-center gap-5">
               <NumeralMarker numeral="IV" light />
-              <span style={serif} className="uppercase tracking-[0.3em] text-white text-[clamp(1.25rem,1.66vw,32px)]">
+              <span style={serif} className="font-bold uppercase tracking-[0.3em] text-white text-[clamp(1.45rem,2vw,38px)]">
                 Events
               </span>
             </div>
@@ -100,15 +100,15 @@ export default function EventsSection() {
                   <div key={card.title} className="relative w-full p-3">
                     <div className="pointer-events-none absolute inset-0 border border-white/60" />
                     <div className="relative flex min-h-[400px] flex-col items-center justify-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-14 text-center shadow-xl">
-                      <h3 style={serif} className="text-[#2a2a2a] text-[clamp(1.5rem,2.4vw,44px)]">{card.title}</h3>
-                      <p className="mt-4 max-w-md leading-relaxed text-[#555555] text-[clamp(0.85rem,1vw,17px)]">{card.body}</p>
+                      <h3 style={serif} className="font-bold leading-[1.05] text-[#242424] text-[clamp(2rem,3.15vw,60px)]">{card.title}</h3>
+                      <p className="mt-5 max-w-lg leading-relaxed text-[#3f3f3f] text-[clamp(1rem,1.18vw,20px)]">{card.body}</p>
                       <CircleButton
                         href="#"
                         circleColor="#191919"
                         arrowColor="#ffffff"
-                        circleSize={96}
-                        magnet={0.35}
-                        className="mt-8 rounded-full border border-[#191919] px-7 py-2.5 text-sm font-medium text-[#191919]"
+                        circleSize={116}
+                        magnet={0.4}
+                        className="mt-9 rounded-full border border-[#191919] px-9 py-3.5 text-base font-medium text-[#191919]"
                       >
                         More
                       </CircleButton>

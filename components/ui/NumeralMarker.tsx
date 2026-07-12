@@ -25,8 +25,8 @@ const INNER_H = "4.2em"; // smaller frame height (gap = (OUTER_H - INNER_H) / 2)
 const GLYPH_SIZE = "1.4em"; // numeral character size
 
 // ─ Box border colors (lighter = sits behind, darker = sits in front) ──
-const OUTER_BORDER = "rgba(39, 30, 36, 0.15)";
-const INNER_BORDER = "rgba(39, 30, 36, 0.35)";
+const OUTER_BORDER = "rgba(39, 30, 36, 0.25)";
+const INNER_BORDER = "rgba(39, 30, 36, 0.54)";
 const GLYPH_COLOR = "#271e24";
 
 // ─ Box-pinch animation (boxes squeeze toward each other, then release) ──

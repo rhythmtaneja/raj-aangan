@@ -17,7 +17,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Text tilt-zoom (entire text block enters with rotateY + scale) ──
-const TILT_DEG = -55;
+const TILT_DEG = -35;
 const INITIAL_SCALE = 0.78;
 const TILT_DURATION = 6;
 const TILT_EASE = "power3.out";

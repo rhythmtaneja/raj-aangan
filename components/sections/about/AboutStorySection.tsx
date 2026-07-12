@@ -16,23 +16,22 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 const SECTION_BG = "#081b24"; // ↓ closer to "#040e14" for near-black navy
 //  ↑ closer to "#0f3a4a" to lighten
 const TEXT_COLOR = "#ffffff";
+const IMAGE_HOVER_TRANSITION = "transition-transform duration-[1200ms] ease-out";
+const IMAGE_HOVER_SCALE = "group-hover:scale-105";
 
 // ─ Trust title & paragraph (LEFT column, now CENTRED) ──
 const STORY_TITLE = "One of Jaipur's most trusted names in luxury events and premium catering";
 const TITLE_ITALIC_PORTION = "most trusted";
 const STORY_PARAGRAPH =
-  "At Raj Aangan Events & Caterers, we believe every celebration tells its own story. From intimate gatherings to grand royal weddings, we bring together heritage elegance, exceptional cuisine, and meticulous planning to create moments that last a lifetime.";
-
+  "At Raj Aangan Events & Caterers, we believe every celebration tells its own story. From intimate gatherings to grand royal weddings, we bring together heritage elegance, exceptional cuisine, and meticulous planning to create moments that last a lifetime. With a passion for creating unforgettable experiences, we handle every detail with care—from elegant décor and seamless event coordination to customized catering that delights every guest. Whether it's a wedding, family celebration, or corporate event, our dedicated team ensures every occasion reflects your vision with style, precision, and warm hospitality. At Raj Aangan, we don't just plan events—we create memories that you and your loved ones will cherish for years to come.";
 // Gap between numeral and title (bigger = more breathing room above heading)
 const NUMERAL_TO_TITLE_GAP = "3.5rem";
 
-// Gap between title and paragraph — matches reference site's 1.5em spec
-// (dev-tools screenshot showed `h2 { margin-bottom: 1.5em }`).
-const TITLE_TO_PARA_GAP = "1.5em";
+const TEXT_STACK_GAP = "2.25rem";
 
 // ─ Photo on the RIGHT of the top 2-col section ──
 const TOP_PHOTO = "/images/about-story-1.jpg";
-const TOP_PHOTO_ASPECT = "aspect-[3/4]";
+const TOP_PHOTO_ASPECT = "aspect-[4/5]";
 // Nudge the top photo down slightly if you want it to start BELOW the numeral.
 // Leave at "0" to align photo top exactly with numeral top.
 const TOP_PHOTO_TOP_OFFSET = "0";
@@ -57,9 +56,9 @@ const BULLETS = [
 //
 // If you want it even taller: bump BOX_MIN_HEIGHT to "48rem" / "56rem".
 // If it looks too airy: drop BOX_ITEM_GAP to "2rem" and BOX_MIN_HEIGHT to "32rem".
-const BOX_PADDING_Y = "9rem";
-const BOX_ITEM_GAP = "3rem";
-const BOX_MIN_HEIGHT = "40rem";
+const BOX_PADDING_Y = "5.5rem";
+const BOX_ITEM_GAP = "2rem";
+const BOX_MIN_HEIGHT = "28rem";
 
 // ─ Scrolling photo stack (RIGHT, scrolls past the sticky box) ──
 const PHOTOS = [
@@ -75,6 +74,7 @@ const BOX_INNER_COLOR = "rgba(255,255,255,0.50)";
 
 // ─ Sticky offset from viewport top ──
 const STICKY_TOP_OFFSET = "8rem";
+const BOTTOM_ROW_TOP_GAP = "mt-20";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -96,19 +96,16 @@ export default function AboutStorySection() {
         photo appear to start ABOVE the numeral. Now they start together.
       */}
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 md:grid-cols-2 md:gap-20 md:items-start">
-        <div className="flex flex-col items-center text-center">
+        <div className="flex flex-col items-center text-center" style={{ gap: TEXT_STACK_GAP }}>
           <Reveal>
-            <div style={{ marginBottom: NUMERAL_TO_TITLE_GAP }}>
+            <div style={{ marginBottom: `calc(${NUMERAL_TO_TITLE_GAP} - ${TEXT_STACK_GAP})` }}>
               <NumeralMarker numeral="I" light />
             </div>
           </Reveal>
 
           <Reveal>
             <h2
-              style={{
-                ...serif,
-                marginBottom: TITLE_TO_PARA_GAP,
-              }}
+              style={serif}
               className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,50px)]"
             >
               {renderItalicEmphasis(STORY_TITLE, TITLE_ITALIC_PORTION)}
@@ -127,19 +124,19 @@ export default function AboutStorySection() {
 
         <Reveal>
           <div
-            className={`relative ${TOP_PHOTO_ASPECT} w-full overflow-hidden`}
+            className={`group relative ${TOP_PHOTO_ASPECT} w-full overflow-hidden`}
             style={{ marginTop: TOP_PHOTO_TOP_OFFSET }}
           >
             <Image
               src={TOP_PHOTO}
               alt="Raj Aangan story"
               fill
-              className="object-cover"
+              className={`object-cover ${IMAGE_HOVER_TRANSITION} ${IMAGE_HOVER_SCALE}`}
               sizes="(max-width: 768px) 100vw, 600px"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute"
+              className="pointer-events-none absolute z-10"
               style={{ inset: "20px", border: "1px solid rgba(255,255,255,0.45)" }}
             />
           </div>
@@ -151,7 +148,7 @@ export default function AboutStorySection() {
         LEFT  = stretched bullet box that STICKS in place while user scrolls.
         RIGHT = photo column that scrolls past.
       */}
-      <div className="mx-auto mt-32 grid w-full max-w-6xl grid-cols-1 gap-16 md:grid-cols-2 md:items-start">
+      <div className={`mx-auto ${BOTTOM_ROW_TOP_GAP} grid w-full max-w-6xl grid-cols-1 gap-16 md:grid-cols-2 md:items-start`}>
         <div
           className="md:sticky md:self-start"
           style={{ top: STICKY_TOP_OFFSET }}
@@ -163,18 +160,18 @@ export default function AboutStorySection() {
 
         <div className="flex flex-col gap-12">
           {PHOTOS.map((src, i) => (
-            <Reveal key={src}>
-              <div className="relative aspect-square w-full overflow-hidden">
+            <Reveal key={src} className="w-full">
+              <div className="group relative aspect-square w-full overflow-hidden">
                 <Image
                   src={src}
                   alt={`Raj Aangan story ${i + 2}`}
                   fill
-                  className="object-cover"
+                  className={`object-cover ${IMAGE_HOVER_TRANSITION} ${IMAGE_HOVER_SCALE}`}
                   sizes="(max-width: 768px) 100vw, 600px"
                 />
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute"
+                  className="pointer-events-none absolute z-10"
                   style={{ inset: "20px", border: "1px solid rgba(255,255,255,0.45)" }}
                 />
               </div>

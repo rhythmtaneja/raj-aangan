@@ -49,12 +49,12 @@ const LIST_LETTER_SPC = "0.2em";
 // ─ Inner outline frame (sits INSIDE the white card, hugging the text) ──
 // Positive value = how far the line is inset from the card's edge.
 const BOX_INNER_FRAME_INSET = "16px";
-const BOX_INNER_FRAME_COLOR = "rgba(0, 0, 0, 0.15)";
+const BOX_INNER_FRAME_COLOR = "rgba(0, 0, 0, 0.55)";
 
 // ─ Outer outline frame (sits OUTSIDE the white card, picture-frame style) ──
 // Positive value = how far the line extends beyond the card's edge.
 const BOX_OUTER_FRAME_OFFSET = "14px";
-const BOX_OUTER_FRAME_COLOR = "rgba(255, 255, 255, 0.43)";
+const BOX_OUTER_FRAME_COLOR = "rgba(255, 255, 255, 0.82)";
 
 // ─ Background images (drop these in /public/images/) ──
 const BG_IMAGES = [

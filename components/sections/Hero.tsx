@@ -65,9 +65,9 @@ export default function Hero() {
       <SiteHeader animateEntrance />
 
       {/* RAEC logo block (decorative, page content) */}
-      <div className="hero-logo absolute inset-x-0 top-[clamp(10rem,21vh,15rem)] z-10 flex flex-col items-center">
+      <div className="hero-logo absolute inset-x-0 top-[clamp(10.5rem,21vh,15rem)] z-10 flex flex-col items-center">
         <Image src="/images/logo-round.png" alt="" width={58} height={58} priority />
-        <div className="-mt-3 h-18 w-[min(50vw,220px)] overflow-hidden">
+        <div className="-mt-4 h-18 w-[min(50vw,220px)] overflow-hidden">
           <Image
             src="/images/logo.png"
             alt="Raj Aangan Events and Caterers"

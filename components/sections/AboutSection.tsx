@@ -17,6 +17,7 @@ import NumeralMarker from "@/components/ui/NumeralMarker";
 import Reveal from "@/components/anim/Reveal";
 import Parallax from "@/components/anim/Parallax";
 import CountUp from "@/components/anim/CountUp";
+import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -107,9 +108,16 @@ export default function AboutSection() {
       </div>
 
       <Reveal>
-        <a href="#" className="mt-16 inline-block rounded-full border border-[#191919] px-8 py-3 text-sm font-medium text-[#191919] transition-colors duration-300 hover:bg-[#191919] hover:text-white">
+        <CircleButton
+          href="#"
+          circleColor="#191919"
+          arrowColor="#ffffff"
+          circleSize={120}
+          magnet={0.4}
+          className="mt-16 rounded-full border border-[#191919] px-8 py-3 text-sm font-medium text-[#191919]"
+        >
           See Details
-        </a>
+        </CircleButton>
       </Reveal>
     </section>
   );

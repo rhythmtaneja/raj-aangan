@@ -22,6 +22,7 @@ import { useGSAP } from "@gsap/react";
 import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
+import ImageOverlay from "@/components/ui/ImageOverlay";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -41,7 +42,7 @@ const COLOR_TRANSITION_END = "top top";
 const TITLE_FONT_SIZE = "clamp(1.8rem, 4vw, 72px)";
 const TITLE_TRACKING = "0.15em";
 const TITLE_COLOR = "#6b4f3a";
-const TITLE_MARGIN_BOTTOM = "4rem";
+const TITLE_MARGIN_BOTTOM = "2.75rem";
 
 // ─ Auto-scrolling cards ──
 // Fixed px sizes so the seamless loop math works — same approach as EventsHero.
@@ -195,7 +196,7 @@ function CuisineCard({ name, img, price }: { name: string; img: string; price: s
         sizes="440px"
         className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-black/15" />
+      <ImageOverlay opacity={0.44} />
       {/* Inner outline frame — site-wide pattern, z-10 to stay above scaled image */}
       <div
         aria-hidden

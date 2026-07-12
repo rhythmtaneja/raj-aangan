@@ -65,7 +65,7 @@ const PARALLAX_FOLLOW_DURATION = 0.9;
 
 const SERVICES = [
   { label: "Weddings", image: "/images/service-weddings.jpg", href: "#", accent: "#cdbfa6" },
-  { label: "Events",   image: "/images/service-events.jpg",   href: "#", accent: "#d8c3bd" },
+  { label: "Events", image: "/images/service-events.jpg", href: "#", accent: "#d8c3bd" },
   { label: "Catering", image: "/images/service-catering.jpg", href: "#", accent: "#bfccbb" },
 ];
 
