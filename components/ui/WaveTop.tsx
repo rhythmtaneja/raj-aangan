@@ -1,29 +1,39 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: components/ui/WaveTop.tsx
+// ══════════════════════════════════════════════════════════════════
 
 /**
- * WaveTop
+ * WaveTop — final version
  * ---------------------------------------------------------------------------
- * Layered animated SVG wave sitting above the top edge of the footer. Three
- * <path>s share the same colour but different amplitudes / frequencies /
- * speeds and opacities — overlapping regions blend into a natural depth
- * gradient, and the varied speeds create a subtle parallax as they flow.
+ * A layered animated wave that:
+ *   • Is INVISIBLE on non-footer pages by construction (lives inside the
+ *     footer as `position: sticky`, not `position: fixed`).
+ *   • Slides UP from the bottom of the viewport when the user has scrolled
+ *     the footer to cover the screen and continues scrolling.
+ *   • Stays pinned at the top of the viewport while the user scrolls
+ *     through the footer.
+ *   • Releases naturally when the footer bottom reaches the viewport top
+ *     (scrolls off with the footer).
  *
- * Usage (already wired into FooterSection):
- *   <footer className="relative bg-[#0f2f3b]">
- *     <WaveTop />
- *     ...
- *   </footer>
+ * Why sticky over fixed:
+ *   Previous attempts used `position: fixed`, which puts the wave in the
+ *   viewport on EVERY page — a single unit-mismatch bug (yPercent vs y)
+ *   made it visible everywhere. Sticky is bound to the footer's own
+ *   scrolling context, so bugs can only cause it to misbehave inside the
+ *   footer, never on other pages.
  *
- * The component absolutely positions itself at `bottom: 100%` of its parent
- * (the footer), so it protrudes upward into whatever section sits above.
+ * Structure:
+ *   <sticky wrapper, height:0, top:0>
+ *     <wave inner, absolute, top:0, translateY animates>
+ *       <svg with three layered paths />
  *
- * Performance:
- *   • Continuous motion runs on gsap.ticker (single RAF loop).
- *   • A ScrollTrigger pauses the ticker when the footer is out of viewport,
- *     so this component costs nothing on pages where the user hasn't scrolled
- *     near the bottom.
- *   • A second ScrollTrigger scrubs opacity + a small Y rise as the footer
- *     approaches — the "wave rises up as we scroll down" behaviour you
- *     described.
+ * Sticky wrapper has `height: 0` so it takes no space in the footer's
+ * layout — the Menu row and everything else sit in their original spots.
+ * The wave inner overflows the wrapper (positioned absolute), animated
+ * via `translateY` in pixels (not yPercent — that was the previous bug).
+ *
+ * Requires: <footer> has `position: relative` (or nothing overflow-clipping
+ * between here and the html root). FooterSection already provides that.
  * ---------------------------------------------------------------------------
  */
 
@@ -41,36 +51,24 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Vertical height of the wave in px. Bigger = wave protrudes further up
-// into the section above. Reference feels ~90–120px.
-const WAVE_HEIGHT = 110;
+// Wave SVG height in px. Reference feels ~90–130px.
+const WAVE_HEIGHT = 100;
 
-// SVG viewBox width — arbitrary internal unit; SVG scales to 100% width via
+// SVG viewBox width — arbitrary; SVG stretches to 100vw via
 // preserveAspectRatio="none".
 const WAVE_WIDTH = 1440;
 
-// Number of line segments used to draw each curve. Higher = smoother curve,
-// slightly more CPU. 60 is smooth on a 27" display; drop to 40 for cheap
-// laptops if you notice frame drops.
-const WAVE_SEGMENTS = 60;
+// Segments per curve. Higher = smoother, slightly more CPU.
+const WAVE_SEGMENTS = 70;
 
-// How far the wave slides up on scroll-in, in px. 0 = pure opacity fade.
-const RISE_OFFSET = 30;
+// px of scroll AFTER footer covers the screen during which the wave slides
+// up from the bottom of the viewport. Larger = more cinematic; smaller = snappy.
+const REVEAL_SCROLL_DISTANCE = 400;
 
 // ─ Layer definitions ────────────────────────────────────────────────────
-// Rendered in array order — index 0 is drawn first (back), last index is
-// on top. All use the same fill colour; opacity differences do the depth.
-// If you want to match a different footer colour, change `fill` on all
-// three (or accept it via a prop — currently hard-coded for simplicity).
-//
-// TUNING:
-//  amplitude → how tall the wave crest is (px). Bigger = taller peaks.
-//  frequency → how many full waves fit across WAVE_WIDTH. Higher = tighter.
-//  speed     → radians / sec added to phase every frame. Higher = faster
-//              horizontal motion. Keep front layer slowest for parallax.
-//  yOffset   → vertical centre of the wave inside the SVG. Larger = wave
-//              sits lower / closer to the footer edge.
-//  opacity   → back layers subtler, front layer opaque for the base wash.
+// Three stacked <path>s with different colours so the wave silhouette is
+// VISIBLE against the footer's own dark navy — a same-colour wave would
+// blend into the bg and be invisible on top of the footer.
 type WaveLayer = {
   amplitude: number;
   frequency: number;
@@ -81,37 +79,35 @@ type WaveLayer = {
   yOffset: number;
 };
 
-const WAVE_COLOR = "#0f2f3b"; // = FooterSection bg. Change both together.
-
 const LAYERS: WaveLayer[] = [
   {
-    // Back — small tight wave, subtle, fastest
+    // Back — darker peaks catch the tallest crests
     amplitude: 14,
-    frequency: 1.6,
-    speed: 0.18,
+    frequency: 2,
+    speed: 2,
     initialPhase: 0,
-    fill: WAVE_COLOR,
-    opacity: 0.4,
+    fill: "#0a2530",
+    opacity: 0.7,
     yOffset: 32,
   },
   {
-    // Middle — medium wave, slower
+    // Middle — slightly lighter than footer bg, provides visible tonal shift
     amplitude: 22,
-    frequency: 1.0,
-    speed: 0.11,
+    frequency: 1.3,
+    speed: 0.6,
     initialPhase: Math.PI / 3,
-    fill: WAVE_COLOR,
-    opacity: 0.65,
+    fill: "#14394a",
+    opacity: 0.85,
     yOffset: 55,
   },
   {
-    // Front — large sweeping wave, slowest, opaque. This is the base
-    // that visually connects to the footer.
+    // Front — matches footer bg exactly so the wave's bottom edge blends
+    // seamlessly into the footer once settled at top of viewport
     amplitude: 28,
-    frequency: 0.7,
-    speed: 0.07,
+    frequency: 1,
+    speed: 0.5,
     initialPhase: Math.PI / 2,
-    fill: WAVE_COLOR,
+    fill: "#0f2f3b",
     opacity: 1.0,
     yOffset: 78,
   },
@@ -120,20 +116,29 @@ const LAYERS: WaveLayer[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 export default function WaveTop() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const waveRef = useRef<HTMLDivElement>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
 
   useGSAP(
     () => {
-      const container = containerRef.current;
-      if (!container) return;
-      const footerEl = container.parentElement; // the <footer> hosting this
+      const sticky = stickyRef.current;
+      const wave = waveRef.current;
+      if (!sticky || !wave) return;
+      const footerEl = sticky.parentElement;
+      if (!footerEl) return;
 
-      // ─ Initial hidden state ─
-      gsap.set(container, { opacity: 0, y: RISE_OFFSET });
+      // Enough vertical translation to guarantee the wave is BELOW the
+      // viewport at rest. Recomputed on every ScrollTrigger update so it
+      // stays correct across window resizes.
+      const hiddenOffset = () => window.innerHeight + WAVE_HEIGHT;
 
-      // ─ Draw initial static paths so the wave has a shape before the
-      //   ticker ever runs (matters for reduced-motion + SSR flash) ─
+      // Initial: wave far below viewport (invisible).
+      // Uses PIXEL value (not yPercent) so the offset is truly viewport-
+      // sized, not element-sized.
+      gsap.set(wave, { y: hiddenOffset() });
+
+      // Draw initial paths so the wave has a shape immediately.
       LAYERS.forEach((layer, i) => {
         const path = pathRefs.current[i];
         if (!path) return;
@@ -151,10 +156,9 @@ export default function WaveTop() {
         );
       });
 
-      if (prefersReducedMotion() || !footerEl) return;
+      if (prefersReducedMotion()) return;
 
       // ─ Continuous flow via gsap.ticker ─
-      // Single RAF loop updates all three path `d` attributes each frame.
       const startTime = performance.now();
       let tickerActive = false;
 
@@ -190,8 +194,7 @@ export default function WaveTop() {
         gsap.ticker.remove(tickerFn);
       };
 
-      // ─ ScrollTrigger 1: run the ticker only when the footer is anywhere
-      //   in the viewport. Costs nothing on pages you never scroll to. ─
+      // ─ Ticker on/off gated on footer being in viewport ─
       const activityST = ScrollTrigger.create({
         trigger: footerEl,
         start: "top bottom",
@@ -202,18 +205,19 @@ export default function WaveTop() {
         onLeaveBack: stopTicker,
       });
 
-      // ─ ScrollTrigger 2: scrub opacity + Y rise as the footer enters
-      //   view. This is the "wave rises up as we scroll down" effect.
-      //   Reverses smoothly when the user scrolls back up. ─
+      // ─ Reveal slide-up ─
+      // Starts the moment the footer's top hits viewport top (footer
+      // covers the screen). Scrubs the wave's y from hiddenOffset (below
+      // viewport) → 0 (top of sticky wrapper = top of viewport). Reverses
+      // cleanly when scrolling back up.
       const revealST = ScrollTrigger.create({
         trigger: footerEl,
-        start: "top bottom",
-        end: "top center",
+        start: "top top",
+        end: `top top-=${REVEAL_SCROLL_DISTANCE}`,
         scrub: 0.5,
         onUpdate: (self) => {
-          gsap.set(container, {
-            opacity: self.progress,
-            y: (1 - self.progress) * RISE_OFFSET,
+          gsap.set(wave, {
+            y: (1 - self.progress) * hiddenOffset(),
           });
         },
       });
@@ -224,47 +228,56 @@ export default function WaveTop() {
         revealST.kill();
       };
     },
-    { scope: containerRef }
+    { scope: stickyRef }
   );
 
   return (
+    // Sticky wrapper — height 0 so it takes no space in the footer's
+    // layout, but its natural position at the top of the footer is what
+    // sticky uses. `top: 0` means: pin to viewport top once footer's top
+    // has scrolled above it.
     <div
-      ref={containerRef}
+      ref={stickyRef}
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 z-20"
-      style={{
-        bottom: "100%", // sit directly above the footer's top edge
-        height: WAVE_HEIGHT,
-        opacity: 0,
-      }}
+      className="pointer-events-none sticky top-0 z-[5]"
+      style={{ height: 0 }}
     >
-      <svg
-        viewBox={`0 0 ${WAVE_WIDTH} ${WAVE_HEIGHT}`}
-        preserveAspectRatio="none"
-        className="block h-full w-full"
+      {/*
+        Wave inner — absolute inside the sticky wrapper. CSS transform is
+        the initial-render safety net so the wave never flashes visible
+        before useGSAP takes over.
+      */}
+      <div
+        ref={waveRef}
+        className="absolute inset-x-0 top-0"
+        style={{
+          height: WAVE_HEIGHT,
+          transform: "translateY(200vh)",
+        }}
       >
-        {LAYERS.map((layer, i) => (
-          <path
-            key={i}
-            ref={(el) => { pathRefs.current[i] = el; }}
-            fill={layer.fill}
-            fillOpacity={layer.opacity}
-          />
-        ))}
-      </svg>
+        <svg
+          viewBox={`0 0 ${WAVE_WIDTH} ${WAVE_HEIGHT}`}
+          preserveAspectRatio="none"
+          className="block h-full w-full"
+        >
+          {LAYERS.map((layer, i) => (
+            <path
+              key={i}
+              ref={(el) => { pathRefs.current[i] = el; }}
+              fill={layer.fill}
+              fillOpacity={layer.opacity}
+            />
+          ))}
+        </svg>
+      </div>
     </div>
   );
 }
 
 /**
- * Build an SVG path string tracing a sine wave from left → right, then
- * closing back down to (width, height) → (0, height) so the area under the
- * curve fills solid.
- *
- *   y(x) = yOffset + amplitude * sin( (x/width) * 2π * frequency + phase )
- *
- * Segments are joined with straight lines. At 60 segments across the width,
- * the curve is smooth enough visually — no need for expensive cubic Béziers.
+ * Build an SVG path tracing a sine wave from left → right, then closing
+ * back down to (width, height) → (0, height) so the area under the curve
+ * fills solid.
  */
 function buildWavePath(
   width: number,

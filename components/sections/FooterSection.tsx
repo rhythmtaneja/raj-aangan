@@ -47,21 +47,21 @@ const MENU_HREF = "/menu-builder";
 const BOOKING_HREF = "#";
 
 const EXPLORE = [
-  { num: "I",   label: "Weddings",   href: "/events" },
-  { num: "II",  label: "Birthdays",  href: "/events" },
+  { num: "I", label: "Weddings", href: "/events" },
+  { num: "II", label: "Birthdays", href: "/events" },
   { num: "III", label: "Restaurant", href: "/catering" },
-  { num: "IV",  label: "Hotel",      href: "/venue" },
-  { num: "V",   label: "Catering",   href: "/catering" },
-  { num: "VI",  label: "Info",       href: "/about" },
+  { num: "IV", label: "Hotel", href: "/venue" },
+  { num: "V", label: "Catering", href: "/catering" },
+  { num: "VI", label: "Info", href: "/about" },
 ];
 
 const MORE_ABOUT_TITLE = "More about events";
 const MORE_ABOUT_HREF = "/events";
 const MORE_LINKS = [
-  { label: "Weddings",                  href: "/events" },
-  { label: "Corporate events",          href: "/events" },
+  { label: "Weddings", href: "/events" },
+  { label: "Corporate events", href: "/events" },
   { label: "Birthdays & anniversaries", href: "/events" },
-  { label: "Pre-wedding functions",     href: "/events" },
+  { label: "Pre-wedding functions", href: "/events" },
 ];
 
 const BRAND_LINE_1 = "Raj Aangan Events";
@@ -224,9 +224,9 @@ export default function FooterSection() {
 
         {/* ─── SOCIAL ICONS ────────────────────────────────────────────── */}
         <div className="flex items-center justify-end gap-6 px-8 pb-8 md:px-16 md:pb-12">
-          <a href="#" aria-label="Facebook"  className="text-white/70 transition-colors duration-300 hover:text-white"><FacebookIcon /></a>
+          <a href="#" aria-label="Facebook" className="text-white/70 transition-colors duration-300 hover:text-white"><FacebookIcon /></a>
           <a href="#" aria-label="Instagram" className="text-white/70 transition-colors duration-300 hover:text-white"><InstagramIcon /></a>
-          <a href="#" aria-label="YouTube"   className="text-white/70 transition-colors duration-300 hover:text-white"><YoutubeIcon /></a>
+          <a href="#" aria-label="YouTube" className="text-white/70 transition-colors duration-300 hover:text-white"><YoutubeIcon /></a>
         </div>
 
         {/* ─── COPYRIGHT BAR ───────────────────────────────────────────── */}
@@ -252,7 +252,7 @@ export default function FooterSection() {
 function DehazeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-      <line x1="3" y1="7"  x2="21" y2="7" />
+      <line x1="3" y1="7" x2="21" y2="7" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="17" x2="21" y2="17" />
     </svg>

@@ -16,7 +16,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Section height ──
-const SECTION_HEIGHT = "h-screen"; // "h-[90vh]" for shorter, "h-[80vh]" etc.
+const SECTION_HEIGHT = "min-h-[70vh] sm:h-screen"; // responsive height
 
 // ─ Background — replaces the "plain black strip" ──
 // Suggestion: use a bokeh/lights or blurred venue photo. Blur + dark overlay
@@ -114,7 +114,7 @@ export default function EventsHero() {
 
       {/* Auto-scrolling cards band */}
       <div
-        className="absolute inset-x-0 flex items-center overflow-hidden"
+        className="absolute inset-x-0 flex items-center overflow-x-auto"
         style={{ top: CARDS_TOP, height: CARDS_HEIGHT }}
       >
         <div ref={trackRef} className="flex" style={{ gap: `${CARD_GAP}px` }}>
@@ -131,11 +131,11 @@ function CategoryCard({ label, image }: { label: string; image: string }) {
   return (
     <div
       className="group shrink-0 flex flex-col items-center"
-      style={{ width: CARD_WIDTH }}
+      style={{ width: `clamp(200px, 30vw, ${CARD_WIDTH}px)` }}
     >
       <div
         className="relative overflow-hidden"
-        style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+        style={{ width: `clamp(200px, 30vw, ${CARD_WIDTH}px)`, height: `clamp(200px, 30vw, ${CARD_HEIGHT}px)` }}
       >
         <Image
           src={image}
