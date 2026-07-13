@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
+import ImageOverlay from "@/components/ui/ImageOverlay";
+
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -135,6 +137,7 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
+        <ImageOverlay opacity={0.44} />
         {/* Inner outline frame */}
         <div
           aria-hidden
@@ -164,7 +167,7 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={150}
+          circleSize={120}
           magnet={0.3}
           className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
         >

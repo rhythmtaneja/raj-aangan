@@ -25,9 +25,15 @@ export default function AboutPage() {
       <IntroSection
         numeral="II"
         label="ABOUT US"
-        title="Luxury event planning,heritage venues & exceptional catering crafted with"
-        italicTail="the warmth of Rajasthan"
+        title="Luxury event planning,heritage venues "
+        secondaryLines={[
+          "& exceptional catering crafted with,",
+          "the warmth of Rajasthan"
+        ]}
+        // italicTail="the warmth of Rajasthan"
         buttonText="BEGIN YOUR JOURNEY"
+        buttonCircleSize={120}
+        buttonClassName="rounded-full border border-[#191919] px-8 py-3 text-sm font-medium text-[#191919]"
       />
 
       {/* 5. "What We Offer" — staggered service cards (reference images 5/6) */}

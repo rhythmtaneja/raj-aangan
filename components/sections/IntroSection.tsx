@@ -84,6 +84,8 @@ type IntroSectionProps = {
   /** Button label. */
   buttonText: string;
   buttonHref?: string;
+  buttonCircleSize?: number;
+  buttonClassName?: string;
 };
 
 export default function IntroSection({
@@ -94,6 +96,8 @@ export default function IntroSection({
   secondaryLines,
   buttonText,
   buttonHref = "#",
+  buttonCircleSize = 150,
+  buttonClassName = "rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,24px)]",
 }: IntroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const textBlockRef = useRef<HTMLDivElement>(null);
@@ -221,9 +225,9 @@ export default function IntroSection({
             href={buttonHref}
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={150}
+            circleSize={buttonCircleSize}
             magnet={0.4}
-            className="rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,24px)]"
+            className={buttonClassName}
           >
             {buttonText}
           </CircleButton>

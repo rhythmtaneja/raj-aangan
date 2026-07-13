@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
 
+
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -75,14 +76,14 @@ const FINAL_LAST_CARD_TOP_VH = 15;
 const SCRUB: number | boolean = 1;
 
 // ─ Card styling ────────────────────────────────────────────────────────────
-const CARD_BG = "#f5efe6";  // cream (matches blog/contact cards)
-const CARD_TEXT = "#191919";
-const CARD_DESC_TEXT = "#4a4a4a";
+const CARD_BG = "#d9cbbb";  // darker cream rectangle for stronger contrast
+const CARD_TEXT = "#0b0b0bff";
+const CARD_DESC_TEXT = "#202020";
 const CARD_SHADOW = "0 20px 50px rgba(0,0,0,0.35)";
 
 // Subtle inner outline frame — dark since cards are cream (not on photos)
 const CARD_FRAME_INSET = "12px";
-const CARD_FRAME_BORDER = "1px solid rgba(0,0,0,0.15)";
+const CARD_FRAME_BORDER = "1px solid rgba(0, 0, 0, 0.48)";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Derived — leave alone; tune the knobs above.
@@ -227,6 +228,7 @@ function CardBlock({ card }: { card: Card }) {
         boxShadow: CARD_SHADOW,
       }}
     >
+
       {/* Subtle inner frame — dark against the cream card bg */}
       <div
         aria-hidden
@@ -238,7 +240,7 @@ function CardBlock({ card }: { card: Card }) {
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
         <h3
           style={{ ...serif, color: CARD_TEXT }}
-          className="font-semibold leading-tight text-[clamp(1.3rem,1.7vw,32px)]"
+          className="font-bold leading-tight text-[clamp(1.3rem,1.7vw,32px)]"
         >
           {card.title}
         </h3>

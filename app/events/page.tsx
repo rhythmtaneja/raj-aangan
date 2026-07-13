@@ -48,8 +48,8 @@ export default function EventsPage() {
       {/* 2. Reused IntroSection with events copy */}
       <IntroSection
         numeral="I"
-        title="We believe a great celebration is the sum of a thousand thoughtful details."
-        secondaryLines={["Planned to Perfection"]}
+        title="We believe a great celebration is the sum of a"
+        secondaryLines={["Thousand Thoughtful Details.", "Planned to Perfection"]}
         buttonText="Explore"
         buttonHref="#services"
       />

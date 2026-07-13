@@ -17,7 +17,7 @@ const MIDDLE_BG = "#0f2f3b"; // dark navy card strip
 const TITLE_COLOR = "#191919";
 
 // ─ Padding ──
-const TOP_PAD = "py-14";
+const TOP_PAD = "min-h-[220px] py-16 md:min-h-[252px] md:py-20";
 const MIDDLE_PAD = "py-16 md:py-20";
 
 // ─ Card image ──
@@ -46,7 +46,10 @@ export default function VenuePackagesSection() {
   return (
     <section className="relative w-full">
       {/* TOP — white title band */}
-      <div className={`w-full ${TOP_PAD}`} style={{ backgroundColor: TOP_BG }}>
+      <div
+        className={`flex w-full items-center justify-center ${TOP_PAD}`}
+        style={{ backgroundColor: TOP_BG }}
+      >
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}

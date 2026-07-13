@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
+import ImageOverlay from "@/components/ui/ImageOverlay";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -16,7 +17,10 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
-const SECTION_PAD = "py-24 md:py-32";
+const SECTION_PAD = "pt-24 pb-12 md:pt-32 md:pb-16";
+const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
+const GLASS_EXPLORE_BUTTON_CLASS =
+  "min-h-[50px] min-w-[130px] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,17px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.58),inset_0_-1px_0_rgba(255,255,255,0.16),0_14px_32px_rgba(0,0,0,0.2)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller
@@ -68,7 +72,7 @@ export default function VenuePropertiesSection() {
 
       {/* Our Venue Partners CTA (this one is standalone — not nested) */}
       <Reveal>
-        <div className="mt-16 flex justify-center">
+        <div className={`${PARTNERS_CTA_GAP} flex justify-center`}>
           <CircleButton
             href="/venue/partners"
             circleColor="#191919"
@@ -97,6 +101,7 @@ function PropertyCard({ name, image, href }: Property) {
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
+        <ImageOverlay opacity={0.44} />
         {/* Dark overlay so title reads over any photo */}
         <div className="absolute inset-0" style={{ backgroundColor: CARD_OVERLAY }} />
         {/* Inner outline frame */}
@@ -118,9 +123,9 @@ function PropertyCard({ name, image, href }: Property) {
               asStatic
               circleColor="#ffffff"
               arrowColor="#191919"
-              circleSize={100}
+              circleSize={148}
               magnet={0.3}
-              className="rounded-full border border-white/85 px-7 py-2.5 text-white text-[clamp(0.85rem,0.95vw,17px)]"
+              className={GLASS_EXPLORE_BUTTON_CLASS}
             >
               Explore
             </CircleButton>

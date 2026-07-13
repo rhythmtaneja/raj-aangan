@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
 
@@ -23,10 +24,16 @@ const TOP_PAD = "py-16";
 const MIDDLE_PAD = "py-14";
 const BOTTOM_PAD = "py-12";
 
+// ─ Card grid ──
+const CARD_TRACK_SIZE = "clamp(9.5rem, 19vw, 14.25rem)";
+const CARD_GRID_ROW_GAP = "gap-y-10";
+
 // ─ Card image ──
-const CARD_ASPECT = "aspect-[3/4]"; // matches Figma package cards
+const CARD_ASPECT = "aspect-[4/5]";
+const IMAGE_BASE_SCALE = "scale-[1.05]";
+const IMAGE_HOVER_SCALE = "group-hover:scale-[1.1]";
 const FRAME_INSET = "10px";
-const FRAME_COLOR = "rgba(255,255,255,0.55)";
+const FRAME_COLOR = "rgba(255,255,255,0.88)";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -55,10 +62,13 @@ export default function WeddingPackagesSection() {
       </div>
 
       {/* MIDDLE — dark navy with 4 package cards in a row */}
-      <div className={`w-full ${MIDDLE_PAD} px-6 md:px-12`} style={{ backgroundColor: MIDDLE_BG }}>
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+      <div className={`w-full ${MIDDLE_PAD}`} style={{ backgroundColor: MIDDLE_BG }}>
+        <div
+          className={`grid w-full grid-cols-[repeat(2,minmax(0,var(--pkg-card-size)))] justify-evenly md:grid-cols-[repeat(4,minmax(0,var(--pkg-card-size)))] ${CARD_GRID_ROW_GAP}`}
+          style={{ "--pkg-card-size": CARD_TRACK_SIZE } as CSSProperties}
+        >
           {PACKAGES.map((p) => (
-            <Reveal key={p.name}>
+            <Reveal key={p.name} className="w-full">
               <PackageCard {...p} />
             </Reveal>
           ))}
@@ -106,7 +116,7 @@ function PackageCard({ name, image }: Pkg) {
           alt={name}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+          className={`object-cover ${IMAGE_BASE_SCALE} transition-transform duration-[1200ms] ease-out ${IMAGE_HOVER_SCALE}`}
         />
         <div
           aria-hidden
@@ -116,7 +126,7 @@ function PackageCard({ name, image }: Pkg) {
       </div>
       <p
         style={serif}
-        className="mt-4 text-center text-white text-[clamp(0.95rem,1.05vw,20px)]"
+        className="mt-5 text-center text-white text-[clamp(1.1rem,1.35vw,26px)]"
       >
         {name}
       </p>

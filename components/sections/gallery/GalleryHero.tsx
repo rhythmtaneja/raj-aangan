@@ -45,6 +45,8 @@ const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA (appears after the title finishes) ──
 const CTA_DELAY = 1;
+const GLASS_DOWN_BUTTON_CLASS =
+  "min-h-[56px] w-[min(170px,586vw)] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-7 py-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.62),inset_0_-1px_0_rgba(255,255,255,0.18),0_18px_42px_rgba(0,0,0,0.22)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent md:min-h-[64px]";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -157,10 +159,10 @@ export default function GalleryHero() {
             href="#gallery"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={120}
+            circleSize={170}
             magnet={0.35}
             arrowDirection="down"
-            className="rounded-full border border-white px-7 py-3 text-white"
+            className={GLASS_DOWN_BUTTON_CLASS}
           >
             <DownArrowIcon />
           </CircleButton>
