@@ -3,12 +3,14 @@ import VenuePropertiesSection from "@/components/sections/venue/VenuePropertiesS
 import VenueDetailsCollage from "@/components/sections/venue/VenueDetailsCollage";
 import VenuePackagesSection from "@/components/sections/venue/VenuePackagesSection";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
-export default function VenuePage() {
+export default async function VenuePage() {
+  const siteImages = await getSiteImages();
   return (
     <main className="bg-white">
       {/* 1. Hero — "Venue" letter reveal + down arrow */}
-      <VenueHero />
+      <VenueHero bgImage={siteImages.venueHeroImage ?? undefined} />
 
       {/* 2. Two property cards + Our Venue Partners CTA */}
       <VenuePropertiesSection />

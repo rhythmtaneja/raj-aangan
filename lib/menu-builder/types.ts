@@ -35,6 +35,11 @@ export type Venue = {
   pricingNote: string;
   /** Optional short descriptor rendered under the name, e.g. "Heritage Outdoor Lawn". */
   description?: string;
+  /**
+   * Per-head logistics surcharge in ₹ (Sanity-managed). When present the
+   * pricing math uses this directly instead of parsing `pricingNote`.
+   */
+  logisticsPerHead?: number;
 };
 
 export type CuisineCategory = {
@@ -55,6 +60,24 @@ export type Dish = {
   cuisineCategoryId: string;
   price: number;
   tags: DishTag[];
+};
+
+/** A preset menu (e.g. "Maharaja Vyanjan") with "choose any N" sections. */
+export type PresetMenuSection = {
+  sectionName: string;
+  /** How many dishes the guest may pick from this section. 0 = all included. */
+  chooseCount: number;
+  dishes: Dish[];
+};
+
+export type PresetMenu = {
+  id: string;
+  name: string;
+  basePrice: number | null;
+  priceNote?: string;
+  image: string;
+  description?: string;
+  sections: PresetMenuSection[];
 };
 
 export type CutleryOption = { id: string; name: string; image: string };

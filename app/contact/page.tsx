@@ -3,6 +3,7 @@ import AddressSection from "@/components/sections/contact/AddressSection";
 import ContactAccordion from "@/components/sections/contact/ContactAccordion";
 import ContactForm from "@/components/sections/contact/ContactForm";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Page background — shows through only where sections don't have their own
@@ -13,10 +14,11 @@ import FooterSection from "@/components/sections/FooterSection";
 // ═══════════════════════════════════════════════════════════════════════════
 const PAGE_BG = "#0a1e26";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const siteImages = await getSiteImages();
   return (
     <main style={{ backgroundColor: PAGE_BG }}>
-      <ContactHero />
+      <ContactHero bgImage={siteImages.contactHeroImage ?? undefined} />
       <AddressSection />
       <ContactAccordion />
       <ContactForm />

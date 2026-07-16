@@ -86,7 +86,7 @@ function handleDownClick(e: React.MouseEvent) {
   }
 }
 
-export default function VenueHero() {
+export default function VenueHero({ bgImage }: { bgImage?: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -125,7 +125,7 @@ export default function VenueHero() {
     <section ref={root} className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src={BG_IMAGE}
+          src={bgImage ?? BG_IMAGE}
           alt="Raj Aangan Venue"
           fill
           priority

@@ -80,7 +80,7 @@ function Letters({ text }: { text: string }) {
   );
 }
 
-export default function CateringHero() {
+export default function CateringHero({ bgImage }: { bgImage?: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -121,7 +121,7 @@ export default function CateringHero() {
       {/* Background photo */}
       <div className="absolute inset-0">
         <Image
-          src={BG_IMAGE}
+          src={bgImage ?? BG_IMAGE}
           alt="Catering spread"
           fill
           priority

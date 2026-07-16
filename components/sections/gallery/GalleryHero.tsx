@@ -72,7 +72,7 @@ function Letters({ text }: { text: string }) {
   );
 }
 
-export default function GalleryHero() {
+export default function GalleryHero({ bgImage }: { bgImage?: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -112,7 +112,7 @@ export default function GalleryHero() {
       {/* Background photo */}
       <div className="absolute inset-0">
         <Image
-          src={BG_IMAGE}
+          src={bgImage ?? BG_IMAGE}
           alt="Resort gallery"
           fill
           priority

@@ -13,15 +13,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import {
   CUTLERY_OPTIONS,
-  DISHES,
   LIVE_COUNTERS,
-  OCCASIONS,
   PRESENTATION_STYLES,
   STALL_THEMES,
-  VENUES,
-} from "@/lib/menu-builder/data";
+} from "@/lib/menu-builder/config";
 import {
   formatINR,
   getDiscountAmount,
@@ -52,18 +50,19 @@ const START_OVER_CONFIRM_MSG =
 
 export default function Step5QuotePage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { venues, occasions, dishes } = useCatalog();
   const router = useRouter();
   const [toast, setToast] = useState<string | null>(null);
 
-  const venue = state.venueId ? VENUES.find((v) => v.id === state.venueId) : null;
+  const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
   const occasion =
     state.occasions.length > 0
-      ? state.occasions.map((id) => OCCASIONS.find((o) => o.id === id)?.label).join(", ")
+      ? state.occasions.map((id) => occasions.find((o) => o.id === id)?.label).join(", ")
       : "—";
 
-  const subtotal = getEstimatedTotal(state);
+  const subtotal = getEstimatedTotal(state, venues);
   const gstAmt   = subtotal * (getGstPercent() / 100);
-  const discAmt  = getDiscountAmount(state);
+  const discAmt  = getDiscountAmount(state, venues);
   const total    = subtotal + gstAmt - discAmt;
 
   const showToast = (msg: string) => {
@@ -122,7 +121,7 @@ export default function Step5QuotePage() {
         ) : (
           <ul className="divide-y" style={{ borderColor: MB_COLORS.borderLight }}>
             {state.selectedDishes.map(({ dishId, mealType }) => {
-              const dish = DISHES.find((d) => d.id === dishId);
+              const dish = dishes.find((d) => d.id === dishId);
               if (!dish) return null;
               return (
                 <li key={dishId} className="flex items-center justify-between py-2 text-sm">
@@ -169,7 +168,7 @@ export default function Step5QuotePage() {
           />
           <KVRow
             label={`Venue logistics /head`}
-            value={formatINR(getVenueLogisticsPerHead(state))}
+            value={formatINR(getVenueLogisticsPerHead(state, venues))}
           />
           <KVRow
             label={`× ${state.guests} guests × ${state.eventDays} day${state.eventDays > 1 ? "s" : ""}`}

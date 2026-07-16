@@ -12,7 +12,7 @@
 import Image from "next/image";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { OCCASIONS } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import {
   DIETARY_PREFERENCES,
   MB_COLORS,
@@ -42,6 +42,7 @@ const GUEST_STEP         = 50;
 
 export default function Step1ClientPage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { occasions } = useCatalog();
 
   const setField = <K extends keyof typeof state>(field: K, value: (typeof state)[K]) =>
     dispatch({ type: "SET_FIELD", field, value });
@@ -80,7 +81,7 @@ export default function Step1ClientPage() {
         <Divider label="Occassion Type" />
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {OCCASIONS.map((o) => {
+          {occasions.map((o) => {
             const selected = state.occasions.includes(o.id);
             return (
               <button

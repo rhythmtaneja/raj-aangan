@@ -11,7 +11,9 @@ import SiteHeader from "@/components/ui/SiteHeader";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export default function Hero() {
+const HERO_BG_FALLBACK = "/images/hero-pool.jpg";
+
+export default function Hero({ bgImage }: { bgImage?: string }) {
   const container = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -50,7 +52,7 @@ export default function Hero() {
       {/* Background photo */}
       <div className="hero-bg absolute inset-0">
         <Image
-          src="/images/hero-pool.jpg"
+          src={bgImage ?? HERO_BG_FALLBACK}
           alt="Luxury resort pool at Raj Aangan"
           fill
           priority

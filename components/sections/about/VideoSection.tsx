@@ -18,7 +18,7 @@ const VIDEO_MAX_W = "max-w-7xl";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function VideoSection() {
+export default function VideoSection({ poster }: { poster?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Click anywhere on the play button or the video plays / pauses.
@@ -40,7 +40,7 @@ export default function VideoSection() {
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           src={VIDEO_SRC}
-          poster={POSTER_SRC}
+          poster={poster ?? POSTER_SRC}
           playsInline
           preload="metadata"
         />

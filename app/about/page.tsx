@@ -4,18 +4,20 @@ import VideoSection from "@/components/sections/about/VideoSection";
 import IntroSection from "@/components/sections/IntroSection";
 import WhatWeOfferSection from "@/components/sections/about/WhatWeOfferSection";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const siteImages = await getSiteImages();
   return (
     <main className="bg-[#191919]">
       {/* 1. Hero — navbar already there, title letter-by-letter reveal */}
-      <AboutHero />
+      <AboutHero bgImage={siteImages.aboutHeroImage ?? undefined} />
 
       {/* 2. Trust block + sticky bullet box / scrolling photos */}
       <AboutStorySection />
 
       {/* 3. Video block with hover-to-circle play button */}
-      <VideoSection />
+      <VideoSection poster={siteImages.videoSectionPoster ?? undefined} />
 
       {/*
         4. About-Us intro — IntroSection reused with different copy.

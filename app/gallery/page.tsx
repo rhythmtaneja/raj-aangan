@@ -2,6 +2,7 @@ import GalleryHero from "@/components/sections/gallery/GalleryHero";
 import GalleryGridSection from "@/components/sections/gallery/GalleryGridSection";
 import GalleryBackNav from "@/components/sections/gallery/GalleryBackNav";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Page background colour.
@@ -43,26 +44,39 @@ const INDOOR_AREA_IMAGES = [
 
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const siteImages = await getSiteImages();
   return (
     <main style={{ backgroundColor: PAGE_BG }}>
-      <GalleryHero />
+      <GalleryHero bgImage={siteImages.galleryHeroImage ?? undefined} />
 
       <div id="gallery" className="pt-8">
         <GalleryGridSection
           title="RAEC Resort"
-          images={RAEC_RESORT_IMAGES}
+          images={
+            siteImages.galleryResortImages.length
+              ? siteImages.galleryResortImages.map((i) => i.url)
+              : RAEC_RESORT_IMAGES
+          }
         />
 
         <GalleryGridSection
           title="Outdoor Garden"
-          images={OUTDOOR_GARDEN_IMAGES}
+          images={
+            siteImages.galleryOutdoorImages.length
+              ? siteImages.galleryOutdoorImages.map((i) => i.url)
+              : OUTDOOR_GARDEN_IMAGES
+          }
           showMoreButton
         />
 
         <GalleryGridSection
           title="Indoor Area"
-          images={INDOOR_AREA_IMAGES}
+          images={
+            siteImages.galleryIndoorImages.length
+              ? siteImages.galleryIndoorImages.map((i) => i.url)
+              : INDOOR_AREA_IMAGES
+          }
           showMoreButton
         />
       </div>
