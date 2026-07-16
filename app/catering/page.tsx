@@ -1,12 +1,14 @@
 import CateringHero from "@/components/sections/catering/CateringHero";
 import IntroSection from "@/components/sections/IntroSection";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
-export default function CateringPage() {
+export default async function CateringPage() {
+  const siteImages = await getSiteImages();
   return (
     <main className="bg-white">
       {/* 1. Hero — RAEC logo block + letter-reveal tagline + Plan Your Event */}
-      <CateringHero />
+      <CateringHero bgImage={siteImages.cateringHeroImage ?? undefined} />
 
       {/*
         2. Intro — reuses the existing IntroSection component with catering copy.

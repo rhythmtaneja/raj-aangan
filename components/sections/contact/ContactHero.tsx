@@ -69,7 +69,7 @@ function Letters({ text }: { text: string }) {
   );
 }
 
-export default function ContactHero() {
+export default function ContactHero({ bgImage }: { bgImage?: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -120,7 +120,7 @@ export default function ContactHero() {
       {/* Background photo */}
       <div className="absolute inset-0">
         <Image
-          src={BG_IMAGE}
+          src={bgImage ?? BG_IMAGE}
           alt="Contact Us"
           fill
           priority

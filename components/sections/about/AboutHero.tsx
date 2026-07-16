@@ -104,7 +104,7 @@ function handleDownClick(e: React.MouseEvent) {
   }
 }
 
-export default function AboutHero() {
+export default function AboutHero({ bgImage }: { bgImage?: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -144,7 +144,7 @@ export default function AboutHero() {
       {/* Background photo */}
       <div className="absolute inset-0">
         <Image
-          src={BG_IMAGE}
+          src={bgImage ?? BG_IMAGE}
           alt="Raj Aangan venue"
           fill
           priority

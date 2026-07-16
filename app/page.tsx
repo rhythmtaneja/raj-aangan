@@ -6,11 +6,13 @@ import CuisineSection from "@/components/sections/CuisineSection";
 import AboutSection from "@/components/sections/AboutSection";
 import EventsSection from "@/components/sections/EventsSection";
 import FooterSection from "@/components/sections/FooterSection";
+import { getSiteImages } from "@/lib/site-images/queries";
 
-export default function Home() {
+export default async function Home() {
+  const siteImages = await getSiteImages();
   return (
     <main className="bg-[#191919]">
-      <Hero />
+      <Hero bgImage={siteImages.homeHero ?? undefined} />
       <IntroSection
         numeral="I"
         title="A Royal Destination where celebrations come alive."
