@@ -203,14 +203,14 @@ export default function IntroSection({
         {secondaryLines && secondaryLines.length > 0 && (
           <div
             style={serif}
-            className="mt-6 font-semibold leading-[1.15] text-[#8a8a8a]"
+            className="mt-6 font-semibold leading-[1.15] text-[#999999]"
           >
             {secondaryLines.map((line, i) => (
               <p
                 key={i}
                 className={
                   i === 0
-                    ? "text-[clamp(1.5rem,3.39vw,65px)]"
+                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,65px)]"
                     : "mt-6 text-[clamp(1.25rem,2.86vw,55px)]"
                 }
               >

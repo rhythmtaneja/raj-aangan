@@ -89,7 +89,7 @@ export default function ContactAccordion() {
 
   return (
     <section
-      className="w-full px-6 py-8 md:px-16 md:pb-32"
+      className="w-full px-6 pt-0 pb-8 md:px-16 md:pb-32"
       style={{ backgroundColor: SECTION_BG, color: TEXT_COLOR }}
     >
       <div className="mx-auto w-full max-w-6xl">

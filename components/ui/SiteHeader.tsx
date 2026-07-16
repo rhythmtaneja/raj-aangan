@@ -182,7 +182,7 @@ export default function SiteHeader({
 
   return (
     <header ref={root} className={`absolute inset-x-0 top-0 z-30 ${textColor}`}>
-      <div className="relative flex items-center justify-between px-6 pt-9 pb-4 md:px-12">
+      <div className="relative flex items-center justify-between px-6 pt-9 pb-8 md:px-12">
         {/* MENU */}
         <Link
           href={MENU_BUTTON_HREF}
@@ -195,7 +195,7 @@ export default function SiteHeader({
         {variant === "full" && (
           <Link
             href="/"
-            className="site-header-item absolute left-1/2 top-2 -translate-x-1/2"
+            className="site-header-item absolute left-1/2 top-4 -translate-x-1/2"
           >
             <Image
               src="/images/logo-round.png"

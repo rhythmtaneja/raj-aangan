@@ -27,9 +27,9 @@ const ADDRESS_LINES = [
 const MAP_HREF = "https://maps.google.com/?q=Raj+Aangan+Resort+Jaipur"; // ← replace with real link
 
 // ─ Typography ──
-const SMALL_LABEL_SIZE = "clamp(1rem, 1.2vw, 22px)";
+const SMALL_LABEL_SIZE = "clamp(1.25rem, 1.6vw, 28px)";
 const TITLE_SIZE = "clamp(2.2rem, 4vw, 72px)";
-const ADDRESS_SIZE = "clamp(1rem, 1.2vw, 22px)";
+const ADDRESS_SIZE = "clamp(1.15rem, 1.45vw, 26px)";
 
 // ─ Photo ──
 const PHOTO_SRC = "/images/contact-address.jpg";
@@ -49,7 +49,7 @@ export default function AddressSection() {
   return (
     <section
       id="address"
-      className="relative w-full px-6 py-24 md:px-16 md:py-32"
+      className="relative w-full px-6 pt-24 pb-12 md:px-16 md:pt-32 md:pb-16"
       style={{ backgroundColor: SECTION_BG, color: TEXT_COLOR }}
     >
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-16 md:grid-cols-2 md:gap-24">
