@@ -3,7 +3,7 @@
 import Image from "next/image";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { VENUES } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { MB_COLORS, type Venue } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -23,9 +23,10 @@ const VENUE_IMG_H = 180;
 
 export default function Step2VenuePage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { venues } = useCatalog();
 
-  const ourProperties = VENUES.filter((v) => v.type === "our-property");
-  const partners = VENUES.filter((v) => v.type === "partner");
+  const ourProperties = venues.filter((v) => v.type === "our-property");
+  const partners = venues.filter((v) => v.type === "partner");
 
   const selectVenue = (id: string) =>
     dispatch({ type: "SET_FIELD", field: "venueId", value: state.venueId === id ? null : id });

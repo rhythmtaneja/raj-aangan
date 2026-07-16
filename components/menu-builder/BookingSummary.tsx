@@ -1,7 +1,7 @@
 "use client";
 
 import { useBooking } from "@/lib/menu-builder/context";
-import { DISHES, OCCASIONS, VENUES } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import {
   formatINR,
   getDiscountPercent,
@@ -34,18 +34,19 @@ type Props = {
 
 export default function BookingSummary({ currentStep }: Props) {
   const { state, hydrated } = useBooking();
+  const { venues, occasions, dishes } = useCatalog();
 
   // Extended summary appears from Step 3 onward.
   const showItemsAndTotal = currentStep >= 3;
 
-  const venue = state.venueId ? VENUES.find((v) => v.id === state.venueId) : null;
+  const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
   const occasion =
     state.occasions.length > 0
-      ? OCCASIONS.find((o) => o.id === state.occasions[0])?.label
+      ? occasions.find((o) => o.id === state.occasions[0])?.label
       : null;
 
-  const perHead = getPerHeadRate(state) + getVenueLogisticsPerHead(state);
-  const total = getEstimatedTotal(state);
+  const perHead = getPerHeadRate(state) + getVenueLogisticsPerHead(state, venues);
+  const total = getEstimatedTotal(state, venues);
 
   return (
     <aside className={`sticky ${STICKY_TOP} h-fit`}>
@@ -92,7 +93,7 @@ export default function BookingSummary({ currentStep }: Props) {
             </h4>
             <ul className="space-y-2">
               {state.selectedDishes.map(({ dishId }) => {
-                const dish = DISHES.find((d) => d.id === dishId);
+                const dish = dishes.find((d) => d.id === dishId);
                 if (!dish) return null;
                 return (
                   <li

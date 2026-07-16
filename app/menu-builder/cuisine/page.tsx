@@ -3,7 +3,8 @@
 import Image from "next/image";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { BUDGET_TIERS, CUISINE_CATEGORIES } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
+import { BUDGET_TIERS } from "@/lib/menu-builder/config";
 import { MB_COLORS, MEAL_TYPES, type BudgetTierId, type MealType } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -23,6 +24,7 @@ const CAT_IMG_H = 130;
 
 export default function Step3CuisinePage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { cuisines } = useCatalog();
 
   const toggleMeal = (meal: MealType) =>
     dispatch({ type: "TOGGLE_ARRAY", field: "mealTypes", value: meal });
@@ -103,7 +105,7 @@ export default function Step3CuisinePage() {
         <div className="mt-2 h-px w-full" style={{ backgroundColor: GOLD }} />
 
         <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {CUISINE_CATEGORIES.map((cat) => {
+          {cuisines.map((cat) => {
             const selected = hydrated && state.selectedCuisineCategories.includes(cat.id);
             return (
               <button

@@ -24,17 +24,18 @@ import { useState } from "react";
 import Image from "next/image";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import {
   CUTLERY_OPTIONS,
-  DISHES,
   LIVE_COUNTERS,
   PRESENTATION_STYLES,
   STALL_THEMES,
-} from "@/lib/menu-builder/data";
+} from "@/lib/menu-builder/config";
 import {
   DISH_FILTER_TAGS,
   MB_COLORS,
   MEAL_TYPES,
+  type Dish,
   type DishTag,
   type MealType,
 } from "@/lib/menu-builder/types";
@@ -56,6 +57,7 @@ const ADDON_IMG_H    = 130;
 
 export default function Step4MenuPage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { dishes } = useCatalog();
   const [activeFilter, setActiveFilter] = useState<DishTag | "All">("All");
   const [activeMeal, setActiveMeal] = useState<MealType>(state.mealTypes[0] || "Lunch");
 
@@ -65,12 +67,12 @@ export default function Step4MenuPage() {
     else dispatch({ type: "ADD_DISH", dishId, mealType: activeMeal });
   };
 
-  const filteredDishes = DISHES.filter((d) =>
+  const filteredDishes = dishes.filter((d) =>
     activeFilter === "All" ? true : d.tags.includes(activeFilter as DishTag)
   );
 
   // Group dishes by their section (e.g. "Signature Welcome Elixirs")
-  const grouped = filteredDishes.reduce<Record<string, typeof DISHES>>((acc, dish) => {
+  const grouped = filteredDishes.reduce<Record<string, Dish[]>>((acc, dish) => {
     (acc[dish.section] = acc[dish.section] || []).push(dish);
     return acc;
   }, {});
