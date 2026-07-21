@@ -1,3 +1,13 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: lib/menu-builder/types.ts
+// ══════════════════════════════════════════════════════════════════
+// Domain types, BookingState, step-sets and shared design tokens for the
+// three-sub-flow Menu Builder wizard:
+//   A) Venue Event + Raj Aangan property → set-menu flow
+//   B) Venue Event + partner venue       → cuisine flow (the original)
+//   C) Outdoor Catering / Bulk Orders    → catalog flow
+// ═══════════════════════════════════════════════════════════════════════════
+
 // ─── Domain enums / literal unions ─────────────────────────────────────────
 
 export type MealType = "Breakfast" | "Lunch" | "High Tea" | "Brunch" | "Dinner" | "Cocktail";
@@ -14,6 +24,25 @@ export type BudgetTierId = "Standard" | "Premium" | "Delux" | "Luxury";
 
 export type DishTag = "Veg" | "Non Veg" | "Jain" | "Satvik" | "Starter" | "Main" | "Dessert" | "Beverage";
 
+/** Which sub-flow the wizard is in — chosen on Step 1. */
+export type CateringType = "venue-event" | "outdoor" | null;
+
+/**
+ * How a venue routes the wizard:
+ *   raj-aangan  → Raj Aangan property = set-menu flow (Sub-flow A)
+ *   raj-gharana → our other property  = cuisine flow  (Sub-flow B)
+ *   partner     → external venue       = cuisine flow  (Sub-flow B)
+ */
+export type VenueKind = "raj-aangan" | "raj-gharana" | "partner";
+
+/** Outdoor catalog item categories. */
+export type CatalogCategory =
+  | "sweet-box"
+  | "meal-box"
+  | "snack-packet"
+  | "bulk-mithai"
+  | "live-counter-van";
+
 // ─── Catalog types (what the site OFFERS) ──────────────────────────────────
 
 export type Occasion = {
@@ -28,6 +57,11 @@ export type Venue = {
   image: string;
   /** "our-property" = RAEC-owned; "partner" = external partner property. */
   type: "our-property" | "partner";
+  /**
+   * Routing kind. Optional because queries.ts (Sanity) does not yet project it;
+   * derive it with `venueKindOf()` in flow.ts, which infers from id when absent.
+   */
+  venueKind?: VenueKind;
   category: "Indoor" | "Outdoor" | "Both";
   /** e.g. "200-2000". Empty string means not specified. */
   capacity: string;
@@ -94,37 +128,101 @@ export type BudgetTier = {
   perHead: number;
 };
 
+// ─── Sub-flow A — Set-menu (Raj Aangan) shapes ─────────────────────────────
+
+export type SetMenuDishOption = {
+  id: string;
+  name: string;                 // "French Fries"
+  subtitle?: string;            // optional second line
+};
+
+export type SetMenuSection = {
+  id: string;
+  label: string;                // "Snacks"
+  chooseCount: number;          // 4
+  dishOptions: SetMenuDishOption[];
+};
+
+export type SetMenu = {
+  id: string;
+  name: string;                 // "Maharani Dinner Menu"
+  slug: string;
+  perPersonPrice: number;       // 1250
+  coverImage: string;
+  description?: string;         // "RO water and 200ml bottles are included..."
+  mealTypeFit: MealType[];      // which meal types this menu shows for
+  sections: SetMenuSection[];
+};
+
+// ─── Sub-flow C — Outdoor catalog shapes ───────────────────────────────────
+
+export type CatalogItem = {
+  id: string;
+  name: string;                 // "Wedding Favour Sweet Box"
+  description: string;          // "Assorted mithai, festive packaging"
+  price: number;                // 220
+  unit: string;                 // "per box" | "per kg" | "per packet" | "per day"
+  image: string;
+  category: CatalogCategory;
+};
+
+export type PackagingStyle = {
+  id: string;
+  label: string;                // "Eco Kraft Box"
+};
+
 // ─── BookingState — what the user has selected across the wizard ───────────
 
 export type BookingState = {
+  // Step 1 — Catering type (chosen first, picks the sub-flow)
+  cateringType: CateringType;
+
   // Step 1 — Client / Event
   occasions: string[];           // ids from OCCASIONS
   clientName: string;
   contactPhone: string;
   mealTypes: MealType[];
-  eventDate: string;             // ISO date string
+  eventDate: string;             // ISO date string (also used as delivery date for outdoor)
   eventDays: number;
   guests: number;                // min 100, step 50
   dietaryPreferences: DietaryPreference[];
 
-  // Step 2 — Venue
+  // Step 2 — Venue (Sub-flows A/B)
   venueId: string | null;        // id from VENUES, or null if using custom
   customVenueAddress: string;
 
-  // Step 3 — Cuisine
+  // Step 3 — Cuisine (Sub-flow B)
   budgetTier: BudgetTierId | null;
   activeMealForCuisine: MealType | null;
   selectedCuisineCategories: string[]; // ids from CUISINE_CATEGORIES
 
-  // Step 4 — Menu items + Cutlery/Presentation/Stalls
+  // Step 4 — Menu items (Sub-flow B)
   selectedDishes: { dishId: string; mealType: MealType }[];
-  cutleryIds: string[];
-  presentationStyleIds: string[];
-  stallThemeIds: string[];
-  liveCounterIds: string[];
+
+  // Sub-flow A — Set-menu selection
+  selectedSetMenuId: string | null;
+  /** sectionId → chosen dishOptionIds. */
+  setMenuSelections: Record<string, string[]>;
+
+  // Sub-flow B — Presentation / Live Counters step
+  presentationChoices: {
+    liveCounters: string[];
+    cutlery: string | null;
+    presentationStyle: string | null;
+    stallTheme: string | null;
+    liveCounterDesigns: string[];
+  };
+
+  // Sub-flow C — Outdoor catalog
+  /** catalogItemId → quantity. */
+  catalogSelections: Record<string, number>;
+  packagingStyleId: string | null;
+  deliveryAddress: string;
 };
 
 export const INITIAL_STATE: BookingState = {
+  cateringType: null,
+
   occasions: [],
   clientName: "",
   contactPhone: "",
@@ -142,23 +240,56 @@ export const INITIAL_STATE: BookingState = {
   selectedCuisineCategories: [],
 
   selectedDishes: [],
-  cutleryIds: [],
-  presentationStyleIds: [],
-  stallThemeIds: [],
-  liveCounterIds: [],
+
+  selectedSetMenuId: null,
+  setMenuSelections: {},
+
+  presentationChoices: {
+    liveCounters: [],
+    cutlery: null,
+    presentationStyle: null,
+    stallTheme: null,
+    liveCounterDesigns: [],
+  },
+
+  catalogSelections: {},
+  packagingStyleId: null,
+  deliveryAddress: "",
 };
 
-// ─── Step definitions (used by ProgressBar and NavFooter) ──────────────────
+// ─── Step definitions — one set per sub-flow (used by ProgressBar) ─────────
 
-export const STEPS = [
-  { number: 1, label: "Client", slug: "client" },
-  { number: 2, label: "Venue", slug: "venue" },
-  { number: 3, label: "Cuisine", slug: "cuisine" },
-  { number: 4, label: "Menu", slug: "menu" },
-  { number: 5, label: "Quote", slug: "quote" },
-] as const;
+export type WizardStep = { label: string; slug: string };
 
-export type StepNumber = 1 | 2 | 3 | 4 | 5;
+/**
+ * Sub-flow A — Venue Event + Raj Aangan property (set-menu). Includes the
+ * shared Presentation (counters/cutlery) step, same as the cuisine flow.
+ */
+export const STEPS_VENUE_EVENT_SET_MENU: WizardStep[] = [
+  { label: "Client", slug: "client" },
+  { label: "Venue", slug: "venue" },
+  { label: "Set Menu", slug: "menu" },
+  { label: "Presentation", slug: "presentation" },
+  { label: "Quote", slug: "quote" },
+];
+
+/** Sub-flow B — Venue Event + partner venue (cuisine). */
+export const STEPS_VENUE_EVENT_CUISINE: WizardStep[] = [
+  { label: "Client", slug: "client" },
+  { label: "Venue", slug: "venue" },
+  { label: "Cuisine", slug: "cuisine" },
+  { label: "Menu", slug: "menu" },
+  { label: "Presentation", slug: "presentation" },
+  { label: "Quote", slug: "quote" },
+];
+
+/** Sub-flow C — Outdoor Catering / Bulk Orders. */
+export const STEPS_OUTDOOR: WizardStep[] = [
+  { label: "Client", slug: "client" },
+  { label: "Catalog", slug: "catalog" },
+  { label: "Packaging", slug: "packaging" },
+  { label: "Quote", slug: "quote" },
+];
 
 // ─── Design tokens shared across all menu-builder files ────────────────────
 
@@ -180,10 +311,37 @@ export const MB_COLORS = {
 
 export const MEAL_TYPES: MealType[] = ["Breakfast", "Lunch", "High Tea", "Brunch", "Dinner", "Cocktail"];
 
+// "Non Veg" intentionally removed from the selectable list (per brief); the
+// literal remains in the DietaryPreference union for stored/legacy data.
 export const DIETARY_PREFERENCES: DietaryPreference[] = [
-  "Pure Veg", "Non Veg", "Jain", "Satvik", "Alcohol", "Non Alcohol",
+  "Pure Veg", "Jain", "Satvik", "Alcohol", "Non Alcohol",
 ];
 
 export const DISH_FILTER_TAGS: DishTag[] = [
   "Veg", "Jain", "Satvik", "Starter", "Main", "Dessert", "Beverage",
+];
+
+// ─── Catering type cards (Step 1, first section) ───────────────────────────
+
+export type CateringTypeOption = {
+  id: Exclude<CateringType, null>;
+  label: string;
+  description: string;
+  /** Which route the Next button leads to when this type is chosen. */
+  nextHref: string;
+};
+
+export const CATERING_TYPES: CateringTypeOption[] = [
+  {
+    id: "venue-event",
+    label: "Venue Event Catering",
+    description: "Weddings, receptions & parties hosted at a venue, with full menu & presentation builder.",
+    nextHref: "/menu-builder/venue",
+  },
+  {
+    id: "outdoor",
+    label: "Outdoor Catering / Bulk Orders",
+    description: "Packed meals, sweet boxes, corporate gifting & live counter vans delivered off-site.",
+    nextHref: "/menu-builder/catalog",
+  },
 ];

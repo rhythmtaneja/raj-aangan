@@ -50,6 +50,18 @@ export const STALL_THEMES: StallTheme[] = [
   { id: "destination-wedding",   name: "Destination Wedding",   image: "/images/mb-stall-destination.jpg" },
 ];
 
+// Photo tiles for the "Choose Your Live Counters" grid on the Presentation
+// step (distinct from LIVE_COUNTERS below, which is the pill-list of design
+// names). Placeholder imagery until the client provides real shots.
+export const LIVE_COUNTER_TILES: StallTheme[] = [
+  { id: "chaat-counter",   name: "Chaat Counter",   image: "/images/mb/placeholder-1.jpg" },
+  { id: "pasta-counter",   name: "Pasta Counter",   image: "/images/mb/placeholder-2.jpg" },
+  { id: "tandoor-counter", name: "Live Tandoor",    image: "/images/mb/placeholder-3.jpg" },
+  { id: "dessert-counter", name: "Dessert Counter", image: "/images/mb/placeholder-4.jpg" },
+  { id: "chinese-wok",     name: "Chinese Wok",     image: "/images/mb/placeholder-5.jpg" },
+  { id: "mocktail-counter", name: "Mocktail Bar",   image: "/images/mb/placeholder-6.jpg" },
+];
+
 export const LIVE_COUNTERS: LiveCounter[] = [
   { id: "chaat-station",  name: "Chaat Station"  },
   { id: "jalebi-counter", name: "Jalebi Counter" },

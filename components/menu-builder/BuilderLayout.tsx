@@ -2,15 +2,17 @@
 // PATH IN REPO: components/menu-builder/BuilderLayout.tsx
 // ══════════════════════════════════════════════════════════════════
 // CHANGES vs previous version:
-//   • New backLabel prop plumbed through to NavFooter.
-//     Steps can override the default "Back" text (Step 1 → "Back to Catering").
+//   • Now takes a `steps` array (the active sub-flow's step-set) plus a
+//     1-based `currentStep` index, both forwarded to the dynamic ProgressBar
+//     and to BookingSummary. Callers pick their step-set via flow.ts/getSteps.
+//   • `backLabel` prop still plumbed through to NavFooter.
 // ══════════════════════════════════════════════════════════════════
 
 "use client";
 
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { MB_COLORS, type StepNumber } from "@/lib/menu-builder/types";
+import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
 import ProgressBar from "./ProgressBar";
 import BookingSummary from "./BookingSummary";
 import NavFooter from "./NavFooter";
@@ -28,12 +30,15 @@ const SIDEBAR_W = "360px";
 // ═══════════════════════════════════════════════════════════════════════════
 
 type Props = {
-  currentStep: StepNumber;
+  /** The active sub-flow's step-set (from flow.ts/getSteps). */
+  steps: WizardStep[];
+  /** 1-based index of this page within `steps`. */
+  currentStep: number;
   children: ReactNode;
 
   /** Nav footer — see NavFooter.tsx for full docs. */
   backHref?: string;
-  backLabel?: string;   // NEW — override "Back" text (e.g. "Back to Catering")
+  backLabel?: string;
   nextHref?: string;
   nextLabel?: string;
   onNext?: () => void | boolean;
@@ -41,6 +46,7 @@ type Props = {
 };
 
 export default function BuilderLayout({
+  steps,
   currentStep,
   children,
   backHref,
@@ -69,8 +75,8 @@ export default function BuilderLayout({
         </button>
       </div>
 
-      {/* 5-step progress indicator */}
-      <ProgressBar currentStep={currentStep} />
+      {/* Dynamic progress indicator */}
+      <ProgressBar steps={steps} currentStep={currentStep} />
 
       {/* Main content + sticky sidebar */}
       <div
@@ -80,7 +86,7 @@ export default function BuilderLayout({
         }}
       >
         <main className="min-w-0">{children}</main>
-        <BookingSummary currentStep={currentStep} />
+        <BookingSummary steps={steps} currentStep={currentStep} />
       </div>
 
       {/* Bottom nav — Back / Next */}

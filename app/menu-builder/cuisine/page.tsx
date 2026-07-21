@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
+import { getSteps, isSetMenuFlow, stepIndexOf } from "@/lib/menu-builder/flow";
 import { BUDGET_TIERS } from "@/lib/menu-builder/config";
 import { MB_COLORS, MEAL_TYPES, type BudgetTierId, type MealType } from "@/lib/menu-builder/types";
 
@@ -24,7 +27,18 @@ const CAT_IMG_H = 130;
 
 export default function Step3CuisinePage() {
   const { state, dispatch, hydrated } = useBooking();
-  const { cuisines } = useCatalog();
+  const { cuisines, venues } = useCatalog();
+  const router = useRouter();
+
+  // Route protection — venue-event only, and never for the Raj Aangan
+  // set-menu flow (which skips Cuisine straight to the Set Menu step).
+  useEffect(() => {
+    if (!hydrated) return;
+    if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
+    else if (isSetMenuFlow(state, venues)) router.replace("/menu-builder/menu");
+  }, [hydrated, state, venues, router]);
+
+  const steps = getSteps(state, venues);
 
   const toggleMeal = (meal: MealType) =>
     dispatch({ type: "TOGGLE_ARRAY", field: "mealTypes", value: meal });
@@ -37,7 +51,8 @@ export default function Step3CuisinePage() {
 
   return (
     <BuilderLayout
-      currentStep={3}
+      steps={steps}
+      currentStep={stepIndexOf(steps, "cuisine")}
       backHref="/menu-builder/venue"
       nextHref="/menu-builder/menu"
       nextLabel="Build Menu"

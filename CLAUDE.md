@@ -1,5 +1,12 @@
 @AGENTS.md
 
+Menu Builder rework: Phases 1–7 DONE (three sub-flows — Raj Aangan set-menu,
+partner-venue cuisine, outdoor bulk — all built with hardcoded placeholder data
+in `lib/menu-builder/data.ts`, dynamic step-sets, route protection). Phase 8
+(Sanity wiring for set menus / catalog / packaging / presentation) is NOT
+started — do not begin it without explicit confirmation. `queries.ts` was left
+untouched per the rework brief. Reference designs: `docs/reference/screens/`.
+
 # Raj Aangan — project guide
 
 Next.js 16 (App Router) + TypeScript + Tailwind v4 + GSAP, deployed on Vercel

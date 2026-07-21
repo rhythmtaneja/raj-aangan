@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
+import { getSteps, venueKindOf } from "@/lib/menu-builder/flow";
 import { MB_COLORS, type Venue } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -24,6 +27,15 @@ const VENUE_IMG_H = 180;
 export default function Step2VenuePage() {
   const { state, dispatch, hydrated } = useBooking();
   const { venues } = useCatalog();
+  const router = useRouter();
+
+  // Route protection — the Venue step belongs to the venue-event flow only.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
+  }, [hydrated, state.cateringType, router]);
+
+  const steps = getSteps(state, venues);
 
   const ourProperties = venues.filter((v) => v.type === "our-property");
   const partners = venues.filter((v) => v.type === "partner");
@@ -34,12 +46,21 @@ export default function Step2VenuePage() {
   const setCustom = (addr: string) =>
     dispatch({ type: "SET_FIELD", field: "customVenueAddress", value: addr });
 
+  // Raj Aangan → set-menu flow (skip Cuisine, go straight to Menu).
+  // Everything else (our other property + partners + custom) → cuisine flow.
+  const selectedVenue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
+  const isSetMenu = venueKindOf(selectedVenue) === "raj-aangan";
+  const nextHref = isSetMenu ? "/menu-builder/menu" : "/menu-builder/cuisine";
+  const canContinue = Boolean(state.venueId || state.customVenueAddress.trim());
+
   return (
     <BuilderLayout
+      steps={steps}
       currentStep={2}
       backHref="/menu-builder/client"
-      nextHref="/menu-builder/cuisine"
+      nextHref={nextHref}
       nextLabel="Next"
+      nextDisabled={!hydrated || !canContinue}
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2

@@ -23,12 +23,12 @@ export const OCCASIONS: Occasion[] = [
 
 // ─── Step 2 — Venues (our properties + partners) ───────────────────────────
 export const VENUES: Venue[] = [
-  { id: "raj-gharana", name: "Raj Gharana Resort", image: "/images/mb-venue-raj-gharana.jpg", type: "our-property", category: "Outdoor", capacity: "200-2000", pricingNote: "Included in base rate", logisticsPerHead: 0 },
-  { id: "raj-aangan", name: "Raj Aangan Resort", image: "/images/mb-venue-raj-aangan.jpg", type: "our-property", category: "Indoor", capacity: "100-800", pricingNote: "Included in base rate. Indoor", logisticsPerHead: 0 },
-  { id: "samode-palace", name: "Samode palace", image: "/images/mb-venue-samode.jpg", type: "partner", category: "Outdoor", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Outdoor Lawn", logisticsPerHead: 25 },
-  { id: "jaipur-marriott", name: "Jaipur Marriott", image: "/images/mb-venue-marriott.jpg", type: "partner", category: "Indoor", capacity: "", pricingNote: "+ 40/ Head Logistic", description: "5 star banquet · AC", logisticsPerHead: 40 },
-  { id: "leela-palace", name: "Leela palace Jaipur", image: "/images/mb-venue-leela.jpg", type: "partner", category: "Both", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Garden + Hall", logisticsPerHead: 25 },
-  { id: "rajmahal-palace", name: "Rajmahal palace", image: "/images/mb-venue-rajmahal.jpg", type: "partner", category: "Outdoor", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Outdoor Lawn", logisticsPerHead: 25 },
+  { id: "raj-gharana", name: "Raj Gharana Resort", image: "/images/mb-venue-raj-gharana.jpg", type: "our-property", venueKind: "raj-gharana", category: "Outdoor", capacity: "200-2000", pricingNote: "Included in base rate", logisticsPerHead: 0 },
+  { id: "raj-aangan", name: "Raj Aangan Resort", image: "/images/mb-venue-raj-aangan.jpg", type: "our-property", venueKind: "raj-aangan", category: "Indoor", capacity: "100-800", pricingNote: "Included in base rate. Indoor", logisticsPerHead: 0 },
+  { id: "samode-palace", name: "Samode palace", image: "/images/mb-venue-samode.jpg", type: "partner", venueKind: "partner", category: "Outdoor", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Outdoor Lawn", logisticsPerHead: 25 },
+  { id: "jaipur-marriott", name: "Jaipur Marriott", image: "/images/mb-venue-marriott.jpg", type: "partner", venueKind: "partner", category: "Indoor", capacity: "", pricingNote: "+ 40/ Head Logistic", description: "5 star banquet · AC", logisticsPerHead: 40 },
+  { id: "leela-palace", name: "Leela palace Jaipur", image: "/images/mb-venue-leela.jpg", type: "partner", venueKind: "partner", category: "Both", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Garden + Hall", logisticsPerHead: 25 },
+  { id: "rajmahal-palace", name: "Rajmahal palace", image: "/images/mb-venue-rajmahal.jpg", type: "partner", venueKind: "partner", category: "Outdoor", capacity: "", pricingNote: "+ 25/ Head Logistic", description: "Heritage Outdoor Lawn", logisticsPerHead: 25 },
 ];
 
 // ─── Step 3 — Cuisine categories ───────────────────────────────────────────

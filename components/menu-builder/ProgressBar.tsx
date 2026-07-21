@@ -1,11 +1,16 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: components/menu-builder/ProgressBar.tsx
 // ══════════════════════════════════════════════════════════════════
+// Now DYNAMIC: takes a `steps` array (one per sub-flow) plus the current
+// step's 1-based index. Grid columns are computed inline (2N-1 cells:
+// N circles + N-1 connectors) so it works for 4-step and 6-step flows alike
+// without any Tailwind class that would need JIT-safelisting.
+// ═══════════════════════════════════════════════════════════════════════════
 
 "use client";
 
 import Link from "next/link";
-import { MB_COLORS, STEPS, type StepNumber } from "@/lib/menu-builder/types";
+import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
@@ -22,23 +27,31 @@ const SECTION_PAD_Y      = "pt-6 pb-10";
 // ═══════════════════════════════════════════════════════════════════════════
 
 type Props = {
-  currentStep: StepNumber;
+  /** The step-set for the active sub-flow. */
+  steps: WizardStep[];
+  /** 1-based index of the current step within `steps`. */
+  currentStep: number;
 };
 
-export default function ProgressBar({ currentStep }: Props) {
+export default function ProgressBar({ steps, currentStep }: Props) {
+  // 2N-1 cells: circle, connector, circle, connector, ... circle
+  const cols = Math.max(1, steps.length * 2 - 1);
+
   return (
     <div className={`w-full ${SECTION_PAD_Y}`}>
-      <div className="mx-auto grid max-w-4xl grid-cols-9 items-start px-6">
-        {/* Row alternates: circle, connector, circle, connector, ... (9 cells for 5 circles + 4 connectors) */}
-        {STEPS.map((step, i) => (
+      <div
+        className="mx-auto grid max-w-4xl items-start px-6"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+      >
+        {steps.map((step, i) => (
           <div key={step.slug} className="contents">
             <StepCircle
-              step={step.number as StepNumber}
+              number={i + 1}
               label={step.label}
               slug={step.slug}
               currentStep={currentStep}
             />
-            {i < STEPS.length - 1 && (
+            {i < steps.length - 1 && (
               <div
                 className="col-span-1"
                 style={{
@@ -56,19 +69,19 @@ export default function ProgressBar({ currentStep }: Props) {
 }
 
 function StepCircle({
-  step,
+  number,
   label,
   slug,
   currentStep,
 }: {
-  step: StepNumber;
+  number: number;
   label: string;
   slug: string;
-  currentStep: StepNumber;
+  currentStep: number;
 }) {
-  const isCurrent = step === currentStep;
-  const isCompleted = step < currentStep;
-  const isReachable = step <= currentStep; // can go back to earlier steps
+  const isCurrent = number === currentStep;
+  const isCompleted = number < currentStep;
+  const isReachable = number <= currentStep; // can go back to earlier steps
 
   // Visual states:
   //   current   → gold fill + white text + white ring around
@@ -93,12 +106,18 @@ function StepCircle({
             width:  CIRCLE_SIZE_PX,
             height: CIRCLE_SIZE_PX,
             backgroundColor: filled ? MB_COLORS.gold : "transparent",
-            color: filled ? "#ffffff" : "#ffffff",
+            color: "#ffffff",
             border: filled ? "none" : "1px solid rgba(255,255,255,0.65)",
             fontSize: 14,
           }}
         >
-          {step}
+          {isCompleted ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          ) : (
+            number
+          )}
         </div>
       </div>
       <div

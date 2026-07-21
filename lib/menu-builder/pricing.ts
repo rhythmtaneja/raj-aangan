@@ -11,6 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { BUDGET_TIERS } from "./config";
+import { getCatalogItemById, getSetMenuById } from "./data";
 import type { BookingState, Dish, Venue } from "./types";
 
 // ─── PLACEHOLDER CONSTANTS — replace when client confirms ─────────────────
@@ -60,6 +61,43 @@ export function getSelectedDishesSubtotal(
 export function getEstimatedTotal(state: BookingState, venues: Venue[]): number {
   const perHead = getPerHeadRate(state) + getVenueLogisticsPerHead(state, venues);
   return perHead * state.guests * state.eventDays;
+}
+
+// ─── Sub-flow A — set-menu pricing ─────────────────────────────────────────
+
+/** Per-head base for the selected set menu (0 if none picked). */
+export function getSetMenuPerHead(state: BookingState): number {
+  return getSetMenuById(state.selectedSetMenuId)?.perPersonPrice ?? 0;
+}
+
+/**
+ * Set-menu subtotal (pre-GST) = perPersonPrice × guests × eventDays.
+ * Raj Aangan is RAEC-owned, so venue logistics are 0 and not added here.
+ */
+export function getSetMenuSubtotal(state: BookingState): number {
+  return getSetMenuPerHead(state) * state.guests * state.eventDays;
+}
+
+/** GST-inclusive estimated total for the set-menu flow (used by the sidebar). */
+export function getSetMenuEstimatedTotal(state: BookingState): number {
+  const subtotal = getSetMenuSubtotal(state);
+  return subtotal + (subtotal * GST_PERCENT) / 100;
+}
+
+// ─── Sub-flow C — outdoor catalog pricing ──────────────────────────────────
+
+/** Sum of quantity × unit price across all selected catalog items (pre-GST). */
+export function getOutdoorSubtotal(state: BookingState): number {
+  return Object.entries(state.catalogSelections).reduce((sum, [itemId, qty]) => {
+    const item = getCatalogItemById(itemId);
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
+}
+
+/** GST-inclusive estimated total for the outdoor flow (used by the sidebar). */
+export function getOutdoorEstimatedTotal(state: BookingState): number {
+  const subtotal = getOutdoorSubtotal(state);
+  return subtotal + (subtotal * GST_PERCENT) / 100;
 }
 
 /** Subtotal + GST. */
