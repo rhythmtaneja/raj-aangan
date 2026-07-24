@@ -32,7 +32,7 @@ const HERO_BLEND_HEIGHT = "0vh";
 
 // ─ Title ──
 const TITLE_TEXT = "Venue";
-const TITLE_FONT_SIZE = "clamp(3rem, 7vw, 130px)";
+const TITLE_FONT_SIZE = "clamp(3rem, 7vw, 101px)";
 
 // ─ Letter reveal ──
 const LETTER_STAGGER = 0.06;

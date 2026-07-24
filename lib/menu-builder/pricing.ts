@@ -17,7 +17,16 @@ import type { BookingState, Dish, Venue } from "./types";
 // ─── PLACEHOLDER CONSTANTS — replace when client confirms ─────────────────
 const GST_PERCENT = 5;
 const DEFAULT_DISCOUNT_PERCENT = 30;
+// Per-head surcharge for each set-menu dish chosen BEYOND its section's
+// chooseCount (an "add-on"). Placeholder — confirm the real add-on price with
+// the client (flat per item, or per-dish prices).
+const ADDON_PRICE_PER_ITEM = 100;
+// Per-head placeholder price for each dish in the CUSTOM builder (no per-dish
+// prices exist in the source yet). Custom per-head = #dishes × this.
+const CUSTOM_PRICE_PER_DISH = 150;
 // ═══════════════════════════════════════════════════════════════════════════
+
+export const getAddOnPricePerItem = (): number => ADDON_PRICE_PER_ITEM;
 
 /** Look up the per-head rate for the selected budget tier. */
 export function getPerHeadRate(state: BookingState): number {
@@ -65,9 +74,29 @@ export function getEstimatedTotal(state: BookingState, venues: Venue[]): number 
 
 // ─── Sub-flow A — set-menu pricing ─────────────────────────────────────────
 
-/** Per-head base for the selected set menu (0 if none picked). */
+/**
+ * Number of add-on dishes across the selected set menu — i.e. picks beyond
+ * each section's chooseCount (the first chooseCount, in order, are included).
+ */
+export function getSetMenuAddOnCount(state: BookingState): number {
+  const menu = getSetMenuById(state.selectedSetMenuId);
+  if (!menu) return 0;
+  return menu.sections.reduce((sum, s) => {
+    const chosen = state.setMenuSelections[s.id]?.length ?? 0;
+    return sum + Math.max(0, chosen - s.chooseCount);
+  }, 0);
+}
+
+/** Add-on surcharge per head = #add-on dishes × per-item surcharge. */
+export function getSetMenuAddOnPerHead(state: BookingState): number {
+  return getSetMenuAddOnCount(state) * ADDON_PRICE_PER_ITEM;
+}
+
+/** Per-head for the selected set menu = package base + add-on surcharge. */
 export function getSetMenuPerHead(state: BookingState): number {
-  return getSetMenuById(state.selectedSetMenuId)?.perPersonPrice ?? 0;
+  const menu = getSetMenuById(state.selectedSetMenuId);
+  if (!menu) return 0;
+  return menu.perPersonPrice + getSetMenuAddOnPerHead(state);
 }
 
 /**
@@ -81,6 +110,32 @@ export function getSetMenuSubtotal(state: BookingState): number {
 /** GST-inclusive estimated total for the set-menu flow (used by the sidebar). */
 export function getSetMenuEstimatedTotal(state: BookingState): number {
   const subtotal = getSetMenuSubtotal(state);
+  return subtotal + (subtotal * GST_PERCENT) / 100;
+}
+
+// ─── Venue-event pricing (set package OR custom sum-of-dishes) ──────────────
+
+/**
+ * Per-head base for the venue-event flow:
+ *   • custom menu → #selected dishes × CUSTOM_PRICE_PER_DISH (placeholder,
+ *     since the source has no per-dish prices and budget tiers were removed).
+ *   • set menu    → package per-person price + add-on surcharge.
+ */
+export function getVenueEventPerHead(state: BookingState): number {
+  return state.menuMode === "custom"
+    ? state.selectedDishes.length * CUSTOM_PRICE_PER_DISH
+    : getSetMenuPerHead(state);
+}
+
+/** (perHead + venue logistics) × guests × eventDays — pre-GST. */
+export function getVenueEventSubtotal(state: BookingState, venues: Venue[]): number {
+  const perHead = getVenueEventPerHead(state) + getVenueLogisticsPerHead(state, venues);
+  return perHead * state.guests * state.eventDays;
+}
+
+/** GST-inclusive venue-event total (used by the sidebar). */
+export function getVenueEventEstimatedTotal(state: BookingState, venues: Venue[]): number {
+  const subtotal = getVenueEventSubtotal(state, venues);
   return subtotal + (subtotal * GST_PERCENT) / 100;
 }
 

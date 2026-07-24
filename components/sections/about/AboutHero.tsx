@@ -40,7 +40,7 @@ const HERO_BLEND_HEIGHT = "30vh";    // ↑ for longer, gentler blend
 
 // ─ Title ──
 const TITLE_TEXT = "One of the most premium resort for wedding & events";
-const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 86px)";
+const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 65px)";
 const TITLE_MAX_W = "1200px";
 
 // ─ Letter-by-letter reveal ──

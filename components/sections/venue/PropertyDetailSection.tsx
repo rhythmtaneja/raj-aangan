@@ -85,7 +85,7 @@ export default function PropertyDetailSection({
           <NumeralMarker numeral={numeral} />
           <span
             style={serif}
-            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,18px)]"
+            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,14px)]"
           >
             {label}
           </span>
@@ -96,7 +96,7 @@ export default function PropertyDetailSection({
       <Reveal>
         <h1
           style={serif}
-          className="mx-auto mb-20 max-w-4xl text-center font-medium leading-tight text-[clamp(2rem,3.6vw,64px)]"
+          className="mx-auto mb-20 max-w-4xl text-center font-medium leading-tight text-[clamp(2rem,3.6vw,52px)]"
         >
           {title}
         </h1>
@@ -108,7 +108,7 @@ export default function PropertyDetailSection({
           <FramedImage src={heroImage} alt={label} />
           <p
             style={{ ...serif, color: MUTED_COLOR }}
-            className="text-center leading-relaxed md:text-left text-[clamp(0.95rem,1.15vw,22px)]"
+            className="text-center leading-relaxed md:text-left text-[clamp(0.95rem,1.15vw,17px)]"
           >
             {intro}
           </p>
@@ -134,20 +134,20 @@ function AreaRow({ area }: { area: Area }) {
       <div className="flex flex-col">
         <h3
           style={serif}
-          className="mb-4 font-semibold text-[clamp(1.25rem,1.65vw,32px)]"
+          className="mb-4 font-semibold text-[clamp(1.25rem,1.65vw,24px)]"
         >
           {area.title}
         </h3>
         <p
           style={{ ...serif, color: MUTED_COLOR }}
-          className="leading-relaxed text-[clamp(0.95rem,1.1vw,20px)]"
+          className="leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
         >
           {area.description}
         </p>
         {area.capacityLines && area.capacityLines.length > 0 && (
           <div
             style={{ ...serif, color: MUTED_COLOR }}
-            className="mt-4 leading-relaxed text-[clamp(0.95rem,1.1vw,20px)]"
+            className="mt-4 leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
           >
             {area.capacityLines.map((line, i) => (
               <p key={i}>{line}</p>

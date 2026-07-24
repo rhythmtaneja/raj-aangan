@@ -177,13 +177,13 @@ function CardBlock({ card }: { card: Card }) {
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
         <h3
           style={{ ...serif, color: CARD_TEXT }}
-          className="font-bold leading-tight text-[clamp(1.15rem,1.5vw,28px)]"
+          className="font-bold leading-tight text-[clamp(1.15rem,1.5vw,22px)]"
         >
           {card.title}
         </h3>
         <p
           style={{ ...serif, color: CARD_DESC_TEXT }}
-          className="mt-5 leading-snug text-[clamp(0.8rem,0.9vw,15px)]"
+          className="mt-5 leading-snug text-[clamp(0.8rem,0.9vw,13px)]"
         >
           {card.description}
         </p>

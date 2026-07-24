@@ -97,7 +97,7 @@ export default function IntroSection({
   buttonText,
   buttonHref = "#",
   buttonCircleSize = 150,
-  buttonClassName = "rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,24px)]",
+  buttonClassName = "rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,18px)]",
 }: IntroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const textBlockRef = useRef<HTMLDivElement>(null);
@@ -181,7 +181,7 @@ export default function IntroSection({
         {label && (
           <span
             style={{ ...serif, color: LABEL_COLOR }}
-            className="uppercase tracking-[0.2em] text-[clamp(1rem,1.25vw,24px)]"
+            className="uppercase tracking-[0.2em] text-[clamp(1rem,1.25vw,18px)]"
           >
             {label}
           </span>
@@ -195,7 +195,7 @@ export default function IntroSection({
       >
         <h2
           style={serif}
-          className="max-w-[1600px] font-semibold leading-[1.05] text-[#191919] text-[clamp(2rem,3.9vw,75px)]"
+          className="max-w-[1600px] font-semibold leading-[1.05] text-[#191919] text-[clamp(2rem,3.9vw,56px)]"
         >
           <Words text={title} italicTail={italicTail} />
         </h2>
@@ -210,8 +210,8 @@ export default function IntroSection({
                 key={i}
                 className={
                   i === 0
-                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,65px)]"
-                    : "mt-6 text-[clamp(1.25rem,2.86vw,55px)]"
+                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,49px)]"
+                    : "mt-6 text-[clamp(1.25rem,2.86vw,41px)]"
                 }
               >
                 <Words text={line} />

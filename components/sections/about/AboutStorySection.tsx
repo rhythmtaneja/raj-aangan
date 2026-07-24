@@ -106,7 +106,7 @@ export default function AboutStorySection() {
           <Reveal>
             <h2
               style={serif}
-              className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,50px)]"
+              className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,37px)]"
             >
               {renderItalicEmphasis(STORY_TITLE, TITLE_ITALIC_PORTION)}
             </h2>
@@ -115,7 +115,7 @@ export default function AboutStorySection() {
           <Reveal>
             <p
               style={serif}
-              className="max-w-lg leading-relaxed text-white/85 text-[clamp(0.95rem,1.15vw,22px)]"
+              className="max-w-lg leading-relaxed text-white/85 text-[clamp(0.95rem,1.15vw,17px)]"
             >
               {STORY_PARAGRAPH}
             </p>
@@ -242,7 +242,7 @@ function BulletBox({ bullets }: { bullets: string[] }) {
           <li
             key={b}
             style={{ ...serif, color: "#ffffff" }}
-            className="text-[clamp(1.1rem,1.45vw,28px)]"
+            className="text-[clamp(1.1rem,1.45vw,21px)]"
           >
             {b}
           </li>

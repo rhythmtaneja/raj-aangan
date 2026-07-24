@@ -47,9 +47,9 @@ const GUEST_STEP         = 50;
 
 export default function Step1ClientPage() {
   const { state, dispatch, hydrated } = useBooking();
-  const { occasions, venues } = useCatalog();
+  const { occasions } = useCatalog();
 
-  const steps = getSteps(state, venues);
+  const steps = getSteps(state);
   const outdoor = state.cateringType === "outdoor";
 
   const setField = <K extends keyof typeof state>(field: K, value: (typeof state)[K]) =>
@@ -88,7 +88,7 @@ export default function Step1ClientPage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
           Menu Builder
         </h2>
@@ -183,7 +183,7 @@ export default function Step1ClientPage() {
           />
           <TextInput
             label="Contact / Phone"
-            placeholder="+91 985463768"
+            placeholder=""
             value={hydrated ? state.contactPhone : ""}
             onChange={(v) => setField("contactPhone", v)}
           />

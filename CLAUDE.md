@@ -1,11 +1,17 @@
 @AGENTS.md
 
-Menu Builder rework: Phases 1–7 DONE (three sub-flows — Raj Aangan set-menu,
-partner-venue cuisine, outdoor bulk — all built with hardcoded placeholder data
-in `lib/menu-builder/data.ts`, dynamic step-sets, route protection). Phase 8
-(Sanity wiring for set menus / catalog / packaging / presentation) is NOT
-started — do not begin it without explicit confirmation. `queries.ts` was left
-untouched per the rework brief. Reference designs: `docs/reference/screens/`.
+Menu Builder rework DONE (hardcoded placeholder data; build passes). Two
+catering types from Step 1: **venue-event** and **outdoor**. Venue-event flow is
+now the SAME for every venue (no raj-aangan branching): Client → Venue → Menu →
+Presentation → Quote. The Menu step (`/menu-builder/menu`, `SetMenuStep`) shows
+fixed set menus for all venues; a CTA there branches into the custom builder
+(`/menu-builder/cuisine` → `/menu-builder/custom-menu`), both sub-screens of the
+Menu step in the 5-step bar. `menuMode` ("set"|"custom") drives quote/summary +
+pricing (set = package per-head; custom = sum of selected dish prices — budget
+tiers removed from the cuisine UI). Outdoor flow: Client → Catalog → Packaging →
+Quote. Placeholder data in `lib/menu-builder/data.ts`; `queries.ts` untouched.
+Phase 8 (Sanity wiring for the new types) NOT started — needs explicit go-ahead.
+Reference designs: `docs/reference/screens/`.
 
 # Raj Aangan — project guide
 
@@ -87,7 +93,7 @@ stub, and Step-5 wiring remain.
 
 ## Common commands
 ```bash
-npm run dev            # site :3000, Studio :3000/studio
+npm run dev            # site :3000, Studio :3000
 npm run build          # production build (SANITY_TELEMETRY_DISABLED=1 to quiet)
 npx tsc --noEmit       # typecheck
 npm run import-menu -- ./data/menu-data.json   # idempotent menu import

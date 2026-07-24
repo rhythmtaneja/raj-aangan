@@ -35,7 +35,7 @@ const HERO_BLEND_START = "0%";
 
 // ─ Title ──
 const TITLE_TEXT = "Resort Gallery";
-const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 120px)";
+const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 86px)";
 
 // ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.05;

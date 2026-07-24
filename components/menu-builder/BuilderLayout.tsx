@@ -85,19 +85,21 @@ export default function BuilderLayout({
           gridTemplateColumns: `minmax(0, 1fr) ${SIDEBAR_W}`,
         }}
       >
-        <main className="min-w-0">{children}</main>
+        <main className="min-w-0">
+          {children}
+          {/* Nav lives inside the content column so Back / Next align to the
+              card's edges (in frame), not the full viewport width. */}
+          <NavFooter
+            backHref={backHref}
+            backLabel={backLabel}
+            nextHref={nextHref}
+            nextLabel={nextLabel}
+            onNext={onNext}
+            nextDisabled={nextDisabled}
+          />
+        </main>
         <BookingSummary steps={steps} currentStep={currentStep} />
       </div>
-
-      {/* Bottom nav — Back / Next */}
-      <NavFooter
-        backHref={backHref}
-        backLabel={backLabel}
-        nextHref={nextHref}
-        nextLabel={nextLabel}
-        onNext={onNext}
-        nextDisabled={nextDisabled}
-      />
     </div>
   );
 }

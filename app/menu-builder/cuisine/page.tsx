@@ -1,14 +1,22 @@
+// ══════════════════════════════════════════════════════════════════
+// PATH IN REPO: app/menu-builder/cuisine/page.tsx
+// ══════════════════════════════════════════════════════════════════
+// Custom builder — step 1 of 2. Reached from the "Build a Custom Menu" CTA on
+// the Menu step. Picks meal type(s) + cuisine categories; the per-person
+// budget section was removed (custom menus price by the dishes chosen). Both
+// this and /custom-menu are sub-screens of the Menu step in the progress bar.
+// ═══════════════════════════════════════════════════════════════════════════
+
 "use client";
 
-import Image from "next/image";
-import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
-import { getSteps, isSetMenuFlow, stepIndexOf } from "@/lib/menu-builder/flow";
-import { BUDGET_TIERS } from "@/lib/menu-builder/config";
-import { MB_COLORS, MEAL_TYPES, type BudgetTierId, type MealType } from "@/lib/menu-builder/types";
+import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
+import { MB_COLORS, MEAL_TYPES, type MealType } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -25,26 +33,25 @@ const CAT_IMG_H = 130;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function Step3CuisinePage() {
+export default function CustomCuisinePage() {
   const { state, dispatch, hydrated } = useBooking();
-  const { cuisines, venues } = useCatalog();
+  const { cuisines } = useCatalog();
   const router = useRouter();
 
-  // Route protection — venue-event only, and never for the Raj Aangan
-  // set-menu flow (which skips Cuisine straight to the Set Menu step).
+  // Route protection — venue-event flow with a venue selected.
   useEffect(() => {
     if (!hydrated) return;
-    if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
-    else if (isSetMenuFlow(state, venues)) router.replace("/menu-builder/menu");
-  }, [hydrated, state, venues, router]);
+    if (state.cateringType !== "venue-event") {
+      router.replace("/menu-builder/client");
+    } else if (!state.venueId && !state.customVenueAddress.trim()) {
+      router.replace("/menu-builder/venue");
+    }
+  }, [hydrated, state.cateringType, state.venueId, state.customVenueAddress, router]);
 
-  const steps = getSteps(state, venues);
+  const steps = getSteps(state);
 
   const toggleMeal = (meal: MealType) =>
     dispatch({ type: "TOGGLE_ARRAY", field: "mealTypes", value: meal });
-
-  const selectBudget = (id: BudgetTierId) =>
-    dispatch({ type: "SET_FIELD", field: "budgetTier", value: id });
 
   const toggleCategory = (id: string) =>
     dispatch({ type: "TOGGLE_ARRAY", field: "selectedCuisineCategories", value: id });
@@ -52,17 +59,17 @@ export default function Step3CuisinePage() {
   return (
     <BuilderLayout
       steps={steps}
-      currentStep={stepIndexOf(steps, "cuisine")}
-      backHref="/menu-builder/venue"
-      nextHref="/menu-builder/menu"
+      currentStep={stepIndexOf(steps, "menu")}
+      backHref="/menu-builder/menu"
+      nextHref="/menu-builder/custom-menu"
       nextLabel="Build Menu"
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
-          Budget & Cuisine Preferences
+          Cuisine Preferences
         </h2>
         <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
           Pick all that apply — menu items will be shown per selection.
@@ -84,36 +91,10 @@ export default function Step3CuisinePage() {
           </Pill>
         </div>
 
-        {/* PER PERSON BUDGET */}
-        <SectionLabel>Per Person Budget</SectionLabel>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {BUDGET_TIERS.map((tier) => {
-            const selected = hydrated && state.budgetTier === tier.id;
-            return (
-              <button
-                key={tier.id}
-                onClick={() => selectBudget(tier.id)}
-                className="flex flex-col items-center rounded border px-4 py-4 transition-colors"
-                style={{
-                  borderColor: selected ? GOLD : MB_COLORS.border,
-                  backgroundColor: selected ? `${MB_COLORS.gold}20` : "transparent", // 20 = ~12% alpha
-                }}
-              >
-                <span style={{ color: GOLD }} className="text-sm font-medium">
-                  {tier.range}
-                </span>
-                <span style={{ color: INK }} className="mt-1 text-base">
-                  {tier.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
         {/* CUISINE CATEGORIES */}
         <h3
           style={{ ...serif, color: INK }}
-          className="mt-10 text-[clamp(1.4rem,2vw,36px)] font-semibold"
+          className="mt-10 text-[clamp(1.4rem,2vw,29px)] font-semibold"
         >
           Select Cuisine Categories
         </h3>
@@ -166,17 +147,6 @@ export default function Step3CuisinePage() {
 }
 
 // ─── Inline primitives ────────────────────────────────────────────────────
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-8 mb-4 flex items-center gap-4">
-      <p style={{ color: INK }} className="text-xs font-semibold uppercase tracking-widest">
-        {children}
-      </p>
-      <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
-    </div>
-  );
-}
 
 function Pill({
   children,

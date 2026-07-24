@@ -54,7 +54,7 @@ export default function WeddingPackagesSection() {
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.9rem,3.2vw,58px)]"
+            className="text-center font-medium text-[clamp(1.9rem,3.2vw,46px)]"
           >
             Wedding Packages
           </h2>
@@ -85,7 +85,7 @@ export default function WeddingPackagesSection() {
             circleSize={150}
             magnet={0.35}
             arrowDirection="right"
-            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,20px)]"
+            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,15px)]"
           >
             Plan Your wedding
           </CircleButton>
@@ -97,7 +97,7 @@ export default function WeddingPackagesSection() {
             circleSize={150}
             magnet={0.35}
             arrowDirection="down"
-            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,20px)]"
+            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,15px)]"
           >
             Download Brochure
           </CircleButton>
@@ -126,7 +126,7 @@ function PackageCard({ name, image }: Pkg) {
       </div>
       <p
         style={serif}
-        className="mt-5 text-center text-white text-[clamp(1.1rem,1.35vw,26px)]"
+        className="mt-5 text-center text-white text-[clamp(1.1rem,1.35vw,19px)]"
       >
         {name}
       </p>

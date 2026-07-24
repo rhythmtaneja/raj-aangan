@@ -82,7 +82,7 @@ export default async function BlogPostPage(props: PageParams) {
             {post.title}
           </h1>
           {post.excerpt && (
-            <p style={serif} className="mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,1.5rem)] text-white/90">
+            <p style={serif} className="mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,23px)] text-white/90">
               {post.excerpt}
             </p>
           )}

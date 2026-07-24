@@ -11,7 +11,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Section title ──
-const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 68px)";
+const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 52px)";
 const TITLE_COLOR = "#ffffff";
 const TITLE_TRACKING = "0.02em";
 const TITLE_MARGIN_BOT = "3.5rem";
@@ -93,7 +93,7 @@ export default function GalleryGridSection({
             arrowColor="#191919"
             circleSize={150}
             magnet={0.35}
-            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,20px)]"
+            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,15px)]"
           >
             More Photos
           </CircleButton>

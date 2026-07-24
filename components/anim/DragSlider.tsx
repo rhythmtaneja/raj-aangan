@@ -83,7 +83,7 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
       {marqueeWord && (
         <div aria-hidden style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 0 }}>
           <Marquee speed={50} repeat={6} className={marqueeClassName}>
-            <span style={{ fontFamily: "var(--font-cormorant-garamond)", fontSize: "clamp(120px,22vw,360px)", lineHeight: 1, fontWeight: 600 }}>
+            <span style={{ fontFamily: "var(--font-cormorant-garamond)", fontSize: "clamp(120px,22vw,317px)", lineHeight: 1, fontWeight: 600 }}>
               {marqueeWord}
             </span>
           </Marquee>

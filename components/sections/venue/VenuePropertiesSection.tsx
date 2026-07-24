@@ -20,7 +20,7 @@ const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
 const SECTION_PAD = "pt-24 pb-12 md:pt-32 md:pb-16";
 const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
 const GLASS_EXPLORE_BUTTON_CLASS =
-  "min-h-[50px] min-w-[130px] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,17px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.58),inset_0_-1px_0_rgba(255,255,255,0.16),0_14px_32px_rgba(0,0,0,0.2)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent";
+  "min-h-[50px] min-w-[130px] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,14px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.58),inset_0_-1px_0_rgba(255,255,255,0.16),0_14px_32px_rgba(0,0,0,0.2)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller
@@ -79,7 +79,7 @@ export default function VenuePropertiesSection() {
             arrowColor="#ffffff"
             circleSize={100}
             magnet={0.35}
-            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,20px)]"
+            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,16px)]"
           >
             Our Venue Partners
           </CircleButton>
@@ -114,7 +114,7 @@ function PropertyCard({ name, image, href }: Property) {
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
           <h3
             style={serif}
-            className="font-semibold uppercase tracking-wide leading-tight text-[clamp(1.5rem,2.4vw,44px)] [text-shadow:0_2px_12px_rgba(0,0,0,0.55)]"
+            className="font-semibold uppercase tracking-wide leading-tight text-[clamp(1.5rem,2.4vw,35px)] [text-shadow:0_2px_12px_rgba(0,0,0,0.55)]"
           >
             {name}
           </h3>

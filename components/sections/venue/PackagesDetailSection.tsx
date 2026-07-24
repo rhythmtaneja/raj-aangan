@@ -73,7 +73,7 @@ export default function PackagesDetailSection({
           <NumeralMarker numeral={numeral} />
           <span
             style={serif}
-            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,18px)]"
+            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,14px)]"
           >
             {label}
           </span>
@@ -84,7 +84,7 @@ export default function PackagesDetailSection({
       <Reveal>
         <h1
           style={serif}
-          className="mx-auto mb-20 text-center font-medium text-[clamp(2.2rem,4vw,72px)]"
+          className="mx-auto mb-20 text-center font-medium text-[clamp(2.2rem,4vw,58px)]"
         >
           {title}
         </h1>
@@ -115,14 +115,14 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
       <div className="flex flex-col">
         <h3
           style={serif}
-          className="mb-5 font-semibold uppercase tracking-wide leading-tight text-[clamp(1.2rem,1.55vw,30px)]"
+          className="mb-5 font-semibold uppercase tracking-wide leading-tight text-[clamp(1.2rem,1.55vw,22px)]"
         >
           {pkg.title}
         </h3>
 
         <p
           style={{ ...serif, color: MUTED_COLOR }}
-          className="leading-relaxed text-[clamp(0.95rem,1.1vw,20px)]"
+          className="leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
         >
           {pkg.description}
         </p>
@@ -133,7 +133,7 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
               <li
                 key={item}
                 style={{ ...serif, color: MUTED_COLOR }}
-                className="flex items-start gap-3 leading-snug text-[clamp(0.9rem,1.05vw,19px)]"
+                className="flex items-start gap-3 leading-snug text-[clamp(0.9rem,1.05vw,15px)]"
               >
                 <span aria-hidden className="mt-[0.4em] shrink-0 leading-none">
                   •
@@ -151,7 +151,7 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
             arrowColor="#ffffff"
             circleSize={150}
             magnet={0.3}
-            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
+            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,14px)]"
           >
             View package
           </CircleButton>

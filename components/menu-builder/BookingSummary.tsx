@@ -1,11 +1,10 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: components/menu-builder/BookingSummary.tsx
 // ══════════════════════════════════════════════════════════════════
-// The sticky live-preview sidebar. Now renders one of three variants based
-// on the active sub-flow:
-//   • venue-event + cuisine    → full: fields + selected dishes + est. total
-//   • venue-event + set-menu   → fields (set-menu name replaces "Meal")
-//   • outdoor                  → minimal: Client + Date (+ est. total)
+// The sticky live-preview sidebar. Renders one of three variants:
+//   • venue-event + set package → fields, total captioned with the menu name
+//   • venue-event + custom menu → fields + selected dishes + per-head total
+//   • outdoor                   → minimal: Client + Date (+ est. total)
 // ═══════════════════════════════════════════════════════════════════════════
 
 "use client";
@@ -13,15 +12,13 @@
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSetMenuById } from "@/lib/menu-builder/data";
-import { isSetMenuFlow, venueKindOf } from "@/lib/menu-builder/flow";
+import { venueKindOf } from "@/lib/menu-builder/flow";
 import {
   formatINR,
   getOutdoorEstimatedTotal,
   getOutdoorSubtotal,
-  getPerHeadRate,
-  getSetMenuEstimatedTotal,
-  getSetMenuPerHead,
-  getTotalWithGst,
+  getVenueEventEstimatedTotal,
+  getVenueEventPerHead,
   getVenueLogisticsPerHead,
 } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
@@ -54,14 +51,13 @@ export default function BookingSummary({ currentStep }: Props) {
   const { venues, occasions, dishes } = useCatalog();
 
   const outdoor = state.cateringType === "outdoor";
-  const setMenuFlow = isSetMenuFlow(state, venues);
 
   return (
     <aside className={`sticky ${STICKY_TOP} h-fit`}>
       <div className={`${CARD_PADDING} rounded-sm`} style={{ backgroundColor: CARD_BG }}>
         <h3
           style={{ ...serif, color: TITLE_COLOR }}
-          className="text-[clamp(1.15rem,1.35vw,26px)] font-semibold uppercase tracking-wide"
+          className="text-[clamp(1.15rem,1.35vw,19px)] font-semibold uppercase tracking-wide"
         >
           Booking Summary
         </h3>
@@ -76,7 +72,6 @@ export default function BookingSummary({ currentStep }: Props) {
             hydrated={hydrated}
             state={state}
             currentStep={currentStep}
-            setMenuFlow={setMenuFlow}
             venues={venues}
             occasions={occasions}
             dishes={dishes}
@@ -103,35 +98,31 @@ function OutdoorSummary({
 
   return (
     <>
-      <div className="mt-6 space-y-3">
+      <div className="mt-6">
         <Row label="Client" value={hydrated ? state.clientName || "—" : "—"} />
         <Row label="Date" value={hydrated ? state.eventDate || "—" : "—"} />
+        {showTotal && <Row label="Items" value={String(itemCount)} />}
       </div>
 
       {showTotal && (
-        <>
-          <Divider />
-          <Row label="Items" value={String(itemCount)} />
-          <div className="mt-4">
-            <TotalBlock
-              total={getOutdoorEstimatedTotal(state)}
-              caption="incl. GST"
-              subCaption={`${itemCount} item${itemCount === 1 ? "" : "s"} · bulk / delivery`}
-            />
-          </div>
-        </>
+        <div className="mt-6">
+          <TotalBlock
+            total={getOutdoorEstimatedTotal(state)}
+            caption="incl. GST"
+            subCaption={`${itemCount} item${itemCount === 1 ? "" : "s"} · bulk / delivery`}
+          />
+        </div>
       )}
     </>
   );
 }
 
-// ─── Venue-event variant (cuisine + set-menu) ──────────────────────────────
+// ─── Venue-event variant (set package + custom) ────────────────────────────
 
 function VenueEventSummary({
   hydrated,
   state,
   currentStep,
-  setMenuFlow,
   venues,
   occasions,
   dishes,
@@ -139,11 +130,11 @@ function VenueEventSummary({
   hydrated: boolean;
   state: ReturnType<typeof useBooking>["state"];
   currentStep: number;
-  setMenuFlow: boolean;
   venues: ReturnType<typeof useCatalog>["venues"];
   occasions: ReturnType<typeof useCatalog>["occasions"];
   dishes: ReturnType<typeof useCatalog>["dishes"];
 }) {
+  const customMenu = state.menuMode === "custom";
   const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
   const occasion =
     state.occasions.length > 0
@@ -153,30 +144,23 @@ function VenueEventSummary({
 
   const showItemsAndTotal = currentStep >= 3;
 
-  const perHead = setMenuFlow
-    ? getSetMenuPerHead(state)
-    : getPerHeadRate(state) + getVenueLogisticsPerHead(state, venues);
-  const total = setMenuFlow ? getSetMenuEstimatedTotal(state) : getTotalWithGst(state, venues);
+  const perHead = getVenueEventPerHead(state) + getVenueLogisticsPerHead(state, venues);
+  const total = getVenueEventEstimatedTotal(state, venues);
 
   return (
     <>
-      <div className="mt-6 space-y-3">
+      <div className="mt-6">
         <Row label="Client" value={hydrated ? state.clientName || "—" : "—"} />
         <Row label="Occasion" value={hydrated ? occasion || "—" : "—"} />
         <Row label="Date" value={hydrated ? state.eventDate || "—" : "—"} />
         <Row label="Guests" value={hydrated ? String(state.guests) : "—"} />
-      </div>
-
-      <Divider />
-
-      <div className="space-y-3">
         <Row label="Venue" value={hydrated ? venue?.name || state.customVenueAddress || "—" : "—"} />
         <Row label="Meal" value={hydrated ? state.mealTypes.join(", ") || "—" : "—"} />
         <Row label="Diet" value={hydrated ? state.dietaryPreferences.join(", ") || "—" : "—"} />
       </div>
 
-      {/* Cuisine flow: selected dishes list */}
-      {!setMenuFlow && showItemsAndTotal && state.selectedDishes.length > 0 && (
+      {/* Custom menu: selected dishes list */}
+      {customMenu && showItemsAndTotal && state.selectedDishes.length > 0 && (
         <>
           <Divider />
           <h4
@@ -195,16 +179,12 @@ function VenueEventSummary({
               return (
                 <li
                   key={dishId}
-                  className="flex items-center justify-between text-[clamp(0.8rem,0.85vw,14px)]"
+                  className="flex items-center justify-between text-[clamp(0.8rem,0.85vw,12px)]"
                   style={{ color: VALUE_COLOR }}
                 >
                   <span className="truncate pr-2">
                     {dish.name}
-                    {currentStep >= 4 && (
-                      <span style={{ color: GOLD }} className="ml-2">
-                        / ₹{dish.price}
-                      </span>
-                    )}
+                    <span style={{ color: GOLD }} className="ml-2">/ ₹{dish.price}</span>
                   </span>
                   <RemoveButton dishId={dishId} />
                 </li>
@@ -220,7 +200,7 @@ function VenueEventSummary({
           <TotalBlock
             total={total}
             caption={
-              setMenuFlow && setMenu
+              !customMenu && setMenu
                 ? `incl. GST · ${setMenu.name}`
                 : `incl. GST · ${formatINR(perHead)}/head`
             }
@@ -245,12 +225,10 @@ function TotalBlock({
   total,
   caption,
   subCaption,
-  extra,
 }: {
   total: number;
   caption: string;
   subCaption: string;
-  extra?: React.ReactNode;
 }) {
   return (
     <div>
@@ -262,7 +240,7 @@ function TotalBlock({
       </h4>
       <p
         style={{ ...serif, color: GOLD }}
-        className="mt-2 text-[clamp(1.6rem,2vw,36px)] font-semibold leading-none"
+        className="mt-2 text-[clamp(1.6rem,2vw,29px)] font-semibold leading-none"
       >
         {formatINR(total)}
       </p>
@@ -272,14 +250,16 @@ function TotalBlock({
       <p style={{ color: LABEL_COLOR }} className="text-xs">
         {subCaption}
       </p>
-      {extra}
     </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 text-[clamp(0.85rem,0.95vw,16px)]">
+    <div
+      className="flex items-baseline justify-between gap-4 border-b py-3.5 text-[clamp(0.85rem,0.95vw,14px)]"
+      style={{ borderColor: DIVIDER_COLOR }}
+    >
       <span style={{ color: LABEL_COLOR }}>{label}</span>
       <span style={{ color: VALUE_COLOR }} className="text-right truncate">
         {value}

@@ -67,20 +67,25 @@ function reducer(state: BookingState, action: Action): BookingState {
 
     // ─── Sub-flow A — set menu ─────────────────────────────────────────────
     case "SET_SET_MENU":
-      if (state.selectedSetMenuId === action.setMenuId) return state;
+      if (state.selectedSetMenuId === action.setMenuId) {
+        return { ...state, menuMode: "set" };
+      }
       // Switching menus clears prior section picks (they belong to the old menu).
-      return { ...state, selectedSetMenuId: action.setMenuId, setMenuSelections: {} };
+      return {
+        ...state,
+        selectedSetMenuId: action.setMenuId,
+        setMenuSelections: {},
+        menuMode: "set",
+      };
 
     case "TOGGLE_SET_MENU_DISH": {
+      // Soft cap: picks beyond chooseCount are ALLOWED — they become paid
+      // add-ons (the first chooseCount, in selection order, are included in the
+      // package; the rest surcharge). So no blocking here; order is preserved.
       const current = state.setMenuSelections[action.sectionId] ?? [];
-      let next: string[];
-      if (current.includes(action.optionId)) {
-        next = current.filter((id) => id !== action.optionId);
-      } else {
-        // Enforce the section's chooseCount cap — ignore over-selection.
-        if (current.length >= action.chooseCount) return state;
-        next = [...current, action.optionId];
-      }
+      const next = current.includes(action.optionId)
+        ? current.filter((id) => id !== action.optionId)
+        : [...current, action.optionId];
       return {
         ...state,
         setMenuSelections: { ...state.setMenuSelections, [action.sectionId]: next },

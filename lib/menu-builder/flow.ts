@@ -1,15 +1,15 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: lib/menu-builder/flow.ts
 // ══════════════════════════════════════════════════════════════════
-// Pure helpers that decide which of the three sub-flows the wizard is in,
-// and therefore which step-set the ProgressBar should render. No React here
-// so both client pages and (later) server code can import it.
+// Pure helpers that decide which sub-flow's step-set the ProgressBar renders.
+// The venue-event flow is now the same for every venue (fixed set menus, with
+// an optional custom builder that lives inside the Menu step), so routing no
+// longer branches on venue kind. `venueKindOf` is kept for pricing/labels.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import {
   STEPS_OUTDOOR,
-  STEPS_VENUE_EVENT_CUISINE,
-  STEPS_VENUE_EVENT_SET_MENU,
+  STEPS_VENUE_EVENT,
   type BookingState,
   type Venue,
   type VenueKind,
@@ -18,8 +18,7 @@ import {
 
 /**
  * The routing kind for a venue. Prefers the Sanity-managed `venueKind` field;
- * falls back to inferring from the slug/id so partner venues and our other
- * property still route correctly before Phase 8 wires the field.
+ * falls back to inferring from the slug/id (used only for pricing labels now).
  */
 export function venueKindOf(venue: Venue | null | undefined): VenueKind {
   if (!venue) return "partner";
@@ -29,29 +28,16 @@ export function venueKindOf(venue: Venue | null | undefined): VenueKind {
   return "partner";
 }
 
-/** True when the current selection resolves to the Raj Aangan set-menu flow. */
-export function isSetMenuFlow(state: BookingState, venues: Venue[]): boolean {
-  if (state.cateringType !== "venue-event") return false;
-  const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
-  return venueKindOf(venue) === "raj-aangan";
-}
-
 /**
  * The step-set for the current state.
- *   • outdoor                         → STEPS_OUTDOOR
- *   • venue-event + Raj Aangan venue  → STEPS_VENUE_EVENT_SET_MENU
- *   • venue-event + anything else     → STEPS_VENUE_EVENT_CUISINE (default)
- *
- * Before a venue is chosen we default venue-event to the fuller cuisine set,
- * then collapse to the 4-step set-menu set once Raj Aangan is selected.
+ *   • outdoor      → STEPS_OUTDOOR
+ *   • venue-event  → STEPS_VENUE_EVENT (same for all venues)
  */
-export function getSteps(state: BookingState, venues: Venue[]): WizardStep[] {
-  if (state.cateringType === "outdoor") return STEPS_OUTDOOR;
-  if (isSetMenuFlow(state, venues)) return STEPS_VENUE_EVENT_SET_MENU;
-  return STEPS_VENUE_EVENT_CUISINE;
+export function getSteps(state: BookingState): WizardStep[] {
+  return state.cateringType === "outdoor" ? STEPS_OUTDOOR : STEPS_VENUE_EVENT;
 }
 
-/** 1-based index of a slug within a step-set (0 if not found → renders nothing lit). */
+/** 1-based index of a slug within a step-set (1 if not found). */
 export function stepIndexOf(steps: WizardStep[], slug: string): number {
   const i = steps.findIndex((s) => s.slug === slug);
   return i === -1 ? 1 : i + 1;

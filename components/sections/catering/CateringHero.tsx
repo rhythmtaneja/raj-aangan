@@ -44,7 +44,7 @@ const HERO_BLEND_HEIGHT = "0vh";
 
 // ─ Tagline ──
 const TAGLINE_TEXT = "A journey of flavors, cultures, and unforgettable tastes.";
-const TAGLINE_FONT_SIZE = "clamp(2rem, 4.2vw, 78px)";
+const TAGLINE_FONT_SIZE = "clamp(2rem, 4.2vw, 60px)";
 const TAGLINE_MAX_W = "1100px";
 
 // ─ Letter reveal on tagline ──
@@ -180,7 +180,7 @@ export default function CateringHero({ bgImage }: { bgImage?: string }) {
             arrowColor="#ffffff"
             circleSize={120}
             magnet={0.4}
-            className="rounded-full border border-white/80 px-10 py-4 text-white uppercase tracking-[0.15em] text-[clamp(0.9rem,1.05vw,20px)]"
+            className="rounded-full border border-white/80 px-10 py-4 text-white uppercase tracking-[0.15em] text-[clamp(0.9rem,1.05vw,15px)]"
           >
             Plan Your Event
           </CircleButton>

@@ -34,8 +34,8 @@ const FRAME_COLOR = "rgba(255,255,255,0.6)"; // reads against darker photos
 
 // Text column
 const TEXT_COLUMN_OFFSET = "md:pl-8 lg:pl-12";
-const TITLE_SIZE = "text-[clamp(2rem,3.2vw,60px)]";
-const BULLET_SIZE = "text-[clamp(1.1rem,1.35vw,26px)]";
+const TITLE_SIZE = "text-[clamp(2rem,3.2vw,46px)]";
+const BULLET_SIZE = "text-[clamp(1.1rem,1.35vw,19px)]";
 const BULLET_MARKER_SIZE = "text-xl";
 
 // Bullet layout

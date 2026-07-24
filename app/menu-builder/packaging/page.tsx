@@ -67,7 +67,7 @@ export default function PackagingStepPage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
           Packaging & Delivery
         </h2>

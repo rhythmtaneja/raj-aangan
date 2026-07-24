@@ -46,13 +46,13 @@ export default function AboutSection() {
       <Reveal stagger staggerEach={0.12} className="flex flex-col items-center">
         <div className="flex items-center gap-4">
           <NumeralMarker numeral="III" />
-          <span style={serif} className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,24px)]">About</span>
+          <span style={serif} className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,18px)]">About</span>
         </div>
         <div className="mt-12">
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,18px)]">Our Story</p>
+          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,14px)]">Our Story</p>
           <span className="mx-auto mt-2 block h-px w-16 bg-[#bf9a3f]" />
         </div>
-        <h2 style={serif} className="mt-8 font-semibold text-[#bf9a3f] text-[clamp(2rem,3.4vw,66px)]">
+        <h2 style={serif} className="mt-8 font-semibold text-[#bf9a3f] text-[clamp(2rem,3.4vw,49px)]">
           Raj Aangan Events and Caterers
         </h2>
       </Reveal>
@@ -74,7 +74,7 @@ export default function AboutSection() {
           <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
         </div>
         <Reveal>
-          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,28px)] md:px-6">
+          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,21px)] md:px-6">
             What started as a passion for bringing people together has grown into one of Jaipur&rsquo;s trusted names in luxury events, destination weddings, and premium catering experiences. Inspired by Rajasthan&rsquo;s royal culture and timeless traditions, Raj Aangan blends heritage hospitality with modern event craftsmanship.
           </p>
         </Reveal>
@@ -127,7 +127,7 @@ function Stat({ icon, end, suffix, label }: { icon: React.ReactNode; end: number
   return (
     <div className="flex flex-col items-center text-center">
       <span className="mb-3 text-[#444444]">{icon}</span>
-      <p style={serif} className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,40px)]">
+      <p style={serif} className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,30px)]">
         <span className="font-medium">
           <CountUp end={end} suffix={suffix} />{" "}
         </span>

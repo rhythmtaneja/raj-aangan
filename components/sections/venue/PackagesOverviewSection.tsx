@@ -51,7 +51,7 @@ export default function PackagesOverviewSection({
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.6rem,2.8vw,48px)]"
+            className="text-center font-medium text-[clamp(1.6rem,2.8vw,40px)]"
           >
             {title}
           </h2>
@@ -98,7 +98,7 @@ function OverviewCard({ name, image, href }: PackageOverview) {
       </div>
       <p
         style={serif}
-        className="mt-5 text-center text-white leading-tight text-[clamp(0.95rem,1.1vw,20px)]"
+        className="mt-5 text-center text-white leading-tight text-[clamp(0.95rem,1.1vw,16px)]"
       >
         {name}
       </p>

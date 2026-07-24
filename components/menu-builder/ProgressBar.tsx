@@ -121,7 +121,7 @@ function StepCircle({
         </div>
       </div>
       <div
-        className="text-white text-[clamp(0.75rem,0.85vw,15px)] uppercase tracking-wide"
+        className="text-white text-[clamp(0.75rem,0.85vw,12px)] uppercase tracking-wide"
         style={{ marginTop: LABEL_MARGIN_TOP, fontFamily: "var(--font-cormorant-garamond)" }}
       >
         {label}

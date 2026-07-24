@@ -85,7 +85,7 @@ export default function DecorStylingCarousel() {
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.9rem,3.2vw,58px)]"
+            className="text-center font-medium text-[clamp(1.9rem,3.2vw,46px)]"
           >
             Decor & Styling
           </h2>
@@ -113,7 +113,7 @@ export default function DecorStylingCarousel() {
             arrowColor="#ffffff"
             circleSize={150}
             magnet={0.3}
-            className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.05vw,20px)]"
+            className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.05vw,15px)]"
           >
             Request for styling
           </CircleButton>
@@ -148,7 +148,7 @@ function ThemeCard({ name, image }: Theme) {
       </div>
       <p
         style={serif}
-        className="mt-5 text-white text-[clamp(1rem,1.15vw,22px)]"
+        className="mt-5 text-white text-[clamp(1rem,1.15vw,17px)]"
       >
         {name}
       </p>

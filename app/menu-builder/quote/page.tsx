@@ -16,7 +16,7 @@ import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getCatalogItemById, getPackagingById, getSetMenuById } from "@/lib/menu-builder/data";
-import { getSteps, isSetMenuFlow, stepIndexOf } from "@/lib/menu-builder/flow";
+import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
 import {
   CUTLERY_OPTIONS,
   LIVE_COUNTERS,
@@ -24,10 +24,12 @@ import {
 } from "@/lib/menu-builder/config";
 import {
   formatINR,
+  getAddOnPricePerItem,
   getGstPercent,
   getOutdoorSubtotal,
-  getPerHeadRate,
-  getSetMenuPerHead,
+  getSetMenuAddOnCount,
+  getSetMenuAddOnPerHead,
+  getVenueEventPerHead,
   getVenueLogisticsPerHead,
 } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, STEPS_OUTDOOR } from "@/lib/menu-builder/types";
@@ -52,7 +54,6 @@ const START_OVER_CONFIRM   = "Start over? All your selections will be cleared.";
 
 export default function QuotePage() {
   const { state, hydrated } = useBooking();
-  const { venues } = useCatalog();
   const router = useRouter();
 
   useEffect(() => {
@@ -62,22 +63,19 @@ export default function QuotePage() {
 
   if (!hydrated || !state.cateringType) return null;
 
-  return state.cateringType === "outdoor" ? (
-    <OutdoorQuote />
-  ) : (
-    <VenueEventQuote setMenuFlow={isSetMenuFlow(state, venues)} />
-  );
+  return state.cateringType === "outdoor" ? <OutdoorQuote /> : <VenueEventQuote />;
 }
 
-// ─── Venue-event quote (set-menu + cuisine share this) ─────────────────────
+// ─── Venue-event quote (set package + custom builder share this) ───────────
 
-function VenueEventQuote({ setMenuFlow }: { setMenuFlow: boolean }) {
+function VenueEventQuote() {
   const { state, dispatch } = useBooking();
   const { venues, occasions } = useCatalog();
   const router = useRouter();
   const { toast, showToast } = useToast();
 
-  const steps = getSteps(state, venues);
+  const customMenu = state.menuMode === "custom";
+  const steps = getSteps(state);
   const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
   const occasion =
     state.occasions.length > 0
@@ -85,9 +83,12 @@ function VenueEventQuote({ setMenuFlow }: { setMenuFlow: boolean }) {
       : "—";
   const setMenu = getSetMenuById(state.selectedSetMenuId);
 
-  // Pricing inputs differ by sub-flow; the breakdown shape is identical.
-  const perHeadBase = setMenuFlow ? getSetMenuPerHead(state) : getPerHeadRate(state);
-  const venueLogistic = setMenuFlow ? 0 : getVenueLogisticsPerHead(state, venues);
+  // Per-head basis differs by menu mode; the breakdown shape is identical.
+  const addOnCount = customMenu ? 0 : getSetMenuAddOnCount(state);
+  const addOnPerHead = customMenu ? 0 : getSetMenuAddOnPerHead(state);
+  const packageBase = getVenueEventPerHead(state) - addOnPerHead;
+  const perHeadBase = getVenueEventPerHead(state);
+  const venueLogistic = getVenueLogisticsPerHead(state, venues);
   const subtotal = (perHeadBase + venueLogistic) * state.guests * state.eventDays;
   const gst = subtotal * (getGstPercent() / 100);
   const total = subtotal + gst;
@@ -124,7 +125,8 @@ function VenueEventQuote({ setMenuFlow }: { setMenuFlow: boolean }) {
 
         <SectionTitle>Venue</SectionTitle>
         <KV label="Select"  value={venue?.name || state.customVenueAddress || "—"} />
-        <KV label="Pricing" value={venue?.pricingNote || (setMenu ? `${formatINR(perHeadBase)} / head` : "—")} />
+        <KV label="Menu"    value={customMenu ? "Custom menu" : setMenu?.name || "—"} />
+        <KV label="Pricing" value={venue?.pricingNote || `${formatINR(perHeadBase)} / head`} />
 
         <SectionTitle>Presentation &amp; Live Counters</SectionTitle>
         <p style={{ color: INK_MUTED }} className="py-1 text-sm">
@@ -137,7 +139,13 @@ function VenueEventQuote({ setMenuFlow }: { setMenuFlow: boolean }) {
 
         <SectionTitle>Estimated Total</SectionTitle>
         <div className="space-y-1.5 text-sm">
-          <KVRow label="Per head base" value={formatINR(perHeadBase)} />
+          <KVRow label="Per head base" value={formatINR(packageBase)} />
+          {addOnCount > 0 && (
+            <KVRow
+              label={`Add-ons / head (${addOnCount} × ${formatINR(getAddOnPricePerItem())})`}
+              value={formatINR(addOnPerHead)}
+            />
+          )}
           <KVRow label="Venue logistic / head" value={formatINR(venueLogistic)} />
           <KVRow
             label={`x ${state.guests} guest x ${state.eventDays} day${state.eventDays > 1 ? "s" : ""}`}
@@ -256,7 +264,7 @@ function startOver(
 function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <>
-      <h2 style={{ ...serif, color: INK }} className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold">
+      <h2 style={{ ...serif, color: INK }} className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold">
         {title}
       </h2>
       <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
@@ -269,7 +277,7 @@ function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-8 mb-3 flex items-center gap-4">
-      <h3 style={{ ...serif, color: INK }} className="text-[clamp(1.1rem,1.35vw,24px)] font-semibold">
+      <h3 style={{ ...serif, color: INK }} className="text-[clamp(1.1rem,1.35vw,19px)] font-semibold">
         {children}
       </h3>
       <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
@@ -301,10 +309,10 @@ function KVRow({ label, value }: { label: string; value: string }) {
 function EstimatedTotalRow({ value }: { value: string }) {
   return (
     <div className="mt-4 flex items-baseline justify-between border-t pt-4" style={{ borderColor: MB_COLORS.border }}>
-      <span style={{ ...serif, color: INK }} className="text-[clamp(1.2rem,1.6vw,28px)] font-semibold">
+      <span style={{ ...serif, color: INK }} className="text-[clamp(1.2rem,1.6vw,23px)] font-semibold">
         Estimated total
       </span>
-      <span style={{ ...serif, color: GOLD }} className="text-[clamp(1.2rem,1.6vw,28px)] font-semibold">
+      <span style={{ ...serif, color: GOLD }} className="text-[clamp(1.2rem,1.6vw,23px)] font-semibold">
         {value}
       </span>
     </div>

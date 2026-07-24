@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
-import { getSteps, venueKindOf } from "@/lib/menu-builder/flow";
+import { getSteps } from "@/lib/menu-builder/flow";
 import { MB_COLORS, type Venue } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -35,7 +35,7 @@ export default function Step2VenuePage() {
     if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
   }, [hydrated, state.cateringType, router]);
 
-  const steps = getSteps(state, venues);
+  const steps = getSteps(state);
 
   const ourProperties = venues.filter((v) => v.type === "our-property");
   const partners = venues.filter((v) => v.type === "partner");
@@ -46,11 +46,8 @@ export default function Step2VenuePage() {
   const setCustom = (addr: string) =>
     dispatch({ type: "SET_FIELD", field: "customVenueAddress", value: addr });
 
-  // Raj Aangan → set-menu flow (skip Cuisine, go straight to Menu).
-  // Everything else (our other property + partners + custom) → cuisine flow.
-  const selectedVenue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
-  const isSetMenu = venueKindOf(selectedVenue) === "raj-aangan";
-  const nextHref = isSetMenu ? "/menu-builder/menu" : "/menu-builder/cuisine";
+  // Every venue now leads to the same Menu step (fixed set menus, with an
+  // optional custom builder reachable from there).
   const canContinue = Boolean(state.venueId || state.customVenueAddress.trim());
 
   return (
@@ -58,14 +55,14 @@ export default function Step2VenuePage() {
       steps={steps}
       currentStep={2}
       backHref="/menu-builder/client"
-      nextHref={nextHref}
+      nextHref="/menu-builder/menu"
       nextLabel="Next"
       nextDisabled={!hydrated || !canContinue}
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
           Select Venue
         </h2>

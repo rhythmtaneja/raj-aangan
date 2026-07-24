@@ -39,9 +39,9 @@ const CARD_PADDING = "p-8 md:p-10";
 
 export default function CuisineMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
-  const { dishes, cuisines, venues } = useCatalog();
+  const { dishes, cuisines } = useCatalog();
 
-  const steps = getSteps(state, venues);
+  const steps = getSteps(state);
 
   const [activeFilter, setActiveFilter] = useState<DishTag | "All">("All");
   const [activeMeal, setActiveMeal] = useState<MealType>(state.mealTypes[0] || "Lunch");
@@ -87,7 +87,7 @@ export default function CuisineMenuStep() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
           Select Menu Items
         </h2>
@@ -143,7 +143,7 @@ export default function CuisineMenuStep() {
               <div key={section}>
                 <h3
                   style={{ ...serif, color: INK }}
-                  className="text-[clamp(1.2rem,1.5vw,26px)] font-semibold"
+                  className="text-[clamp(1.2rem,1.5vw,22px)] font-semibold"
                 >
                   {section}
                 </h3>

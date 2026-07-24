@@ -153,7 +153,7 @@ function CategoryCard({ label, image }: { label: string; image: string }) {
       </div>
       <p
         style={serif}
-        className="mt-6 text-white uppercase tracking-[0.25em] text-[clamp(0.85rem,1.05vw,20px)]"
+        className="mt-6 text-white uppercase tracking-[0.25em] text-[clamp(0.85rem,1.05vw,15px)]"
       >
         {label}
       </p>

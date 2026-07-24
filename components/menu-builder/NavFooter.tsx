@@ -16,9 +16,9 @@ import { MB_COLORS } from "@/lib/menu-builder/types";
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SECTION_PAD    = "py-8 px-6 md:px-12";
+const SECTION_PAD    = "pt-8 pb-2";   // no horizontal pad — aligns to card edges
 const BUTTON_HEIGHT  = "py-3.5 px-10";
-const BUTTON_FONT    = "text-[clamp(0.9rem,1.05vw,18px)] font-medium tracking-wide";
+const BUTTON_FONT    = "text-[clamp(0.9rem,1.05vw,15px)] font-medium tracking-wide";
 
 // ═══════════════════════════════════════════════════════════════════════════
 

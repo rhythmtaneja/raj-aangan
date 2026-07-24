@@ -36,8 +36,8 @@ const COLOR_TRANSITION_END = "top top";
 const HOVER_BG_DURATION = 0.75;
 const HOVER_BG_EASE = "power2.out";
 
-const WORD_FONT_SIZE = "clamp(1.75rem, 6vw, 140px)";
-const WORD_GAP = "clamp(1rem, 3vw, 60px)";
+const WORD_FONT_SIZE = "clamp(1.75rem, 6vw, 86px)";
+const WORD_GAP = "clamp(1rem, 3vw, 43px)";
 const WORD_LINE_HEIGHT = 1;
 
 const IDLE_COLOR = "#8a8a8a";
@@ -371,7 +371,7 @@ export default function ServicesSection() {
           arrowColor="#ffffff"
           circleSize={150}
           magnet={0.4}
-          className="rounded-full border border-[#191919] px-10 py-4 font-medium text-[#191919] text-[clamp(1rem,1.25vw,24px)]"
+          className="rounded-full border border-[#191919] px-10 py-4 font-medium text-[#191919] text-[clamp(1rem,1.25vw,18px)]"
         >
           Explore
         </CircleButton>

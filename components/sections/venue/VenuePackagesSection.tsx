@@ -53,7 +53,7 @@ export default function VenuePackagesSection() {
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.9rem,3.2vw,58px)]"
+            className="text-center font-medium text-[clamp(1.9rem,3.2vw,46px)]"
           >
             Venue packages
           </h2>
@@ -96,7 +96,7 @@ function PackageCard({ name, image, href }: Property) {
       </div>
       <p
         style={serif}
-        className="mt-6 text-center uppercase text-white leading-tight tracking-wide text-[clamp(1.15rem,1.5vw,28px)]"
+        className="mt-6 text-center uppercase text-white leading-tight tracking-wide text-[clamp(1.15rem,1.5vw,22px)]"
       >
         {name}
       </p>

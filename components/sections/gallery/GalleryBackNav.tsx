@@ -12,7 +12,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─ "About Resort" heading ──
 // Bigger + centered per the reference. Push the max value up for even bigger.
 const HEADING_TEXT = "About Resort";
-const HEADING_FONT_SIZE = "clamp(2.5rem, 4vw, 110px)";
+const HEADING_FONT_SIZE = "clamp(2.5rem, 4vw, 58px)";
 const HEADING_COLOR = "#ffffff";
 
 // ─ Back button ──
@@ -39,7 +39,7 @@ export default function GalleryBackNav() {
             circleSize={150}
             magnet={0.35}
             arrowDirection="left"
-            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,20px)]"
+            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,15px)]"
           >
             <span className="inline-flex items-center gap-2">
               <LeftArrowIcon />

@@ -79,7 +79,7 @@ export default function EventsSection() {
             {/* V Events — upper part of the image */}
             <div className="absolute inset-x-0 top-[6%] z-20 flex items-center justify-center gap-5">
               <NumeralMarker numeral="IV" light />
-              <span style={serif} className="font-bold uppercase tracking-[0.3em] text-white text-[clamp(1.45rem,2vw,38px)]">
+              <span style={serif} className="font-bold uppercase tracking-[0.3em] text-white text-[clamp(1.45rem,2vw,29px)]">
                 Events
               </span>
             </div>
@@ -87,7 +87,7 @@ export default function EventsSection() {
             {/* Running "Events" — in the gap between heading and cards */}
             <div className="absolute inset-x-0 top-[40%] z-10 -translate-y-1/2">
               <Marquee speed={70} repeat={4}>
-                <span style={serif} className="px-6 font-semibold uppercase text-white/15 text-[clamp(70px,12vw,180px)]">
+                <span style={serif} className="px-6 font-semibold uppercase text-white/15 text-[clamp(70px,12vw,173px)]">
                   Events
                 </span>
               </Marquee>
@@ -100,8 +100,8 @@ export default function EventsSection() {
                   <div key={card.title} className="relative w-full p-3">
                     <div className="pointer-events-none absolute inset-0 border border-white/60" />
                     <div className="relative flex min-h-[400px] flex-col items-center justify-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-14 text-center shadow-xl">
-                      <h3 style={serif} className="font-bold leading-[1.05] text-[#242424] text-[clamp(2rem,3.15vw,60px)]">{card.title}</h3>
-                      <p className="mt-5 max-w-lg leading-relaxed text-[#3f3f3f] text-[clamp(1rem,1.18vw,20px)]">{card.body}</p>
+                      <h3 style={serif} className="font-bold leading-[1.05] text-[#242424] text-[clamp(2rem,3.15vw,45px)]">{card.title}</h3>
+                      <p className="mt-5 max-w-lg leading-relaxed text-[#3f3f3f] text-[clamp(1rem,1.18vw,17px)]">{card.body}</p>
                       <CircleButton
                         href="#"
                         circleColor="#191919"

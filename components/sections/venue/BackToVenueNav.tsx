@@ -50,7 +50,7 @@ export default function BackToVenueNav({
             circleSize={150}
             magnet={0.3}
             arrowDirection="left"
-            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,17px)]"
+            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,14px)]"
           >
             Back
           </CircleButton>
@@ -59,7 +59,7 @@ export default function BackToVenueNav({
         {/* CENTER — heading, truly centered in the row */}
         <h2
           style={{ ...serif, color: TEXT_COLOR }}
-          className="text-center font-medium text-[clamp(1.2rem,1.8vw,34px)]"
+          className="text-center font-medium text-[clamp(1.2rem,1.8vw,26px)]"
         >
           {heading}
         </h2>

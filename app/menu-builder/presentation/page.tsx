@@ -18,7 +18,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
 import {
   CUTLERY_OPTIONS,
@@ -46,19 +45,22 @@ const TILE_IMG_H   = 130;
 
 export default function PresentationStepPage() {
   const { state, dispatch, hydrated } = useBooking();
-  const { venues } = useCatalog();
   const router = useRouter();
 
-  const steps = getSteps(state, venues);
+  const steps = getSteps(state);
   const p = state.presentationChoices;
 
-  // Route protection — only the cuisine sub-flow has this step.
+  // Route protection — the Presentation step belongs to the venue-event flow.
   useEffect(() => {
     if (!hydrated) return;
     if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
   }, [hydrated, state.cateringType, router]);
 
   if (!hydrated || state.cateringType !== "venue-event") return null;
+
+  // Back goes to whichever Menu sub-screen the guest came from.
+  const backHref =
+    state.menuMode === "custom" ? "/menu-builder/custom-menu" : "/menu-builder/menu";
 
   const toggleMulti = (field: "liveCounters" | "liveCounterDesigns", value: string) =>
     dispatch({ type: "TOGGLE_PRESENTATION_MULTI", field, value });
@@ -72,14 +74,14 @@ export default function PresentationStepPage() {
     <BuilderLayout
       steps={steps}
       currentStep={stepIndexOf(steps, "presentation")}
-      backHref="/menu-builder/menu"
+      backHref={backHref}
       nextHref="/menu-builder/quote"
       nextLabel="Review & Quote"
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,42px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
         >
           Live Counters, Cutlery & Presentation
         </h2>

@@ -28,6 +28,12 @@ export type DishTag = "Veg" | "Non Veg" | "Jain" | "Satvik" | "Starter" | "Main"
 export type CateringType = "venue-event" | "outdoor" | null;
 
 /**
+ * Within the venue-event flow, whether the guest took a fixed set menu or the
+ * from-scratch custom builder. Drives quote/summary display + pricing basis.
+ */
+export type MenuMode = "set" | "custom" | null;
+
+/**
  * How a venue routes the wizard:
  *   raj-aangan  → Raj Aangan property = set-menu flow (Sub-flow A)
  *   raj-gharana → our other property  = cuisine flow  (Sub-flow B)
@@ -191,15 +197,18 @@ export type BookingState = {
   venueId: string | null;        // id from VENUES, or null if using custom
   customVenueAddress: string;
 
-  // Step 3 — Cuisine (Sub-flow B)
+  // Venue-event Menu step — set package vs custom builder
+  menuMode: MenuMode;
+
+  // Custom builder — Cuisine categories (budget tier removed from the UI)
   budgetTier: BudgetTierId | null;
   activeMealForCuisine: MealType | null;
   selectedCuisineCategories: string[]; // ids from CUISINE_CATEGORIES
 
-  // Step 4 — Menu items (Sub-flow B)
+  // Custom builder — Menu items
   selectedDishes: { dishId: string; mealType: MealType }[];
 
-  // Sub-flow A — Set-menu selection
+  // Set-menu selection
   selectedSetMenuId: string | null;
   /** sectionId → chosen dishOptionIds. */
   setMenuSelections: Record<string, string[]>;
@@ -235,6 +244,8 @@ export const INITIAL_STATE: BookingState = {
   venueId: null,
   customVenueAddress: "",
 
+  menuMode: null,
+
   budgetTier: "Premium",
   activeMealForCuisine: "Breakfast",
   selectedCuisineCategories: [],
@@ -262,22 +273,14 @@ export const INITIAL_STATE: BookingState = {
 export type WizardStep = { label: string; slug: string };
 
 /**
- * Sub-flow A — Venue Event + Raj Aangan property (set-menu). Includes the
- * shared Presentation (counters/cutlery) step, same as the cuisine flow.
+ * Venue Event flow — now identical for every venue. The Menu step shows the
+ * fixed set menus; a "Build custom menu" button branches into the from-scratch
+ * builder (cuisine → items), which are sub-screens of this same Menu step, so
+ * the 5-step bar is unchanged whichever path the guest takes.
  */
-export const STEPS_VENUE_EVENT_SET_MENU: WizardStep[] = [
+export const STEPS_VENUE_EVENT: WizardStep[] = [
   { label: "Client", slug: "client" },
   { label: "Venue", slug: "venue" },
-  { label: "Set Menu", slug: "menu" },
-  { label: "Presentation", slug: "presentation" },
-  { label: "Quote", slug: "quote" },
-];
-
-/** Sub-flow B — Venue Event + partner venue (cuisine). */
-export const STEPS_VENUE_EVENT_CUISINE: WizardStep[] = [
-  { label: "Client", slug: "client" },
-  { label: "Venue", slug: "venue" },
-  { label: "Cuisine", slug: "cuisine" },
   { label: "Menu", slug: "menu" },
   { label: "Presentation", slug: "presentation" },
   { label: "Quote", slug: "quote" },

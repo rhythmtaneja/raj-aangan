@@ -101,7 +101,7 @@ export default function WhatWeOfferSection() {
             <NumeralMarker numeral="III" />
             <span
               style={serif}
-              className="leading-none uppercase tracking-[0.2em] text-[#444444] text-[clamp(1rem,1.25vw,24px)]"
+              className="leading-none uppercase tracking-[0.2em] text-[#444444] text-[clamp(1rem,1.25vw,18px)]"
             >
               What We Offer
             </span>
@@ -111,7 +111,7 @@ export default function WhatWeOfferSection() {
         <Reveal>
           <h2
             style={{ ...serif, marginBottom: SUBTITLE_TO_CARDS_GAP }}
-            className="mx-auto max-w-4xl text-center font-medium leading-[1.1] text-[clamp(1.8rem,3.2vw,62px)]"
+            className="mx-auto max-w-4xl text-center font-medium leading-[1.1] text-[clamp(1.8rem,3.2vw,46px)]"
           >
             {SUBTITLE_BEFORE}
             <em className="italic text-[#737272]">{SUBTITLE_ITALIC}</em>
@@ -167,13 +167,13 @@ function OfferCard({
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-8 text-center text-white">
           <h3
             style={serif}
-            className="font-semibold text-[clamp(1.4rem,2vw,38px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]"
+            className="font-semibold text-[clamp(1.4rem,2vw,29px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]"
           >
             {label}
           </h3>
           <p
             style={serif}
-            className="mt-4 max-w-xs leading-relaxed text-[clamp(0.85rem,1vw,18px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]"
+            className="mt-4 max-w-xs leading-relaxed text-[clamp(0.85rem,1vw,14px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]"
           >
             {description}
           </p>
@@ -188,7 +188,7 @@ function OfferCard({
           arrowColor="#ffffff"
           circleSize={150}
           magnet={0.35}
-          className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.04vw,20px)]"
+          className="rounded-full border border-[#191919] px-8 py-3 text-[#191919] text-[clamp(0.9rem,1.04vw,15px)]"
         >
           {button}
         </CircleButton>
