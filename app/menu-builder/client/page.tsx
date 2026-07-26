@@ -38,8 +38,8 @@ const INK_MUTED          = MB_COLORS.inkMuted;
 const GOLD               = MB_COLORS.gold;
 const CARD_PADDING       = "p-8 md:p-10";
 const SECTION_GAP        = "mt-8";
-const OCCASION_CARD_H    = 130;
-const OCCASION_FRAME_INSET = "8px";
+const CATERING_IMAGE_H   = 120;
+const OCCASION_IMAGE_H    = 104;
 const MIN_GUESTS         = 100;
 const GUEST_STEP         = 50;
 
@@ -100,11 +100,11 @@ export default function Step1ClientPage() {
         <Divider label="Catering Type" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {CATERING_TYPES.map((ct) => (
-            <CateringTypeCard
+            <MediaCard
               key={ct.id}
               label={ct.label}
-              description={ct.description}
-              icon={ct.id === "outdoor" ? <TruckIcon /> : <PinIcon />}
+              image={ct.image}
+              imageHeight={CATERING_IMAGE_H}
               selected={hydrated && state.cateringType === ct.id}
               onClick={() => chooseCateringType(ct.id)}
             />
@@ -114,61 +114,19 @@ export default function Step1ClientPage() {
         {/* ─── Occasion (venue-event only) ───────────────────────────────── */}
         {!outdoor && (
           <>
-            <Divider label="Occassion Type" />
+            <Divider label="OCCASSION TYPE" />
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {occasions.map((o) => {
-                const selected = state.occasions.includes(o.id);
-                return (
-                  <button
-                    key={o.id}
-                    onClick={() => toggleOccasion(o.id)}
-                    className="group relative overflow-hidden text-left"
-                    style={{
-                      height: OCCASION_CARD_H,
-                      borderRadius: 6,
-                      outline: selected ? `2px solid ${GOLD}` : "none",
-                    }}
-                  >
-                    <Image
-                      src={o.image}
-                      alt={o.label}
-                      fill
-                      sizes="(max-width: 640px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute z-10"
-                      style={{
-                        inset: OCCASION_FRAME_INSET,
-                        border: "1px solid rgba(255,255,255,0.5)",
-                      }}
-                    />
-                    <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between bg-white/95 px-3 py-2">
-                      <span
-                        style={{ ...serif, color: selected ? GOLD : INK }}
-                        className="text-sm font-medium"
-                      >
-                        {o.label}
-                      </span>
-                      {selected && (
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke={MB_COLORS.greenCheck}
-                          strokeWidth={3}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+              {occasions.map((o) => (
+                <MediaCard
+                  key={o.id}
+                  label={o.label}
+                  image={o.image}
+                  imageHeight={OCCASION_IMAGE_H}
+                  selected={state.occasions.includes(o.id)}
+                  showCheck
+                  onClick={() => toggleOccasion(o.id)}
+                />
+              ))}
             </div>
           </>
         )}
@@ -275,67 +233,86 @@ export default function Step1ClientPage() {
 
 // ─── Inline UI primitives ──────────────────────────────────────────────────
 
-function CateringTypeCard({
+// Shared image card — photo on top, cream footer with a gold serif label.
+// Used for both the Catering Type and Occasion Type grids (figma reference).
+function MediaCard({
   label,
-  description,
-  icon,
+  image,
+  imageHeight,
   selected,
+  showCheck = false,
   onClick,
 }: {
   label: string;
-  description: string;
-  icon: React.ReactNode;
+  image: string;
+  imageHeight: number;
   selected: boolean;
+  showCheck?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-start gap-4 rounded-lg border p-5 text-left transition-colors"
+      className="group overflow-hidden rounded-[10px] border text-left transition-all"
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
-        backgroundColor: selected ? `${GOLD}1f` : "transparent",
-        outline: selected ? `1px solid ${GOLD}` : "none",
+        boxShadow: selected ? `0 0 0 1px ${GOLD}` : "0 1px 3px rgba(0,0,0,0.06)",
+        backgroundColor: MB_COLORS.cardCream,
       }}
     >
-      <span
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-        style={{
-          backgroundColor: selected ? GOLD : `${GOLD}22`,
-          color: selected ? "#ffffff" : GOLD,
-        }}
-      >
-        {icon}
-      </span>
-      <span className="min-w-0">
+      <div className="relative w-full overflow-hidden" style={{ height: imageHeight }}>
+        <Image
+          src={image}
+          alt={label}
+          fill
+          sizes="(max-width: 640px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+      </div>
+      <div className="flex items-center justify-between gap-2 px-3 py-2.5">
         <span
-          style={{ ...serif, color: selected ? GOLD : INK }}
-          className="block text-lg font-semibold leading-tight"
+          style={{ ...serif, color: GOLD }}
+          className="text-sm font-medium leading-snug"
         >
           {label}
         </span>
-        <span style={{ color: INK_MUTED }} className="mt-1 block text-xs">
-          {description}
-        </span>
-      </span>
+        {showCheck && selected && (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={MB_COLORS.greenCheck}
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="shrink-0"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+      </div>
     </button>
   );
 }
 
 function Divider({ label }: { label: string }) {
   return (
-    <div className="mt-8 mb-4 flex items-center gap-4">
-      <p style={{ color: INK }} className="text-xs font-semibold uppercase tracking-widest">
+    <div className="mt-8 mb-5 flex items-center gap-4">
+      <h3
+        style={{ ...serif, color: INK }}
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+      >
         {label}
-      </p>
-      <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
+      </h3>
+      <div className="h-px flex-1" style={{ backgroundColor: MB_COLORS.border }} />
     </div>
   );
 }
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ color: INK }} className="text-sm font-medium">
+    <p style={{ ...serif, color: INK }} className="text-[15px] font-semibold">
       {children}
     </p>
   );
@@ -408,27 +385,5 @@ function StepButton({
     >
       {children}
     </button>
-  );
-}
-
-// ─── Icons ─────────────────────────────────────────────────────────────────
-
-function PinIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 21s-6-5.686-6-10a6 6 0 1 1 12 0c0 4.314-6 10-6 10Z" />
-      <circle cx="12" cy="11" r="2" />
-    </svg>
-  );
-}
-
-function TruckIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 6h11v9H3z" />
-      <path d="M14 9h4l3 3v3h-7z" />
-      <circle cx="7" cy="18" r="1.6" />
-      <circle cx="17" cy="18" r="1.6" />
-    </svg>
   );
 }

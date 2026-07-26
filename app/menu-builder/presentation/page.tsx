@@ -38,7 +38,7 @@ const CARD_BG      = MB_COLORS.card;
 const INK          = MB_COLORS.ink;
 const INK_MUTED    = MB_COLORS.inkMuted;
 const GOLD         = MB_COLORS.gold;
-const CARD_PADDING = "p-8 md:p-10";
+const CARD_PADDING = "p-5 md:p-10";
 const TILE_IMG_H   = 130;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -90,7 +90,7 @@ export default function PresentationStepPage() {
           design will show grouped for each stall you choose.
         </p>
 
-        {/* Live Counters — multi-select image grid */}
+        {/* Live Counters — multi-select image grid (always shown) */}
         <SectionLabel>Choose Your Live Counters</SectionLabel>
         <PhotoGrid
           items={LIVE_COUNTER_TILES}
@@ -98,43 +98,62 @@ export default function PresentationStepPage() {
           onToggle={(id) => toggleMulti("liveCounters", id)}
         />
 
-        {/* Cutlery — single-select image grid */}
-        <SectionLabel>Cutlery</SectionLabel>
-        <PhotoGrid
-          items={CUTLERY_OPTIONS}
-          isSelected={(id) => p.cutlery === id}
-          onToggle={(id) => setSingle("cutlery", id)}
-        />
+        {/*
+          The cutlery / presentation / stall categories belong to the chosen
+          live counters and only appear once at least one counter is selected.
+          TODO: once the client shares which counter maps to which options,
+          filter each category by the selected counters. For now, selecting any
+          counter reveals the full set of options.
+        */}
+        {p.liveCounters.length === 0 ? (
+          <p
+            className="mt-8 rounded-lg border border-dashed px-5 py-6 text-sm"
+            style={{ borderColor: GOLD, color: INK_MUTED, backgroundColor: `${GOLD}0d` }}
+          >
+            Choose a live counter above to configure its cutlery, presentation
+            style and stall theme.
+          </p>
+        ) : (
+          <>
+            {/* Cutlery — single-select image grid */}
+            <SectionLabel>Cutlery</SectionLabel>
+            <PhotoGrid
+              items={CUTLERY_OPTIONS}
+              isSelected={(id) => p.cutlery === id}
+              onToggle={(id) => setSingle("cutlery", id)}
+            />
 
-        {/* Presentation Style — single-select image grid */}
-        <SectionLabel>Presentation Style</SectionLabel>
-        <PhotoGrid
-          items={PRESENTATION_STYLES}
-          isSelected={(id) => p.presentationStyle === id}
-          onToggle={(id) => setSingle("presentationStyle", id)}
-        />
+            {/* Presentation Style — single-select image grid */}
+            <SectionLabel>Presentation Style</SectionLabel>
+            <PhotoGrid
+              items={PRESENTATION_STYLES}
+              isSelected={(id) => p.presentationStyle === id}
+              onToggle={(id) => setSingle("presentationStyle", id)}
+            />
 
-        {/* Stall Theme — single-select image grid */}
-        <SectionLabel>Stall Theme</SectionLabel>
-        <PhotoGrid
-          items={STALL_THEMES}
-          isSelected={(id) => p.stallTheme === id}
-          onToggle={(id) => setSingle("stallTheme", id)}
-        />
+            {/* Stall Theme — single-select image grid */}
+            <SectionLabel>Stall Theme</SectionLabel>
+            <PhotoGrid
+              items={STALL_THEMES}
+              isSelected={(id) => p.stallTheme === id}
+              onToggle={(id) => setSingle("stallTheme", id)}
+            />
 
-        {/* Live Counter Design — multi-select pills */}
-        <SectionLabel>Live Counter Design</SectionLabel>
-        <div className="flex flex-wrap gap-3">
-          {LIVE_COUNTERS.map((lc) => (
-            <Pill
-              key={lc.id}
-              selected={p.liveCounterDesigns.includes(lc.id)}
-              onClick={() => toggleMulti("liveCounterDesigns", lc.id)}
-            >
-              {lc.name}
-            </Pill>
-          ))}
-        </div>
+            {/* Live Counter Design — multi-select pills */}
+            <SectionLabel>Live Counter Design</SectionLabel>
+            <div className="flex flex-wrap gap-3">
+              {LIVE_COUNTERS.map((lc) => (
+                <Pill
+                  key={lc.id}
+                  selected={p.liveCounterDesigns.includes(lc.id)}
+                  onClick={() => toggleMulti("liveCounterDesigns", lc.id)}
+                >
+                  {lc.name}
+                </Pill>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </BuilderLayout>
   );
@@ -144,11 +163,14 @@ export default function PresentationStepPage() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-8 mb-4 flex items-center gap-4">
-      <p style={{ color: INK }} className="text-xs font-semibold uppercase tracking-widest">
+    <div className="mt-8 mb-5 flex items-center gap-4">
+      <h3
+        style={{ ...serif, color: INK }}
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+      >
         {children}
-      </p>
-      <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
+      </h3>
+      <div className="h-px flex-1" style={{ backgroundColor: "#e5e5e5" }} />
     </div>
   );
 }

@@ -21,11 +21,13 @@ import NavFooter from "./NavFooter";
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const HEADER_PAD = "px-6 pt-6 pb-2 md:px-10";
-const CONTENT_PAD_X = "px-6 md:px-10";
+const HEADER_PAD = "px-4 pt-5 pb-2 md:px-10 md:pt-6";
+const CONTENT_PAD_X = "px-4 md:px-10";
 const CONTENT_MAX_W = "max-w-7xl";
-const GAP = "gap-6 md:gap-10";
-const SIDEBAR_W = "360px";
+// Content + live-preview summary live in ONE white panel (figma). Two columns
+// split by a vertical divider from lg up; the summary stacks below on smaller.
+const GRID_COLS = "lg:grid-cols-[minmax(0,1fr)_360px]";
+const SUMMARY_PAD = "p-6 md:p-8";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -78,27 +80,32 @@ export default function BuilderLayout({
       {/* Dynamic progress indicator */}
       <ProgressBar steps={steps} currentStep={currentStep} />
 
-      {/* Main content + sticky sidebar */}
-      <div
-        className={`mx-auto grid ${CONTENT_MAX_W} grid-cols-1 ${GAP} ${CONTENT_PAD_X} pb-16 md:grid-cols-[1fr_${SIDEBAR_W}]`}
-        style={{
-          gridTemplateColumns: `minmax(0, 1fr) ${SIDEBAR_W}`,
-        }}
-      >
-        <main className="min-w-0">
-          {children}
-          {/* Nav lives inside the content column so Back / Next align to the
-              card's edges (in frame), not the full viewport width. */}
-          <NavFooter
-            backHref={backHref}
-            backLabel={backLabel}
-            nextHref={nextHref}
-            nextLabel={nextLabel}
-            onNext={onNext}
-            nextDisabled={nextDisabled}
-          />
-        </main>
-        <BookingSummary steps={steps} currentStep={currentStep} />
+      {/* One white panel holding the step content (left) and the live-preview
+          summary (right), split by a vertical divider on lg+. On smaller screens
+          the summary stacks below with a horizontal divider instead. */}
+      <div className={`mx-auto ${CONTENT_MAX_W} ${CONTENT_PAD_X} pb-16`}>
+        <div
+          className={`grid grid-cols-1 ${GRID_COLS} overflow-hidden rounded-sm`}
+          style={{ backgroundColor: MB_COLORS.card }}
+        >
+          <main className="min-w-0">{children}</main>
+          <div
+            className={`border-t lg:border-t-0 lg:border-l ${SUMMARY_PAD}`}
+            style={{ borderColor: MB_COLORS.border }}
+          >
+            <BookingSummary steps={steps} currentStep={currentStep} />
+          </div>
+        </div>
+
+        {/* Nav sits below the panel on the navy background (figma reference). */}
+        <NavFooter
+          backHref={backHref}
+          backLabel={backLabel}
+          nextHref={nextHref}
+          nextLabel={nextLabel}
+          onNext={onNext}
+          nextDisabled={nextDisabled}
+        />
       </div>
     </div>
   );

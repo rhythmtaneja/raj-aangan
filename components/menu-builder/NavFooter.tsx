@@ -47,33 +47,28 @@ export default function NavFooter({
 }: Props) {
   return (
     <div
-      className={`w-full ${SECTION_PAD} flex items-center justify-between gap-4`}
+      className={`relative w-full ${SECTION_PAD} flex items-center justify-center gap-4`}
       style={{ backgroundColor: MB_COLORS.bg }}
     >
-      {/* Left slot — Back */}
-      <div>
-        {backHref ? (
-          <Link
-            href={backHref}
-            className={`inline-block rounded-full ${BUTTON_HEIGHT} ${BUTTON_FONT} uppercase text-[#191919] transition-opacity hover:opacity-90`}
-            style={{ backgroundColor: MB_COLORS.gold }}
-          >
-            {backLabel}
-          </Link>
-        ) : (
-          <div />
-        )}
-      </div>
+      {/* Back — pinned to the left; the primary Next button stays centered
+          (figma reference shows a single centered CTA). */}
+      {backHref && (
+        <Link
+          href={backHref}
+          className={`absolute left-0 inline-block rounded-full ${BUTTON_HEIGHT} ${BUTTON_FONT} uppercase text-[#191919] transition-opacity hover:opacity-90`}
+          style={{ backgroundColor: MB_COLORS.gold }}
+        >
+          {backLabel}
+        </Link>
+      )}
 
-      {/* Right slot — Next / action button */}
-      <div>
-        <NextButton
-          href={nextHref}
-          label={nextLabel}
-          onClick={onNext}
-          disabled={nextDisabled}
-        />
-      </div>
+      {/* Primary Next / action button — centered */}
+      <NextButton
+        href={nextHref}
+        label={nextLabel}
+        onClick={onNext}
+        disabled={nextDisabled}
+      />
     </div>
   );
 }

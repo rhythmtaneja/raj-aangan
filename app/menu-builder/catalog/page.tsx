@@ -26,7 +26,7 @@ const CARD_BG      = MB_COLORS.card;
 const INK          = MB_COLORS.ink;
 const INK_MUTED    = MB_COLORS.inkMuted;
 const GOLD         = MB_COLORS.gold;
-const CARD_PADDING = "p-8 md:p-10";
+const CARD_PADDING = "p-5 md:p-10";
 
 // ═══════════════════════════════════════════════════════════════════════════
 

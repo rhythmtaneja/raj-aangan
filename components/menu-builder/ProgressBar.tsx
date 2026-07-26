@@ -22,7 +22,7 @@ const CIRCLE_RING_GAP    = 3;    // gap between circle and ring
 const CONNECTOR_HEIGHT   = 1;    // line thickness between circles
 const CONNECTOR_COLOR    = "rgba(255,255,255,0.30)";
 const LABEL_MARGIN_TOP   = 12;
-const SECTION_PAD_Y      = "pt-6 pb-10";
+const SECTION_PAD_Y      = "pt-4 pb-6 md:pt-6 md:pb-10";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -36,11 +36,38 @@ type Props = {
 export default function ProgressBar({ steps, currentStep }: Props) {
   // 2N-1 cells: circle, connector, circle, connector, ... circle
   const cols = Math.max(1, steps.length * 2 - 1);
+  const current = steps[currentStep - 1];
 
   return (
     <div className={`w-full ${SECTION_PAD_Y}`}>
+      {/* Mobile: compact "Step X of N" + progress line (the circle row would
+          overflow a phone once there are 5–6 steps). */}
+      <div className="px-4 md:hidden">
+        <div className="flex items-baseline justify-between text-white">
+          <span
+            className="text-sm uppercase tracking-wide"
+            style={{ fontFamily: "var(--font-cormorant-garamond)" }}
+          >
+            {current?.label}
+          </span>
+          <span className="text-xs text-white/70">
+            Step {currentStep} of {steps.length}
+          </span>
+        </div>
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-white/20">
+          <div
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${(currentStep / steps.length) * 100}%`,
+              backgroundColor: MB_COLORS.gold,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop: full circle bar */}
       <div
-        className="mx-auto grid max-w-4xl items-start px-6"
+        className="mx-auto hidden max-w-4xl items-start px-6 md:grid"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
         {steps.map((step, i) => (

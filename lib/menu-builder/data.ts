@@ -11,7 +11,7 @@
 // drop real assets later.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import type { CatalogItem, PackagingStyle, SetMenu } from "./types";
+import type { CatalogItem, CustomMenuItem, PackagingStyle, SetMenu } from "./types";
 
 const img = (n: number) => `/images/mb/placeholder-${n}.jpg`;
 
@@ -26,6 +26,20 @@ const img = (n: number) => `/images/mb/placeholder-${n}.jpg`;
 // Imported locally (used by getSetMenuById) and re-exported.
 import { SET_MENUS } from "./generated/set-menus";
 export { SET_MENUS };
+
+// ─── Custom builder — full à-la-carte master menu (generated from CSV) ──────
+import { CUSTOM_MENU_SECTIONS } from "./generated/custom-menu";
+export { CUSTOM_MENU_SECTIONS };
+
+// Flat id → item lookup, built once (1128 items).
+const CUSTOM_ITEM_BY_ID: Map<string, CustomMenuItem> = new Map(
+  CUSTOM_MENU_SECTIONS.flatMap((s) =>
+    s.subsections.flatMap((ss) => ss.items.map((it) => [it.id, it] as const)),
+  ),
+);
+
+export const getCustomMenuItemById = (id: string): CustomMenuItem | undefined =>
+  CUSTOM_ITEM_BY_ID.get(id);
 
 // ─── Sub-flow C — Outdoor catalog (image 9) ────────────────────────────────
 

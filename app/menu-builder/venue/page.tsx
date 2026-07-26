@@ -19,7 +19,7 @@ const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
-const CARD_PADDING = "p-8 md:p-10";
+const CARD_PADDING = "p-5 md:p-10";
 const VENUE_IMG_H = 180;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -118,11 +118,14 @@ export default function Step2VenuePage() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-8 mb-4 flex items-center gap-4">
-      <p style={{ color: INK }} className="text-xs font-semibold uppercase tracking-widest">
+    <div className="mt-8 mb-5 flex items-center gap-4">
+      <h3
+        style={{ ...serif, color: INK }}
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+      >
         {children}
-      </p>
-      <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
+      </h3>
+      <div className="h-px flex-1" style={{ backgroundColor: "#e5e5e5" }} />
     </div>
   );
 }

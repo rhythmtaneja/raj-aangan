@@ -42,7 +42,8 @@ const MENU_BUTTON_HREF = "/menu-builder";
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Space between nav links.
-const NAV_LINK_GAP = "gap-14";
+// Small wrapping gap on phones (7 links won't fit one row); wide single row md+.
+const NAV_LINK_GAP = "gap-x-5 gap-y-1.5 md:gap-14";
 
 // Base opacity of nav links when nothing is hovered.
 const IDLE_LINK_OPACITY = "opacity-90";
@@ -229,7 +230,7 @@ export default function SiteHeader({
             onMouseLeave={handleNavContainerLeave}
           >
             <nav
-              className={`group flex items-center justify-center ${NAV_LINK_GAP} py-4 font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,13px)]`}
+              className={`group flex flex-wrap items-center justify-center px-4 md:flex-nowrap ${NAV_LINK_GAP} py-4 font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,13px)]`}
             >
               {NAV_LINKS.map((link, i) => (
                 <Link

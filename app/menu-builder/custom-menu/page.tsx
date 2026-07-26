@@ -10,7 +10,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CuisineMenuStep from "@/components/menu-builder/CuisineMenuStep";
+import CustomMenuStep from "@/components/menu-builder/CustomMenuStep";
 import { useBooking } from "@/lib/menu-builder/context";
 
 export default function CustomMenuPage() {
@@ -28,5 +28,5 @@ export default function CustomMenuPage() {
 
   if (!hydrated || state.cateringType !== "venue-event") return null;
 
-  return <CuisineMenuStep />;
+  return <CustomMenuStep />;
 }

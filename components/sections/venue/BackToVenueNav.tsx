@@ -40,7 +40,7 @@ export default function BackToVenueNav({
       className={`relative w-full px-6 md:px-12 ${SECTION_PAD}`}
       style={{ backgroundColor: SECTION_BG }}
     >
-      <div className="mx-auto grid max-w-6xl grid-cols-3 items-center gap-4">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 md:grid md:grid-cols-3 md:items-center">
         {/* LEFT — Back CircleButton */}
         <div className="flex justify-start">
           <CircleButton

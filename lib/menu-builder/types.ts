@@ -160,6 +160,29 @@ export type SetMenu = {
   sections: SetMenuSection[];
 };
 
+// ─── Custom builder — master à-la-carte menu (from RAEC_master_menu.csv) ────
+
+export type CustomMenuItem = {
+  id: string;
+  name: string;                 // display name
+  traditionalName?: string;     // original name (may be absent)
+  description?: string;         // may be absent
+  /** ₹ per plate. null until the client fills real prices. */
+  price: number | null;
+};
+
+/** A group of items inside a section. `label: ""` = a flat section. */
+export type CustomMenuSubsection = {
+  label: string;
+  items: CustomMenuItem[];
+};
+
+export type CustomMenuSection = {
+  id: string;
+  label: string;                // e.g. "The Great Indian Chaat Experience"
+  subsections: CustomMenuSubsection[];
+};
+
 // ─── Sub-flow C — Outdoor catalog shapes ───────────────────────────────────
 
 export type CatalogItem = {
@@ -330,6 +353,8 @@ export type CateringTypeOption = {
   id: Exclude<CateringType, null>;
   label: string;
   description: string;
+  /** Card image (photo shown on the Step 1 catering-type card). */
+  image: string;
   /** Which route the Next button leads to when this type is chosen. */
   nextHref: string;
 };
@@ -339,12 +364,14 @@ export const CATERING_TYPES: CateringTypeOption[] = [
     id: "venue-event",
     label: "Venue Event Catering",
     description: "Weddings, receptions & parties hosted at a venue, with full menu & presentation builder.",
+    image: "/images/events-service-venue.jpg",
     nextHref: "/menu-builder/venue",
   },
   {
     id: "outdoor",
     label: "Outdoor Catering / Bulk Orders",
     description: "Packed meals, sweet boxes, corporate gifting & live counter vans delivered off-site.",
+    image: "/images/catering-hero.jpg",
     nextHref: "/menu-builder/catalog",
   },
 ];

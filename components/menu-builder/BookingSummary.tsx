@@ -11,7 +11,7 @@
 
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
-import { getSetMenuById } from "@/lib/menu-builder/data";
+import { getCustomMenuItemById, getSetMenuById } from "@/lib/menu-builder/data";
 import { venueKindOf } from "@/lib/menu-builder/flow";
 import {
   formatINR,
@@ -29,12 +29,10 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const STICKY_TOP = "top-8";
-const CARD_BG = MB_COLORS.card;
-const CARD_PADDING = "p-8";
 const TITLE_COLOR = MB_COLORS.ink;
 const LABEL_COLOR = MB_COLORS.inkMuted;
 const VALUE_COLOR = MB_COLORS.ink;
+const ROW_LABEL_COLOR = MB_COLORS.ink;
 const DIVIDER_COLOR = MB_COLORS.borderLight;
 const GOLD = MB_COLORS.gold;
 
@@ -48,37 +46,34 @@ type Props = {
 
 export default function BookingSummary({ currentStep }: Props) {
   const { state, hydrated } = useBooking();
-  const { venues, occasions, dishes } = useCatalog();
+  const { venues, occasions } = useCatalog();
 
   const outdoor = state.cateringType === "outdoor";
 
   return (
-    <aside className={`sticky ${STICKY_TOP} h-fit`}>
-      <div className={`${CARD_PADDING} rounded-sm`} style={{ backgroundColor: CARD_BG }}>
-        <h3
-          style={{ ...serif, color: TITLE_COLOR }}
-          className="text-[clamp(1.15rem,1.35vw,19px)] font-semibold uppercase tracking-wide"
-        >
-          Booking Summary
-        </h3>
-        <p style={{ color: LABEL_COLOR }} className="mt-1 text-xs uppercase tracking-widest">
-          Live Preview
-        </p>
+    <div>
+      <h3
+        style={{ ...serif, color: TITLE_COLOR }}
+        className="text-[clamp(1.3rem,1.7vw,23px)] font-semibold"
+      >
+        Booking Summary
+      </h3>
+      <p style={{ color: LABEL_COLOR }} className="mt-1 text-xs uppercase tracking-widest">
+        Live Preview
+      </p>
 
-        {outdoor ? (
-          <OutdoorSummary hydrated={hydrated} state={state} currentStep={currentStep} />
-        ) : (
-          <VenueEventSummary
-            hydrated={hydrated}
-            state={state}
-            currentStep={currentStep}
-            venues={venues}
-            occasions={occasions}
-            dishes={dishes}
-          />
-        )}
-      </div>
-    </aside>
+      {outdoor ? (
+        <OutdoorSummary hydrated={hydrated} state={state} currentStep={currentStep} />
+      ) : (
+        <VenueEventSummary
+          hydrated={hydrated}
+          state={state}
+          currentStep={currentStep}
+          venues={venues}
+          occasions={occasions}
+        />
+      )}
+    </div>
   );
 }
 
@@ -125,14 +120,12 @@ function VenueEventSummary({
   currentStep,
   venues,
   occasions,
-  dishes,
 }: {
   hydrated: boolean;
   state: ReturnType<typeof useBooking>["state"];
   currentStep: number;
   venues: ReturnType<typeof useCatalog>["venues"];
   occasions: ReturnType<typeof useCatalog>["occasions"];
-  dishes: ReturnType<typeof useCatalog>["dishes"];
 }) {
   const customMenu = state.menuMode === "custom";
   const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
@@ -165,7 +158,7 @@ function VenueEventSummary({
           <Divider />
           <h4
             style={{ ...serif, color: TITLE_COLOR }}
-            className="mb-3 text-sm font-semibold uppercase tracking-wide"
+            className="mb-3 text-base font-semibold tracking-wide"
           >
             Selected Item{" "}
             <span style={{ color: LABEL_COLOR }} className="font-normal normal-case">
@@ -174,8 +167,8 @@ function VenueEventSummary({
           </h4>
           <ul className="space-y-2">
             {state.selectedDishes.map(({ dishId }) => {
-              const dish = dishes.find((d) => d.id === dishId);
-              if (!dish) return null;
+              const item = getCustomMenuItemById(dishId);
+              if (!item) return null;
               return (
                 <li
                   key={dishId}
@@ -183,8 +176,10 @@ function VenueEventSummary({
                   style={{ color: VALUE_COLOR }}
                 >
                   <span className="truncate pr-2">
-                    {dish.name}
-                    <span style={{ color: GOLD }} className="ml-2">/ ₹{dish.price}</span>
+                    {item.name}
+                    {item.price != null && (
+                      <span style={{ color: GOLD }} className="ml-2">/ ₹{item.price}</span>
+                    )}
                   </span>
                   <RemoveButton dishId={dishId} />
                 </li>
@@ -234,7 +229,7 @@ function TotalBlock({
     <div>
       <h4
         style={{ ...serif, color: TITLE_COLOR }}
-        className="text-sm font-semibold uppercase tracking-wide"
+        className="text-base font-semibold tracking-wide"
       >
         Estimated Total
       </h4>
@@ -256,12 +251,9 @@ function TotalBlock({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="flex items-baseline justify-between gap-4 border-b py-3.5 text-[clamp(0.85rem,0.95vw,14px)]"
-      style={{ borderColor: DIVIDER_COLOR }}
-    >
-      <span style={{ color: LABEL_COLOR }}>{label}</span>
-      <span style={{ color: VALUE_COLOR }} className="text-right truncate">
+    <div className="grid grid-cols-2 items-baseline gap-3 py-2.5 text-[clamp(0.9rem,1vw,15px)]">
+      <span style={{ ...serif, color: ROW_LABEL_COLOR }}>{label}</span>
+      <span style={{ ...serif, color: VALUE_COLOR }} className="truncate">
         {value}
       </span>
     </div>

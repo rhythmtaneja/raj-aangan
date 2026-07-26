@@ -36,7 +36,7 @@ const CARD_BG      = MB_COLORS.card;
 const INK          = MB_COLORS.ink;
 const INK_MUTED    = MB_COLORS.inkMuted;
 const GOLD         = MB_COLORS.gold;
-const CARD_PADDING = "p-8 md:p-10";
+const CARD_PADDING = "p-5 md:p-10";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -63,7 +63,7 @@ export default function SetMenuStep() {
 
   const goCustom = () => {
     dispatch({ type: "SET_FIELD", field: "menuMode", value: "custom" });
-    router.push("/menu-builder/cuisine");
+    router.push("/menu-builder/custom-menu");
   };
 
   const toggleDish = (section: SetMenuSection, optionId: string) =>
@@ -119,11 +119,14 @@ export default function SetMenuStep() {
         {/* Section pickers for the selected menu */}
         {selectedMenu && (
           <div className="mt-10">
-            <div className="mb-2 flex items-center gap-4">
-              <p style={{ color: INK }} className="text-xs font-semibold uppercase tracking-widest">
+            <div className="mb-3 flex items-center gap-4">
+              <h3
+                style={{ ...serif, color: INK }}
+                className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+              >
                 {selectedMenu.name} — Choose Your Dishes
-              </p>
-              <div className="h-px flex-1" style={{ backgroundColor: MB_COLORS.borderLight }} />
+              </h3>
+              <div className="h-px flex-1" style={{ backgroundColor: "#e5e5e5" }} />
             </div>
             {selectedMenu.description && (
               <p style={{ color: INK_MUTED }} className="mb-6 text-sm">

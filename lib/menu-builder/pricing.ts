@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { BUDGET_TIERS } from "./config";
-import { getCatalogItemById, getSetMenuById } from "./data";
+import { getCatalogItemById, getCustomMenuItemById, getSetMenuById } from "./data";
 import type { BookingState, Dish, Venue } from "./types";
 
 // ─── PLACEHOLDER CONSTANTS — replace when client confirms ─────────────────
@@ -21,9 +21,6 @@ const DEFAULT_DISCOUNT_PERCENT = 30;
 // chooseCount (an "add-on"). Placeholder — confirm the real add-on price with
 // the client (flat per item, or per-dish prices).
 const ADDON_PRICE_PER_ITEM = 100;
-// Per-head placeholder price for each dish in the CUSTOM builder (no per-dish
-// prices exist in the source yet). Custom per-head = #dishes × this.
-const CUSTOM_PRICE_PER_DISH = 150;
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const getAddOnPricePerItem = (): number => ADDON_PRICE_PER_ITEM;
@@ -116,14 +113,25 @@ export function getSetMenuEstimatedTotal(state: BookingState): number {
 // ─── Venue-event pricing (set package OR custom sum-of-dishes) ──────────────
 
 /**
+ * Custom-menu per-head = sum of the selected master-menu items' prices.
+ * Prices are null until the client fills them, so this is 0 for now (any
+ * priced item contributes once real numbers land — no code change needed).
+ */
+export function getCustomMenuPerHead(state: BookingState): number {
+  return state.selectedDishes.reduce(
+    (sum, { dishId }) => sum + (getCustomMenuItemById(dishId)?.price ?? 0),
+    0,
+  );
+}
+
+/**
  * Per-head base for the venue-event flow:
- *   • custom menu → #selected dishes × CUSTOM_PRICE_PER_DISH (placeholder,
- *     since the source has no per-dish prices and budget tiers were removed).
+ *   • custom menu → sum of selected master-menu item prices.
  *   • set menu    → package per-person price + add-on surcharge.
  */
 export function getVenueEventPerHead(state: BookingState): number {
   return state.menuMode === "custom"
-    ? state.selectedDishes.length * CUSTOM_PRICE_PER_DISH
+    ? getCustomMenuPerHead(state)
     : getSetMenuPerHead(state);
 }
 
