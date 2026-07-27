@@ -36,12 +36,16 @@ const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
 
-// Cuisine card — 293 × 299 px in the Figma. The grid never stretches a card
-// past 293px wide; below that it shrinks (min 150px) and keeps the ratio.
+// Cuisine card — 293 × 299 px in the Figma. Three per row (two on the
+// narrowest phones); a card never grows past 293px wide and keeps the Figma
+// aspect ratio as it shrinks.
 const CAT_CARD_W = 293;
 const CAT_CARD_H = 299;
-const CAT_CARD_MIN_W = 150;
+const CAT_GRID_COLS = "grid-cols-2 sm:grid-cols-3";
 const CAT_LABEL_PAD = "px-3 py-2.5";
+// Label strip: frosted white normally, warm gold wash once selected.
+const CAT_LABEL_BG = "rgba(255,255,255,0.95)";
+const CAT_LABEL_BG_SELECTED = "rgba(244,232,220,0.97)";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -131,12 +135,7 @@ export default function CustomCuisinePage() {
         </h3>
         <div className="mt-2 h-px w-full" style={{ backgroundColor: GOLD }} />
 
-        <div
-          className="mt-5 grid gap-4 sm:gap-5"
-          style={{
-            gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, ${CAT_CARD_MIN_W}px), ${CAT_CARD_W}px))`,
-          }}
-        >
+        <div className={`mt-5 grid ${CAT_GRID_COLS} gap-4 sm:gap-5`}>
           {CUISINE_CARDS.map((cat) => {
             const selected = selectedCuisines.includes(cat.id);
             return (
@@ -167,7 +166,10 @@ export default function CustomCuisinePage() {
                 />
                 {selected && <SelectedTick />}
                 <div
-                  className={`absolute inset-x-0 bottom-0 z-20 flex flex-col bg-white/95 ${CAT_LABEL_PAD}`}
+                  className={`absolute inset-x-0 bottom-0 z-20 flex flex-col transition-colors ${CAT_LABEL_PAD}`}
+                  style={{
+                    backgroundColor: selected ? CAT_LABEL_BG_SELECTED : CAT_LABEL_BG,
+                  }}
                 >
                   <span
                     style={{ ...serif, color: selected ? GOLD : INK }}
