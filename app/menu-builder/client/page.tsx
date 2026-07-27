@@ -12,6 +12,7 @@
 "use client";
 
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
@@ -32,16 +33,21 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const CARD_BG            = MB_COLORS.card;
-const INK                = MB_COLORS.ink;
-const INK_MUTED          = MB_COLORS.inkMuted;
-const GOLD               = MB_COLORS.gold;
-const CARD_PADDING       = "p-8 md:p-10";
-const SECTION_GAP        = "mt-8";
-const CATERING_IMAGE_H   = 120;
-const OCCASION_IMAGE_H    = 104;
-const MIN_GUESTS         = 100;
-const GUEST_STEP         = 50;
+const CARD_BG = MB_COLORS.card;
+const INK = MB_COLORS.ink;
+const INK_MUTED = MB_COLORS.inkMuted;
+const GOLD = MB_COLORS.gold;
+const CARD_PADDING = "p-8 md:p-10";
+const SECTION_GAP = "mt-8";
+// Card sizing and spacing knobs. The desktop measurements match the Figma cards.
+// Tailwind gap steps: gap-4 = 16px, gap-6 = 24px, gap-8 = 32px.
+const CARD_DESKTOP_WIDTH = "244px";
+const CATERING_CARD_GAP = "gap-10";
+const OCCASION_CARD_GAP = "gap-12";
+const CATERING_IMAGE_ASPECT = "aspect-[1.43/1]"; // 244px card x 223px total height
+const OCCASION_IMAGE_ASPECT = "aspect-[1.58/1]"; // 244px card x 206px total height
+const MIN_GUESTS = 100;
+const GUEST_STEP = 50;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -98,13 +104,16 @@ export default function Step1ClientPage() {
 
         {/* ─── Catering Type (first section) ─────────────────────────────── */}
         <Divider label="Catering Type" />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div
+          className={`grid grid-cols-2 sm:grid-cols-[repeat(2,minmax(0,var(--card-width)))] ${CATERING_CARD_GAP}`}
+          style={{ "--card-width": CARD_DESKTOP_WIDTH } as CSSProperties}
+        >
           {CATERING_TYPES.map((ct) => (
             <MediaCard
               key={ct.id}
               label={ct.label}
               image={ct.image}
-              imageHeight={CATERING_IMAGE_H}
+              imageAspect={CATERING_IMAGE_ASPECT}
               selected={hydrated && state.cateringType === ct.id}
               onClick={() => chooseCateringType(ct.id)}
             />
@@ -115,13 +124,16 @@ export default function Step1ClientPage() {
         {!outdoor && (
           <>
             <Divider label="OCCASSION TYPE" />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div
+              className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] xl:grid-cols-[repeat(3,minmax(0,var(--card-width)))] ${OCCASION_CARD_GAP}`}
+              style={{ "--card-width": CARD_DESKTOP_WIDTH } as CSSProperties}
+            >
               {occasions.map((o) => (
                 <MediaCard
                   key={o.id}
                   label={o.label}
                   image={o.image}
-                  imageHeight={OCCASION_IMAGE_H}
+                  imageAspect={OCCASION_IMAGE_ASPECT}
                   selected={state.occasions.includes(o.id)}
                   showCheck
                   onClick={() => toggleOccasion(o.id)}
@@ -238,14 +250,14 @@ export default function Step1ClientPage() {
 function MediaCard({
   label,
   image,
-  imageHeight,
+  imageAspect,
   selected,
   showCheck = false,
   onClick,
 }: {
   label: string;
   image: string;
-  imageHeight: number;
+  imageAspect: string;
   selected: boolean;
   showCheck?: boolean;
   onClick: () => void;
@@ -260,12 +272,12 @@ function MediaCard({
         backgroundColor: MB_COLORS.cardCream,
       }}
     >
-      <div className="relative w-full overflow-hidden" style={{ height: imageHeight }}>
+      <div className={`relative w-full overflow-hidden bg-[#f4f0e8] ${imageAspect}`}>
         <Image
           src={image}
           alt={label}
           fill
-          sizes="(max-width: 640px) 50vw, 33vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 256px"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
       </div>

@@ -12,16 +12,16 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { SET_MENUS, getSetMenuById } from "@/lib/menu-builder/data";
-import { stepIndexOf } from "@/lib/menu-builder/flow";
+import { getSteps, menuStepIndex } from "@/lib/menu-builder/flow";
 import { formatINR, getAddOnPricePerItem } from "@/lib/menu-builder/pricing";
 import {
   MB_COLORS,
-  STEPS_VENUE_EVENT,
   type SetMenu,
   type SetMenuSection,
 } from "@/lib/menu-builder/types";
@@ -37,6 +37,11 @@ const INK          = MB_COLORS.ink;
 const INK_MUTED    = MB_COLORS.inkMuted;
 const GOLD         = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
+// Set-menu card knobs. Desktop dimensions match the Figma reference.
+const MENU_CARD_WIDTH = "244px";
+const MENU_CARD_GAP = "gap-8";
+const MENU_CARD_HEIGHT = "sm:h-[223px]";
+const MENU_IMAGE_HEIGHT = "sm:h-[165px]";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -44,7 +49,11 @@ export default function SetMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
   const router = useRouter();
 
-  const selectedId = state.selectedSetMenuId ?? SET_MENUS[0]?.id ?? null;
+  // Step-set follows the mode: 5 steps on the set path, 6 (with Cuisine) once
+  // the guest has opted into the custom builder.
+  const steps = getSteps(state);
+
+  const selectedId = state.selectedSetMenuId;
   const selectedMenu = getSetMenuById(selectedId);
 
   // Accordion: which course sections are expanded. Collapsed by default so the
@@ -53,17 +62,12 @@ export default function SetMenuStep() {
   const toggleSection = (id: string) =>
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  useEffect(() => {
-    if (hydrated && !state.selectedSetMenuId && SET_MENUS[0]) {
-      dispatch({ type: "SET_SET_MENU", setMenuId: SET_MENUS[0].id });
-    }
-  }, [hydrated, state.selectedSetMenuId, dispatch]);
-
   const pickMenu = (id: string) => dispatch({ type: "SET_SET_MENU", setMenuId: id });
 
+  // Custom path = cuisine categories first, then the dishes in those cuisines.
   const goCustom = () => {
     dispatch({ type: "SET_FIELD", field: "menuMode", value: "custom" });
-    router.push("/menu-builder/custom-menu");
+    router.push("/menu-builder/cuisine");
   };
 
   const toggleDish = (section: SetMenuSection, optionId: string) =>
@@ -84,8 +88,8 @@ export default function SetMenuStep() {
 
   return (
     <BuilderLayout
-      steps={STEPS_VENUE_EVENT}
-      currentStep={stepIndexOf(STEPS_VENUE_EVENT, "menu")}
+      steps={steps}
+      currentStep={menuStepIndex(state, steps)}
       backHref="/menu-builder/venue"
       nextHref="/menu-builder/presentation"
       nextLabel="Next"
@@ -104,10 +108,13 @@ export default function SetMenuStep() {
           add-ons. Prefer full control? Build a custom menu instead.
         </p>
 
-        {/* Pricing cards (text only) */}
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {/* Fixed menu cards */}
+        <div
+          className={`mt-6 grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--menu-card-width)))] xl:grid-cols-[repeat(3,minmax(0,var(--menu-card-width)))] ${MENU_CARD_GAP}`}
+          style={{ "--menu-card-width": MENU_CARD_WIDTH } as CSSProperties}
+        >
           {SET_MENUS.map((menu) => (
-            <PricingCard
+            <SetMenuCard
               key={menu.id}
               menu={menu}
               selected={hydrated && selectedId === menu.id}
@@ -254,7 +261,7 @@ export default function SetMenuStep() {
 
 // ─── Sub-components ────────────────────────────────────────────────────────
 
-function PricingCard({
+function SetMenuCard({
   menu,
   selected,
   onClick,
@@ -266,22 +273,27 @@ function PricingCard({
   return (
     <button
       onClick={onClick}
-      className="flex flex-col rounded-lg border p-5 text-left transition-colors"
+      className={`group overflow-hidden rounded-[10px] border text-left transition-all ${MENU_CARD_HEIGHT}`}
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
-        backgroundColor: selected ? `${GOLD}1f` : "transparent",
-        outline: selected ? `1px solid ${GOLD}` : "none",
+        backgroundColor: MB_COLORS.cardCream,
+        boxShadow: selected ? `0 0 0 1px ${GOLD}` : "0 1px 3px rgba(0,0,0,0.06)",
       }}
     >
-      <p style={{ ...serif, color: INK }} className="text-base font-semibold leading-tight">
-        {menu.name}
-      </p>
-      <p style={{ ...serif, color: GOLD }} className="mt-3 text-[clamp(1.5rem,1.9vw,27px)] font-semibold leading-none">
-        {formatINR(menu.perPersonPrice)}
-      </p>
-      <p style={{ color: INK_MUTED }} className="mt-2 text-xs">
-        per person
-      </p>
+      <div className={`relative aspect-[1.48/1] w-full overflow-hidden bg-[#f4f0e8] ${MENU_IMAGE_HEIGHT}`}>
+        <Image
+          src={menu.coverImage}
+          alt={menu.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 244px, 244px"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+      </div>
+      <div className="flex min-h-[52px] items-center px-3 py-2.5">
+        <span style={{ ...serif, color: GOLD }} className="text-sm font-medium leading-snug">
+          {menu.name}
+        </span>
+      </div>
     </button>
   );
 }

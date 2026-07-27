@@ -46,7 +46,7 @@ const LETTER_START_DELAY = 0.4;
 // ─ Down-arrow CTA (appears after the title finishes) ──
 const CTA_DELAY = 1;
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[56px] w-[min(170px,586vw)] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-7 py-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.62),inset_0_-1px_0_rgba(255,255,255,0.18),0_18px_42px_rgba(0,0,0,0.22)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent md:min-h-[64px]";
+  "min-h-[clamp(44px,12vw,64px)] w-[clamp(108px,30vw,170px)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -159,7 +159,7 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
             href="#gallery"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={170}
+            circleSize="clamp(116px,32vw,170px)"
             magnet={0.35}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}

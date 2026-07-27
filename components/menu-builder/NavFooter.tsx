@@ -47,11 +47,10 @@ export default function NavFooter({
 }: Props) {
   return (
     <div
-      className={`relative w-full ${SECTION_PAD} flex items-center justify-center gap-4`}
+      className={`relative w-full ${SECTION_PAD} flex items-center justify-end gap-4`}
       style={{ backgroundColor: MB_COLORS.bg }}
     >
-      {/* Back — pinned to the left; the primary Next button stays centered
-          (figma reference shows a single centered CTA). */}
+      {/* Back and Next align with the left and right edges of the shared panel. */}
       {backHref && (
         <Link
           href={backHref}
@@ -62,7 +61,7 @@ export default function NavFooter({
         </Link>
       )}
 
-      {/* Primary Next / action button — centered */}
+      {/* Primary Next / action button — aligned below the booking summary edge. */}
       <NextButton
         href={nextHref}
         label={nextLabel}

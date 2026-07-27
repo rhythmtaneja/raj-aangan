@@ -10,6 +10,7 @@
 import {
   STEPS_OUTDOOR,
   STEPS_VENUE_EVENT,
+  STEPS_VENUE_EVENT_CUSTOM,
   type BookingState,
   type Venue,
   type VenueKind,
@@ -30,15 +31,26 @@ export function venueKindOf(venue: Venue | null | undefined): VenueKind {
 
 /**
  * The step-set for the current state.
- *   • outdoor      → STEPS_OUTDOOR
- *   • venue-event  → STEPS_VENUE_EVENT (same for all venues)
+ *   • outdoor                    → STEPS_OUTDOOR
+ *   • venue-event, set menu      → STEPS_VENUE_EVENT (5 steps)
+ *   • venue-event, custom menu   → STEPS_VENUE_EVENT_CUSTOM (adds Cuisine)
  */
 export function getSteps(state: BookingState): WizardStep[] {
-  return state.cateringType === "outdoor" ? STEPS_OUTDOOR : STEPS_VENUE_EVENT;
+  if (state.cateringType === "outdoor") return STEPS_OUTDOOR;
+  return state.menuMode === "custom" ? STEPS_VENUE_EVENT_CUSTOM : STEPS_VENUE_EVENT;
 }
 
 /** 1-based index of a slug within a step-set (1 if not found). */
 export function stepIndexOf(steps: WizardStep[], slug: string): number {
   const i = steps.findIndex((s) => s.slug === slug);
   return i === -1 ? 1 : i + 1;
+}
+
+/**
+ * 1-based index of the Menu step — its slug differs per mode ("menu" for the
+ * set-menu screen, "custom-menu" once the custom builder is active), so both
+ * screens ask for it through here instead of hardcoding a slug.
+ */
+export function menuStepIndex(state: BookingState, steps: WizardStep[]): number {
+  return stepIndexOf(steps, state.menuMode === "custom" ? "custom-menu" : "menu");
 }

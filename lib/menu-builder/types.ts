@@ -296,15 +296,28 @@ export const INITIAL_STATE: BookingState = {
 export type WizardStep = { label: string; slug: string };
 
 /**
- * Venue Event flow — now identical for every venue. The Menu step shows the
- * fixed set menus; a "Build custom menu" button branches into the from-scratch
- * builder (cuisine → items), which are sub-screens of this same Menu step, so
- * the 5-step bar is unchanged whichever path the guest takes.
+ * Venue Event flow — identical for every venue. The Menu step shows the fixed
+ * set menus; a "Build a Custom Menu" button branches into the from-scratch
+ * builder, which adds its own Cuisine step (see STEPS_VENUE_EVENT_CUSTOM).
  */
 export const STEPS_VENUE_EVENT: WizardStep[] = [
   { label: "Client", slug: "client" },
   { label: "Venue", slug: "venue" },
   { label: "Menu", slug: "menu" },
+  { label: "Presentation", slug: "presentation" },
+  { label: "Quote", slug: "quote" },
+];
+
+/**
+ * Venue Event flow once the guest opts into the custom builder (menuMode ===
+ * "custom"): a Cuisine step appears before Menu. Cuisine picks the categories,
+ * Menu (= /menu-builder/custom-menu) then lists only those categories' dishes.
+ */
+export const STEPS_VENUE_EVENT_CUSTOM: WizardStep[] = [
+  { label: "Client", slug: "client" },
+  { label: "Venue", slug: "venue" },
+  { label: "Cuisine", slug: "cuisine" },
+  { label: "Menu", slug: "custom-menu" },
   { label: "Presentation", slug: "presentation" },
   { label: "Quote", slug: "quote" },
 ];

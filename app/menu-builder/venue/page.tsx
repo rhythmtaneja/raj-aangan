@@ -20,7 +20,6 @@ const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
-const VENUE_IMG_H = 180;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -72,7 +71,7 @@ export default function Step2VenuePage() {
 
         {/* OUR PROPERTIES */}
         <SectionLabel>Our Properties</SectionLabel>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           {ourProperties.map((v) => (
             <VenueCard
               key={v.id}
@@ -85,7 +84,7 @@ export default function Step2VenuePage() {
 
         {/* VENUE PARTNERS */}
         <SectionLabel>Venue Partner in Jaipur</SectionLabel>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           {partners.map((v) => (
             <VenueCard
               key={v.id}
@@ -150,12 +149,12 @@ function VenueCard({
       }}
     >
       {/* Image + category badge */}
-      <div className="relative w-full" style={{ height: VENUE_IMG_H }}>
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#f4f0e8]">
         <Image
           src={venue.image}
           alt={venue.name}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 304px"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         {venue.category !== "Both" && (
@@ -166,20 +165,22 @@ function VenueCard({
             {venue.category}
           </span>
         )}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent px-4 pb-4 pt-10">
+          <h3
+            style={{ ...serif }}
+            className="text-center text-[clamp(1.3rem,1.7vw,22px)] font-semibold leading-tight text-white"
+          >
+            {venue.name}
+          </h3>
+        </div>
       </div>
 
       {/* Body */}
-      <div className="p-4">
+      <div className="p-3.5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3
-              style={{ ...serif, color: INK }}
-              className="truncate text-lg font-semibold"
-            >
-              {venue.name}
-            </h3>
             {venue.description && (
-              <p style={{ color: INK_MUTED }} className="mt-0.5 text-xs">
+              <p style={{ color: GOLD }} className="text-xs font-medium">
                 {venue.description}
               </p>
             )}
@@ -188,7 +189,7 @@ function VenueCard({
                 Capacity {venue.capacity}
               </p>
             )}
-            <p style={{ color: GOLD }} className="mt-1 text-xs font-medium">
+            <p style={{ color: venue.type === "partner" ? MB_COLORS.greenCheck : GOLD }} className="mt-1 text-xs font-medium">
               {venue.pricingNote}
             </p>
           </div>

@@ -43,6 +43,12 @@ const TITLE_TEXT = "One of the most premium resort for wedding & events";
 const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 65px)";
 const TITLE_MAX_W = "1200px";
 
+// ─ Decorative logo ──
+const LOGO_TOP = "clamp(18rem, 33vh, 23rem)";
+const LOGO_SIZE = "clamp(180px, 34vw, 220px)";
+const LOGO_CROP_HEIGHT = `calc(${LOGO_SIZE} * 0.327)`;
+const LOGO_CROP_OFFSET = `calc(${LOGO_SIZE} * -0.314)`;
+
 // ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.03;
 const LETTER_DURATION = 0.9;
@@ -176,16 +182,27 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
       <SiteHeader />
 
       {/* Decorative RAEC logo block */}
-      <div className="absolute inset-x-0 top-[clamp(10rem,21vh,15rem)] z-10 flex flex-col items-center">
-        <Image src="/images/logo-round.png" alt="" width={58} height={58} priority />
-        <div className="-mt-3 h-18 w-[min(50vw,220px)] overflow-hidden">
+      <div
+        className="absolute inset-x-0 z-10 flex flex-col items-center"
+        style={{ top: LOGO_TOP }}
+      >
+        {/* <Image src="/images/logo-round.png" alt="" width={58} height={58} priority /> */}
+        <div
+          className="-mt-3 overflow-hidden"
+          style={{ width: LOGO_SIZE, height: LOGO_CROP_HEIGHT }}
+        >
           <Image
             src="/images/logo.png"
             alt="Raj Aangan Events and Caterers"
             width={220}
             height={220}
             priority
-            className="h-[220px] w-[220px] max-w-none -translate-y-[69px]"
+            className="max-w-none"
+            style={{
+              width: LOGO_SIZE,
+              height: LOGO_SIZE,
+              transform: `translateY(${LOGO_CROP_OFFSET})`,
+            }}
           />
         </div>
       </div>

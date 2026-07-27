@@ -20,7 +20,7 @@ const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
 const SECTION_PAD = "pt-24 pb-12 md:pt-32 md:pb-16";
 const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
 const GLASS_EXPLORE_BUTTON_CLASS =
-  "min-h-[50px] min-w-[130px] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,14px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.58),inset_0_-1px_0_rgba(255,255,255,0.16),0_14px_32px_rgba(0,0,0,0.2)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent";
+  "min-h-[50px] min-w-[130px] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,14px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.76),inset_0_-1px_0_rgba(255,255,255,0.10),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)]";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller

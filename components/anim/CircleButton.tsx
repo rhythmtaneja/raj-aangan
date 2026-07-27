@@ -82,8 +82,8 @@ type CircleButtonProps = {
   circleColor?: string;
   /** Arrow + (optional) hovered-label colour. */
   arrowColor?: string;
-  /** Ball diameter in px. */
-  circleSize?: number;
+  /** Ball diameter in px or a CSS size value. */
+  circleSize?: number | string;
   /** Magnetic pull for the whole ball, 0–1. */
   magnet?: number;
   /** Magnetic pull for the arrow *within* the ball, 0–1. */

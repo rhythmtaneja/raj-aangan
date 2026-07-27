@@ -1,11 +1,16 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: components/menu-builder/CustomMenuStep.tsx
 // ══════════════════════════════════════════════════════════════════
-// The from-scratch custom builder. Shows the full à-la-carte master menu
+// The from-scratch custom builder. Shows the à-la-carte master menu
 // (CUSTOM_MENU_SECTIONS, generated from RAEC_master_menu.csv) as an accordion —
 // same interaction as the set-menu step: section headings collapsed by
 // default, click to expand into the dishes (grouped by subsection where the
 // source has them), each an add-to-cart row with its price.
+//
+// Only the sections belonging to the cuisines picked on the previous step
+// (/menu-builder/cuisine) are listed — pick Drinks + Chaat + Soup and just
+// those three cuisines' sections show up. No cuisine picked (deep link) → the
+// full master menu, so the screen is never empty.
 //
 // No "choose N" limits here — add as many as you like. Continue unlocks once
 // at least one dish is chosen. Selections reuse the shared ADD_DISH/REMOVE_DISH
@@ -14,11 +19,12 @@
 
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { CUSTOM_MENU_SECTIONS } from "@/lib/menu-builder/data";
-import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
+import { getCuisineCardById, sectionsForCuisines } from "@/lib/menu-builder/cuisine-groups";
+import { getSteps, menuStepIndex } from "@/lib/menu-builder/flow";
 import { formatINR } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, type CustomMenuItem, type CustomMenuSection } from "@/lib/menu-builder/types";
 
@@ -43,6 +49,14 @@ export default function CustomMenuStep() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const toggleSection = (id: string) => setOpen((p) => ({ ...p, [id]: !p[id] }));
 
+  // Only the cuisines picked on the previous step (all of them pre-hydration,
+  // so server and first client render agree).
+  const cuisineIds = hydrated ? state.selectedCuisineCategories : [];
+  const sections = useMemo(() => sectionsForCuisines(cuisineIds), [cuisineIds]);
+  const cuisineNames = cuisineIds
+    .map((id) => getCuisineCardById(id)?.name)
+    .filter(Boolean) as string[];
+
   const selectedSet = new Set(state.selectedDishes.map((d) => d.dishId));
   const activeMeal = state.mealTypes[0] || "Dinner";
 
@@ -62,8 +76,9 @@ export default function CustomMenuStep() {
   return (
     <BuilderLayout
       steps={steps}
-      currentStep={stepIndexOf(steps, "menu")}
-      backHref="/menu-builder/menu"
+      currentStep={menuStepIndex(state, steps)}
+      backHref="/menu-builder/cuisine"
+      backLabel="Back to Cuisines"
       nextHref="/menu-builder/presentation"
       nextLabel="Next"
       nextDisabled={!hydrated || totalSelected === 0}
@@ -76,16 +91,30 @@ export default function CustomMenuStep() {
           Build Your Custom Menu
         </h2>
         <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
-          Browse every course and add the dishes you want — no fixed package,
-          no limits.{" "}
+          {cuisineNames.length > 0
+            ? "Add the dishes you want from the cuisines you picked — no fixed package, no limits. "
+            : "Browse every course and add the dishes you want — no fixed package, no limits. "}
           <span style={{ color: GOLD }}>
             {hydrated ? totalSelected : 0} selected
           </span>
           .
         </p>
 
+        {cuisineNames.length > 0 && (
+          <p style={{ color: INK_MUTED }} className="mt-3 text-xs">
+            <span style={{ color: INK }}>Cuisines:</span> {cuisineNames.join(" · ")}{" "}
+            <Link
+              href="/menu-builder/cuisine"
+              className="underline underline-offset-2"
+              style={{ color: GOLD }}
+            >
+              Edit
+            </Link>
+          </p>
+        )}
+
         <div className="mt-6 space-y-3">
-          {CUSTOM_MENU_SECTIONS.map((section) => {
+          {sections.map((section) => {
             const isOpen = !!open[section.id];
             const count = hydrated ? sectionSelectedCount(section) : 0;
             return (

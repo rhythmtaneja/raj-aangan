@@ -11,6 +11,7 @@ import { useGSAP } from "@gsap/react";
 import SiteHeader from "@/components/ui/SiteHeader";
 import CircleButton from "@/components/anim/CircleButton";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
+import ImageOverlay from "@/components/ui/ImageOverlay";
 
 
 gsap.registerPlugin(useGSAP);
@@ -23,7 +24,9 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
 // ─ Background ──
 const BG_IMAGE = "/images/venue-hero.jpg";
-const OVERLAY_OPACITY = 0.35;
+
+// ─ Overlay tint on hero image so it matches the venue property cards ──
+const HERO_OVERLAY = "rgba(15,10,10,0.30)";
 
 // ─ Bottom blend — dissolves hero photo INTO the WHITE next section ──
 // MUST match the bg of VenuePropertiesSection (currently #ffffff).
@@ -41,9 +44,9 @@ const LETTER_INITIAL_Y = 32;
 const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA ──
-const CTA_DELAY = 1;
+const CTA_DELAY = 1.5;
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[58px] w-[min(172px,58vw)] rounded-full border border-white/80 bg-[rgba(255,255,255,0.13)] px-7 py-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.62),inset_0_-1px_0_rgba(255,255,255,0.18),0_18px_42px_rgba(0,0,0,0.22)] backdrop-blur-md transition-colors duration-300 hover:bg-transparent md:min-h-[64px]";
+  "min-h-[clamp(44px,12vw,64px)] w-[clamp(104px,29vw,150px)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
 
 // ─ Smooth scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "properties";
@@ -135,10 +138,8 @@ export default function VenueHero({ bgImage }: { bgImage?: string }) {
 
       </div>
 
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: `rgba(25,25,25,${OVERLAY_OPACITY})` }}
-      />
+      <ImageOverlay opacity={0.44} />
+      <div className="absolute inset-0" style={{ backgroundColor: HERO_OVERLAY }} />
 
       <div
         aria-hidden
@@ -166,7 +167,7 @@ export default function VenueHero({ bgImage }: { bgImage?: string }) {
             onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={190}
+            circleSize="clamp(116px,32vw,190px)"
             magnet={0.35}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}
