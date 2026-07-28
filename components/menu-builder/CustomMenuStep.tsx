@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { getCuisineCardById, sectionsForCuisines } from "@/lib/menu-builder/cuisine-groups";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, menuStepIndex } from "@/lib/menu-builder/flow";
 import { formatINR } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, type CustomMenuItem, type CustomMenuSection } from "@/lib/menu-builder/types";
@@ -44,6 +44,7 @@ const CARD_PADDING = "p-5 md:p-10";
 
 export default function CustomMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
+  const { sectionsForCuisines, getCuisineCard } = useCatalog();
   const steps = getSteps(state);
 
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -51,10 +52,16 @@ export default function CustomMenuStep() {
 
   // Only the cuisines picked on the previous step (all of them pre-hydration,
   // so server and first client render agree).
-  const cuisineIds = hydrated ? state.selectedCuisineCategories : [];
-  const sections = useMemo(() => sectionsForCuisines(cuisineIds), [cuisineIds]);
+  const cuisineIds = useMemo(
+    () => (hydrated ? state.selectedCuisineCategories : []),
+    [hydrated, state.selectedCuisineCategories],
+  );
+  const sections = useMemo(
+    () => sectionsForCuisines(cuisineIds),
+    [sectionsForCuisines, cuisineIds],
+  );
   const cuisineNames = cuisineIds
-    .map((id) => getCuisineCardById(id)?.name)
+    .map((id) => getCuisineCard(id)?.name)
     .filter(Boolean) as string[];
 
   const selectedSet = new Set(state.selectedDishes.map((d) => d.dishId));

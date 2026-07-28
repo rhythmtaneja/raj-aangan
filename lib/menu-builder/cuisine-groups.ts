@@ -1,7 +1,11 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: lib/menu-builder/cuisine-groups.ts
 // ══════════════════════════════════════════════════════════════════
-// The cuisine cards shown on /menu-builder/cuisine (custom-menu step 1 of 2).
+// The FALLBACK cuisine cards for /menu-builder/cuisine (custom-menu step 1 of
+// 2) — used until Sanity has `cuisineGroup` documents, and whenever Sanity is
+// unreachable. Once the CMS is seeded, queries.ts serves these from Sanity and
+// this file is only the safety net (it also seeds the CMS — see
+// scripts/seed-menu-builder.ts).
 //
 // Each card groups one or more sections of the à-la-carte master menu
 // (CUSTOM_MENU_SECTIONS, generated from RAEC_master_menu.csv). Whatever the
@@ -18,22 +22,18 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { CUSTOM_MENU_SECTIONS } from "./generated/custom-menu";
-import type { CustomMenuSection } from "./types";
+import { unmappedSectionIds, withCuisineCounts } from "./menu-utils";
+import type { CuisineCard } from "./types";
 
 const PLACEHOLDER_IMG = "/images/mb-placeholder.jpg";
 
+/** A card before its counts are derived (what the mapping below declares). */
 export type CuisineGroup = {
   id: string;
   name: string;
   image: string;
   /** ids of the CUSTOM_MENU_SECTIONS this card unlocks. */
   sectionIds: string[];
-};
-
-/** A group plus its derived counts — what the cards actually render. */
-export type CuisineCard = CuisineGroup & {
-  itemCount: number;
-  sectionCount: number;
 };
 
 // ─── The mapping ───────────────────────────────────────────────────────────
@@ -182,65 +182,28 @@ export const CUISINE_GROUPS: CuisineGroup[] = [
   },
 ];
 
-// ─── Derived: the cards the UI renders ─────────────────────────────────────
-
-const SECTION_BY_ID = new Map(CUSTOM_MENU_SECTIONS.map((s) => [s.id, s]));
-
-const itemsIn = (section: CustomMenuSection) =>
-  section.subsections.reduce((n, sub) => n + sub.items.length, 0);
-
-/** Sections that no group above claims — never dropped, just bundled last. */
-const UNMAPPED_SECTION_IDS = CUSTOM_MENU_SECTIONS.filter(
-  (s) => !CUISINE_GROUPS.some((g) => g.sectionIds.includes(s.id)),
-).map((s) => s.id);
-
-const ALL_GROUPS: CuisineGroup[] = UNMAPPED_SECTION_IDS.length
-  ? [
-      ...CUISINE_GROUPS,
-      {
-        id: "chefs-selection",
-        name: "Chef's Selection",
-        image: PLACEHOLDER_IMG,
-        sectionIds: UNMAPPED_SECTION_IDS,
-      },
-    ]
-  : CUISINE_GROUPS;
-
-/** The cuisine cards, with real item counts. Empty groups are dropped. */
-export const CUISINE_CARDS: CuisineCard[] = ALL_GROUPS.map((g) => {
-  const sections = g.sectionIds
-    .map((id) => SECTION_BY_ID.get(id))
-    .filter((s): s is CustomMenuSection => Boolean(s));
-  return {
-    ...g,
-    sectionCount: sections.length,
-    itemCount: sections.reduce((n, s) => n + itemsIn(s), 0),
-  };
-}).filter((c) => c.itemCount > 0);
-
-export const getCuisineCardById = (id: string): CuisineCard | undefined =>
-  CUISINE_CARDS.find((c) => c.id === id);
+// ─── Derived: the fallback cards ───────────────────────────────────────────
 
 /**
- * The master-menu sections unlocked by the given cuisine card ids, in the
- * master menu's own (course) order. No ids → every section (so a deep link to
- * /custom-menu without a cuisine pick still shows the full menu).
+ * The mapping above plus a trailing "Chef's Selection" card for any section no
+ * group claims, so nothing in the master menu is unreachable.
  */
-export function sectionsForCuisines(cuisineIds: string[]): CustomMenuSection[] {
-  if (cuisineIds.length === 0) return CUSTOM_MENU_SECTIONS;
-  const allowed = new Set(
-    cuisineIds.flatMap((id) => getCuisineCardById(id)?.sectionIds ?? []),
-  );
-  return CUSTOM_MENU_SECTIONS.filter((s) => allowed.has(s.id));
-}
+export const CUISINE_GROUPS_WITH_REST: CuisineGroup[] = (() => {
+  const rest = unmappedSectionIds(CUISINE_GROUPS, CUSTOM_MENU_SECTIONS);
+  if (!rest.length) return CUISINE_GROUPS;
+  return [
+    ...CUISINE_GROUPS,
+    {
+      id: "chefs-selection",
+      name: "Chef's Selection",
+      image: PLACEHOLDER_IMG,
+      sectionIds: rest,
+    },
+  ];
+})();
 
-/** Every master-menu item id inside a cuisine card (used to prune de-selections). */
-export function itemIdsForCuisine(cuisineId: string): string[] {
-  const card = getCuisineCardById(cuisineId);
-  if (!card) return [];
-  return card.sectionIds.flatMap((sid) => {
-    const section = SECTION_BY_ID.get(sid);
-    if (!section) return [];
-    return section.subsections.flatMap((sub) => sub.items.map((it) => it.id));
-  });
-}
+/** Fallback cuisine cards, with real item counts. Empty cards are dropped. */
+export const CUISINE_CARDS: CuisineCard[] = withCuisineCounts(
+  CUISINE_GROUPS_WITH_REST,
+  CUSTOM_MENU_SECTIONS,
+);

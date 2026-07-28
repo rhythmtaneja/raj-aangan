@@ -34,23 +34,35 @@ npm run dev
 Add the same env vars in **Vercel → Project → Settings → Environment
 Variables**, then redeploy. Studio ships at `https://<your-domain>/studio`.
 
-## 3. Import the menu data (once you have the JSON)
+## 3. Seed the Menu Builder (do this once, right after step 1)
+
+This copies everything the Menu Builder currently shows — the 7 set menus, the
+1,128-dish à-la-carte menu, the 15 cuisine cards, the presentation options, the
+outdoor catalog and the pricing/quote settings — into Sanity, **including the
+photos** from `/public`, so the client opens Studio to a filled-in CMS.
 
 ```bash
 set -a; . ./.env.local; set +a          # load env into the shell
-npm run import-menu -- ./data/menu-data.json
+npx sanity login                        # if you aren't logged in already
+npm run seed-menu-builder
 ```
 
-The importer is **idempotent** — deterministic IDs mean re-running replaces
-documents instead of duplicating them. See `scripts/import-menu-data.ts` for
-the expected JSON shape. Dishes' images are added later in Studio; the import
-only carries text, prices, and references.
-
-Dry run (transform only, no upload):
+120 documents, idempotent: every document has a deterministic `_id`
+(`setMenu-breakfast-menu`, `customMenuSection-the-soup-atelier`, …) and the
+import runs with `--replace`, so re-running updates in place instead of
+duplicating. Array items keep the ids the app already uses as their `_key`, so
+guests' saved selections survive the migration.
 
 ```bash
-node scripts/import-menu-data.ts ./data/menu-data.json --dry-run
+npm run seed-menu-builder -- --dry-run              # write the NDJSON, don't import
+npm run seed-menu-builder -- --only=setMenu,cuisineGroup
 ```
+
+> Re-running the seed **overwrites** the client's Studio edits for the
+> documents it touches. After the first run, use `--only=…` or don't run it.
+
+Legacy importer (pre-rework dish/cuisine/presetMenu types, kept for reference):
+`npm run import-menu -- ./data/menu-data.json`.
 
 ## 4. Live updates (publish → site refresh in ~30s)
 
@@ -74,6 +86,17 @@ no separate deploy.
 
 | Studio section | Editable content |
 | -------------- | ---------------- |
+| Menu Builder → Set Menus | The 7 fixed packages: per-person price, cover photo, description, courses, “choose N”, every dish, add-on surcharge |
+| Menu Builder → À-la-carte Menu | The 55 master-menu sections and all 1,128 dishes: name, traditional name, **price per plate**, availability, order |
+| Menu Builder → Cuisine Cards | The cards on the Cuisine step: name, photo, and which à-la-carte sections each one unlocks |
+| Menu Builder → Presentation Options | Cutlery, presentation styles, stall themes, live counters (photos + names) |
+| Menu Builder → Outdoor Catering | Bulk catalog items (price, unit, photo) and packaging styles |
+| Menu Builder → Venues / Occasions | Venue cards, capacity, per-head logistics; occasion tiles |
+| Menu Builder → Pricing & Quote Settings | GST %, add-on price, minimum guests, discount codes, quote heading/terms/validity/deposit, contact details |
 | Site Photos    | Every swappable image on the public site (text stays in code) |
-| Menu Builder   | Dishes, cuisines, categories, preset menus, venues, occasions |
 | Blog           | Posts (rich text) and authors |
+
+Full field-by-field walkthrough for the client: [`docs/CMS_GUIDE.md`](docs/CMS_GUIDE.md).
+
+Anything left empty in Studio falls back to what the code ships with, so the
+site never renders blank — see `lib/menu-builder/queries.ts`.

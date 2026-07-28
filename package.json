@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "sanity": "sanity",
-    "import-menu": "node scripts/import-menu-data.ts"
+    "import-menu": "node scripts/import-menu-data.ts",
+    "seed-menu-builder": "node --import ./scripts/ts-loader.mjs scripts/seed-menu-builder.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

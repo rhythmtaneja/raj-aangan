@@ -1,15 +1,21 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: lib/menu-builder/config.ts
 // ══════════════════════════════════════════════════════════════════
-// Static wizard config that is NOT managed in Sanity (yet):
-//   • Budget tiers — placeholder per-head pricing (confirm real values
-//     with client, then update here).
-//   • Cutlery / Presentation / Stall / Live-counter add-ons (Step 4 visuals).
-// These stay in code because they were out of scope for the CMS phase.
+// The FALLBACK wizard config — what the builder uses until Sanity has the
+// matching documents, and whenever Sanity is unreachable:
+//   • Cutlery / Presentation / Stall / Live-counter tiles → Sanity type
+//     `presentationOption` (Studio: Menu Builder → Presentation Options).
+//   • DEFAULT_PRICING_SETTINGS → Sanity singleton `pricingSettings`
+//     (Studio: Menu Builder → Pricing & Quote Settings).
+//   • Budget tiers — no longer rendered anywhere (the budget block was cut
+//     from the cuisine step); kept only so old state stays type-valid.
+// Keep these in step with the schemas; the seed script pushes them into
+// Sanity on first run (scripts/seed-menu-builder.ts).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type {
   BudgetTier, CutleryOption, PresentationStyle, StallTheme, LiveCounter,
+  PricingSettings,
 } from "./types";
 
 // ─── Step 3 — Budget tiers ─────────────────────────────────────────────────
@@ -61,6 +67,28 @@ export const LIVE_COUNTER_TILES: StallTheme[] = [
   { id: "chinese-wok",     name: "Chinese Wok",     image: "/images/mb/placeholder-5.jpg" },
   { id: "mocktail-counter", name: "Mocktail Bar",   image: "/images/mb/placeholder-6.jpg" },
 ];
+
+// ─── Pricing & quote defaults ──────────────────────────────────────────────
+// Mirrors the `pricingSettings` singleton. Every number here is the value the
+// quote used before the CMS existed; the client can change them in Studio.
+
+export const DEFAULT_PRICING_SETTINGS: PricingSettings = {
+  gstPercent: 5,
+  // Placeholder surcharge per extra set-menu dish — confirm with client.
+  addOnPricePerItem: 100,
+  minimumGuests: 0,
+
+  showDiscountField: true,
+  discountCodes: [],
+  invalidCodeMessage: "No valid discount codes yet.",
+
+  quoteHeading: "Review & Quote",
+  quoteSubheading:
+    "Everything you have chosen review before generating the final quote.",
+  quoteValidityDays: 0,
+  depositPercent: 0,
+  quoteTerms: [],
+};
 
 export const LIVE_COUNTERS: LiveCounter[] = [
   { id: "chaat-station",  name: "Chaat Station"  },

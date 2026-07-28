@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { PACKAGING_STYLES } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { MB_COLORS, STEPS_OUTDOOR } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -33,6 +33,7 @@ const PACKAGING_STEP_INDEX = 3; // Client, Catalog, [Packaging], Quote
 
 export default function PackagingStepPage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { packagingStyles } = useCatalog();
   const router = useRouter();
 
   // Route protection — outdoor sub-flow, and needs a catalog selection.
@@ -78,7 +79,7 @@ export default function PackagingStepPage() {
         {/* Packaging style — single-select pills */}
         <SectionLabel>Packaging Style</SectionLabel>
         <div className="flex flex-wrap gap-3">
-          {PACKAGING_STYLES.map((s) => (
+          {packagingStyles.map((s) => (
             <Pill
               key={s.id}
               selected={state.packagingStyleId === s.id}

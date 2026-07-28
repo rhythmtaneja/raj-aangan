@@ -1,36 +1,41 @@
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: lib/menu-builder/pricing.ts
 // ══════════════════════════════════════════════════════════════════
-// Placeholder pricing math. Structure is unchanged; the numbers now come
-// from Sanity-managed data passed in by the caller:
-//   • Venue logistics per-head  → venue.logisticsPerHead (Sanity)
-//   • Budget tier per-head      → BUDGET_TIERS (still static config —
-//                                 no Sanity schema for tiers this phase)
-//   • GST % / discount %        → still placeholder constants below
-// Swap the remaining placeholders once the client confirms real values.
+// All quote math. Nothing is hardcoded any more — every function takes a
+// `PricingData` bundle built from the catalog (Sanity, or the code fallback
+// when Sanity is empty):
+//
+//   settings          → Studio: Menu Builder → Pricing & Quote Settings
+//                       (GST %, add-on surcharge, discount codes, wording)
+//   getSetMenu        → Studio: Set Menus (per-person price, choose-N)
+//   getCustomItem     → Studio: À-la-carte Menu (price per dish)
+//   getCatalogItem    → Studio: Outdoor Catering → Catalog Items
+//   venues            → Studio: Venues (logisticsPerHead)
+//
+// Client components get this bundle from useCatalog() — see usePricingData()
+// in catalog-hooks.ts.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { BUDGET_TIERS } from "./config";
-import { getCatalogItemById, getCustomMenuItemById, getSetMenuById } from "./data";
-import type { BookingState, Dish, Venue } from "./types";
+import type {
+  BookingState,
+  CatalogItem,
+  CustomMenuItem,
+  DiscountCode,
+  PricingSettings,
+  SetMenu,
+  Venue,
+} from "./types";
 
-// ─── PLACEHOLDER CONSTANTS — replace when client confirms ─────────────────
-const GST_PERCENT = 5;
-const DEFAULT_DISCOUNT_PERCENT = 30;
-// Per-head surcharge for each set-menu dish chosen BEYOND its section's
-// chooseCount (an "add-on"). Placeholder — confirm the real add-on price with
-// the client (flat per item, or per-dish prices).
-const ADDON_PRICE_PER_ITEM = 100;
-// ═══════════════════════════════════════════════════════════════════════════
+/** Everything the math needs, resolved from the catalog. */
+export type PricingData = {
+  settings: PricingSettings;
+  getSetMenu: (id: string | null) => SetMenu | undefined;
+  getCustomItem: (id: string) => CustomMenuItem | undefined;
+  getCatalogItem: (id: string) => CatalogItem | undefined;
+  venues: Venue[];
+};
 
-export const getAddOnPricePerItem = (): number => ADDON_PRICE_PER_ITEM;
-
-/** Look up the per-head rate for the selected budget tier. */
-export function getPerHeadRate(state: BookingState): number {
-  if (!state.budgetTier) return 0;
-  const tier = BUDGET_TIERS.find((t) => t.id === state.budgetTier);
-  return tier?.perHead ?? 0;
-}
+// ─── Venue ─────────────────────────────────────────────────────────────────
 
 /**
  * Per-head venue logistics surcharge. Uses the Sanity `logisticsPerHead`
@@ -49,34 +54,21 @@ export function getVenueLogisticsPerHead(
   return match ? parseInt(match[1], 10) : 0;
 }
 
-/** Sum of prices for all selected dishes. Useful for the summary. */
-export function getSelectedDishesSubtotal(
-  state: BookingState,
-  dishes: Dish[],
-): number {
-  return state.selectedDishes.reduce((sum, { dishId }) => {
-    const dish = dishes.find((d) => d.id === dishId);
-    return sum + (dish?.price ?? 0);
-  }, 0);
-}
+// ─── Set menus ─────────────────────────────────────────────────────────────
 
-/**
- * Estimated total = (perHead + venueLogistics) × guests × eventDays.
- * Matches the design ballpark (e.g. 300 × 1 × ₹1,250 ≈ ₹4,42,500 with GST).
- */
-export function getEstimatedTotal(state: BookingState, venues: Venue[]): number {
-  const perHead = getPerHeadRate(state) + getVenueLogisticsPerHead(state, venues);
-  return perHead * state.guests * state.eventDays;
+/** The add-on surcharge for the selected menu (menu override → global default). */
+export function getAddOnPricePerItem(state: BookingState, data: PricingData): number {
+  const menu = data.getSetMenu(state.selectedSetMenuId);
+  const override = menu?.addOnPricePerItem;
+  return typeof override === "number" ? override : data.settings.addOnPricePerItem;
 }
-
-// ─── Sub-flow A — set-menu pricing ─────────────────────────────────────────
 
 /**
  * Number of add-on dishes across the selected set menu — i.e. picks beyond
- * each section's chooseCount (the first chooseCount, in order, are included).
+ * each course's chooseCount (the first chooseCount, in order, are included).
  */
-export function getSetMenuAddOnCount(state: BookingState): number {
-  const menu = getSetMenuById(state.selectedSetMenuId);
+export function getSetMenuAddOnCount(state: BookingState, data: PricingData): number {
+  const menu = data.getSetMenu(state.selectedSetMenuId);
   if (!menu) return 0;
   return menu.sections.reduce((sum, s) => {
     const chosen = state.setMenuSelections[s.id]?.length ?? 0;
@@ -85,103 +77,110 @@ export function getSetMenuAddOnCount(state: BookingState): number {
 }
 
 /** Add-on surcharge per head = #add-on dishes × per-item surcharge. */
-export function getSetMenuAddOnPerHead(state: BookingState): number {
-  return getSetMenuAddOnCount(state) * ADDON_PRICE_PER_ITEM;
+export function getSetMenuAddOnPerHead(state: BookingState, data: PricingData): number {
+  return getSetMenuAddOnCount(state, data) * getAddOnPricePerItem(state, data);
 }
 
 /** Per-head for the selected set menu = package base + add-on surcharge. */
-export function getSetMenuPerHead(state: BookingState): number {
-  const menu = getSetMenuById(state.selectedSetMenuId);
+export function getSetMenuPerHead(state: BookingState, data: PricingData): number {
+  const menu = data.getSetMenu(state.selectedSetMenuId);
   if (!menu) return 0;
-  return menu.perPersonPrice + getSetMenuAddOnPerHead(state);
-}
-
-/**
- * Set-menu subtotal (pre-GST) = perPersonPrice × guests × eventDays.
- * Raj Aangan is RAEC-owned, so venue logistics are 0 and not added here.
- */
-export function getSetMenuSubtotal(state: BookingState): number {
-  return getSetMenuPerHead(state) * state.guests * state.eventDays;
-}
-
-/** GST-inclusive estimated total for the set-menu flow (used by the sidebar). */
-export function getSetMenuEstimatedTotal(state: BookingState): number {
-  const subtotal = getSetMenuSubtotal(state);
-  return subtotal + (subtotal * GST_PERCENT) / 100;
+  return menu.perPersonPrice + getSetMenuAddOnPerHead(state, data);
 }
 
 // ─── Venue-event pricing (set package OR custom sum-of-dishes) ──────────────
 
 /**
- * Custom-menu per-head = sum of the selected master-menu items' prices.
- * Prices are null until the client fills them, so this is 0 for now (any
- * priced item contributes once real numbers land — no code change needed).
+ * Custom-menu per-head = sum of the selected à-la-carte dishes' prices.
+ * Dishes with no price yet contribute 0, so the quote stays honest until the
+ * client fills prices in Studio.
  */
-export function getCustomMenuPerHead(state: BookingState): number {
+export function getCustomMenuPerHead(state: BookingState, data: PricingData): number {
   return state.selectedDishes.reduce(
-    (sum, { dishId }) => sum + (getCustomMenuItemById(dishId)?.price ?? 0),
+    (sum, { dishId }) => sum + (data.getCustomItem(dishId)?.price ?? 0),
     0,
   );
 }
 
 /**
  * Per-head base for the venue-event flow:
- *   • custom menu → sum of selected master-menu item prices.
+ *   • custom menu → sum of selected à-la-carte dish prices.
  *   • set menu    → package per-person price + add-on surcharge.
  */
-export function getVenueEventPerHead(state: BookingState): number {
+export function getVenueEventPerHead(state: BookingState, data: PricingData): number {
   return state.menuMode === "custom"
-    ? getCustomMenuPerHead(state)
-    : getSetMenuPerHead(state);
+    ? getCustomMenuPerHead(state, data)
+    : getSetMenuPerHead(state, data);
 }
 
-/** (perHead + venue logistics) × guests × eventDays — pre-GST. */
-export function getVenueEventSubtotal(state: BookingState, venues: Venue[]): number {
-  const perHead = getVenueEventPerHead(state) + getVenueLogisticsPerHead(state, venues);
+/** (perHead + venue logistics) × guests × eventDays — pre-GST, pre-discount. */
+export function getVenueEventSubtotal(state: BookingState, data: PricingData): number {
+  const perHead =
+    getVenueEventPerHead(state, data) + getVenueLogisticsPerHead(state, data.venues);
   return perHead * state.guests * state.eventDays;
 }
 
 /** GST-inclusive venue-event total (used by the sidebar). */
-export function getVenueEventEstimatedTotal(state: BookingState, venues: Venue[]): number {
-  const subtotal = getVenueEventSubtotal(state, venues);
-  return subtotal + (subtotal * GST_PERCENT) / 100;
+export function getVenueEventEstimatedTotal(
+  state: BookingState,
+  data: PricingData,
+): number {
+  return withGst(getVenueEventSubtotal(state, data), data.settings);
 }
 
 // ─── Sub-flow C — outdoor catalog pricing ──────────────────────────────────
 
 /** Sum of quantity × unit price across all selected catalog items (pre-GST). */
-export function getOutdoorSubtotal(state: BookingState): number {
+export function getOutdoorSubtotal(state: BookingState, data: PricingData): number {
   return Object.entries(state.catalogSelections).reduce((sum, [itemId, qty]) => {
-    const item = getCatalogItemById(itemId);
+    const item = data.getCatalogItem(itemId);
     return sum + (item ? item.price * qty : 0);
   }, 0);
 }
 
 /** GST-inclusive estimated total for the outdoor flow (used by the sidebar). */
-export function getOutdoorEstimatedTotal(state: BookingState): number {
-  const subtotal = getOutdoorSubtotal(state);
-  return subtotal + (subtotal * GST_PERCENT) / 100;
+export function getOutdoorEstimatedTotal(
+  state: BookingState,
+  data: PricingData,
+): number {
+  return withGst(getOutdoorSubtotal(state, data), data.settings);
 }
 
-/** Subtotal + GST. */
-export function getTotalWithGst(state: BookingState, venues: Venue[]): number {
-  const subtotal = getEstimatedTotal(state, venues);
-  return subtotal + (subtotal * GST_PERCENT) / 100;
+// ─── Tax + discounts ───────────────────────────────────────────────────────
+
+export const getGstAmount = (subtotal: number, settings: PricingSettings): number =>
+  (subtotal * settings.gstPercent) / 100;
+
+export const withGst = (subtotal: number, settings: PricingSettings): number =>
+  subtotal + getGstAmount(subtotal, settings);
+
+/**
+ * Look up a guest-entered discount code. Returns the matching code only when
+ * it is active, in date, and the booking meets its minimum guest count.
+ */
+export function findDiscountCode(
+  code: string,
+  state: BookingState,
+  settings: PricingSettings,
+  today = new Date(),
+): DiscountCode | null {
+  const wanted = code.trim().toLowerCase();
+  if (!wanted) return null;
+  const match = settings.discountCodes.find(
+    (c) => c.code.trim().toLowerCase() === wanted,
+  );
+  if (!match || !match.isActive) return null;
+  if (match.minGuests > 0 && state.guests < match.minGuests) return null;
+  if (match.expiresOn) {
+    const expiry = new Date(`${match.expiresOn}T23:59:59`);
+    if (!Number.isNaN(expiry.getTime()) && expiry < today) return null;
+  }
+  return match;
 }
 
-/** Applied discount amount. */
-export function getDiscountAmount(state: BookingState, venues: Venue[]): number {
-  const subtotal = getEstimatedTotal(state, venues);
-  return (subtotal * DEFAULT_DISCOUNT_PERCENT) / 100;
-}
-
-export function getDiscountPercent(): number {
-  return DEFAULT_DISCOUNT_PERCENT;
-}
-
-export function getGstPercent(): number {
-  return GST_PERCENT;
-}
+/** Discount value in ₹ off a pre-GST subtotal. */
+export const getDiscountAmount = (subtotal: number, percentOff: number): number =>
+  (subtotal * percentOff) / 100;
 
 // ─── Formatting ────────────────────────────────────────────────────────────
 

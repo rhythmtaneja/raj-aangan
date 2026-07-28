@@ -156,7 +156,14 @@ export type SetMenu = {
   perPersonPrice: number;       // 1250
   coverImage: string;
   description?: string;         // "RO water and 200ml bottles are included..."
+  /** Optional line under the price, e.g. "min 300 guests" (Sanity-managed). */
+  priceNote?: string;
   mealTypeFit: MealType[];      // which meal types this menu shows for
+  /**
+   * Per-head surcharge for each dish chosen beyond a course's chooseCount.
+   * null/undefined → use the global value from PricingSettings.
+   */
+  addOnPricePerItem?: number | null;
   sections: SetMenuSection[];
 };
 
@@ -183,6 +190,22 @@ export type CustomMenuSection = {
   subsections: CustomMenuSubsection[];
 };
 
+// ─── Custom builder — the cuisine cards that gate the à-la-carte menu ───────
+
+/**
+ * A cuisine card on /menu-builder/cuisine. `sectionIds` are the à-la-carte
+ * sections it unlocks; the counts are derived from those sections, never
+ * stored by hand. Sanity type: `cuisineGroup`.
+ */
+export type CuisineCard = {
+  id: string;
+  name: string;
+  image: string;
+  sectionIds: string[];
+  itemCount: number;
+  sectionCount: number;
+};
+
 // ─── Sub-flow C — Outdoor catalog shapes ───────────────────────────────────
 
 export type CatalogItem = {
@@ -198,6 +221,48 @@ export type CatalogItem = {
 export type PackagingStyle = {
   id: string;
   label: string;                // "Eco Kraft Box"
+  description?: string;
+  /** Optional per-unit packaging surcharge (not yet added to the quote). */
+  pricePerUnit?: number | null;
+};
+
+// ─── Pricing & quote settings (Sanity singleton `pricingSettings`) ─────────
+
+export type DiscountCode = {
+  code: string;
+  percentOff: number;
+  /** 0 = applies to any booking size. */
+  minGuests: number;
+  /** ISO date (YYYY-MM-DD). Absent = never expires. */
+  expiresOn?: string;
+  isActive: boolean;
+};
+
+/**
+ * Every number and piece of quote wording that isn't attached to one menu.
+ * Editable in Studio under Menu Builder → Pricing & Quote Settings; the
+ * defaults live in config.ts/DEFAULT_PRICING_SETTINGS.
+ */
+export type PricingSettings = {
+  gstPercent: number;
+  /** Default surcharge per extra set-menu dish (a menu may override it). */
+  addOnPricePerItem: number;
+  /** 0 = no minimum. */
+  minimumGuests: number;
+
+  showDiscountField: boolean;
+  discountCodes: DiscountCode[];
+  invalidCodeMessage: string;
+
+  quoteHeading: string;
+  quoteSubheading: string;
+  /** 0 hides the line. */
+  quoteValidityDays: number;
+  /** 0 hides the line. */
+  depositPercent: number;
+  quoteTerms: string[];
+  contactPhone?: string;
+  contactEmail?: string;
 };
 
 // ─── BookingState — what the user has selected across the wizard ───────────

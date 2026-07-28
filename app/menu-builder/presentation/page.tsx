@@ -18,14 +18,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
-import {
-  CUTLERY_OPTIONS,
-  LIVE_COUNTERS,
-  LIVE_COUNTER_TILES,
-  PRESENTATION_STYLES,
-  STALL_THEMES,
-} from "@/lib/menu-builder/config";
 import { MB_COLORS } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -45,6 +39,7 @@ const TILE_IMG_H   = 130;
 
 export default function PresentationStepPage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { presentation } = useCatalog();
   const router = useRouter();
 
   const steps = getSteps(state);
@@ -93,7 +88,7 @@ export default function PresentationStepPage() {
         {/* Live Counters — multi-select image grid (always shown) */}
         <SectionLabel>Choose Your Live Counters</SectionLabel>
         <PhotoGrid
-          items={LIVE_COUNTER_TILES}
+          items={presentation.liveCounterTiles}
           isSelected={(id) => p.liveCounters.includes(id)}
           onToggle={(id) => toggleMulti("liveCounters", id)}
         />
@@ -118,7 +113,7 @@ export default function PresentationStepPage() {
             {/* Cutlery — single-select image grid */}
             <SectionLabel>Cutlery</SectionLabel>
             <PhotoGrid
-              items={CUTLERY_OPTIONS}
+              items={presentation.cutlery}
               isSelected={(id) => p.cutlery === id}
               onToggle={(id) => setSingle("cutlery", id)}
             />
@@ -126,7 +121,7 @@ export default function PresentationStepPage() {
             {/* Presentation Style — single-select image grid */}
             <SectionLabel>Presentation Style</SectionLabel>
             <PhotoGrid
-              items={PRESENTATION_STYLES}
+              items={presentation.presentationStyles}
               isSelected={(id) => p.presentationStyle === id}
               onToggle={(id) => setSingle("presentationStyle", id)}
             />
@@ -134,7 +129,7 @@ export default function PresentationStepPage() {
             {/* Stall Theme — single-select image grid */}
             <SectionLabel>Stall Theme</SectionLabel>
             <PhotoGrid
-              items={STALL_THEMES}
+              items={presentation.stallThemes}
               isSelected={(id) => p.stallTheme === id}
               onToggle={(id) => setSingle("stallTheme", id)}
             />
@@ -142,7 +137,7 @@ export default function PresentationStepPage() {
             {/* Live Counter Design — multi-select pills */}
             <SectionLabel>Live Counter Design</SectionLabel>
             <div className="flex flex-wrap gap-3">
-              {LIVE_COUNTERS.map((lc) => (
+              {presentation.liveCounters.map((lc) => (
                 <Pill
                   key={lc.id}
                   selected={p.liveCounterDesigns.includes(lc.id)}

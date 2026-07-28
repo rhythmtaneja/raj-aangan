@@ -1,11 +1,12 @@
 @AGENTS.md
 
-# ⏱️ CURRENT STATE — Menu Builder rework (read this first)
+# ⏱️ CURRENT STATE — Menu Builder + Phase 8 CMS (read this first)
 
-Menu Builder rework is DONE and building green with **real menu data** (still
-pre-Sanity: hardcoded/generated files). **Next up = Phase 8: Sanity CMS wiring
-for the new types** (needs explicit go-ahead). `queries.ts` and the Sanity
-schemas were deliberately left UNTOUCHED during the rework.
+Menu Builder rework is DONE, and **Phase 8 (Sanity CMS wiring) is DONE in code**
+— schemas, queries, seed script and docs all land green. What remains is
+*operational*: connect a real Sanity project and run the seed (see
+"Phase 8 — CMS" below). Everything still runs identically with no Sanity
+project at all (graceful fallback preserved).
 
 **Flow.** Step 1 picks a **catering type**: `venue-event` or `outdoor`
 (`state.cateringType`). Progress bar is dynamic (`flow.ts/getSteps(state)`).
@@ -13,9 +14,13 @@ schemas were deliberately left UNTOUCHED during the rework.
   Client → Venue → **Menu** → Presentation → Quote (`STEPS_VENUE_EVENT`, 5 steps).
   - `/menu-builder/menu` (`SetMenuStep`) = the 7 fixed **set menus** for ALL
     venues. A CTA there ("Build a Custom Menu →") sets `menuMode:"custom"` and
-    goes straight to `/menu-builder/custom-menu` (`CustomMenuStep`) — the full
-    à-la-carte accordion. Both are the "Menu" step in the bar. (The old
-    `/menu-builder/cuisine` category-tiles step was REMOVED.)
+    goes to **`/menu-builder/cuisine`** (cuisine cards) → then
+    `/menu-builder/custom-menu` (`CustomMenuStep`, à-la-carte accordion).
+  - In custom mode the bar becomes **6 steps** (`STEPS_VENUE_EVENT_CUSTOM`,
+    Cuisine inserted before Menu; the Menu step's slug is `custom-menu`, so both
+    menu screens resolve their index via `flow.ts/menuStepIndex`).
+  - The cuisine picks (`state.selectedCuisineCategories`) FILTER the à-la-carte
+    sections shown next; de-selecting a cuisine prunes its picked dishes.
   - `menuMode` ("set" | "custom") drives quote/summary display + pricing.
 - **outdoor**: Client → Catalog → Packaging → Quote (`STEPS_OUTDOOR`).
 
@@ -40,6 +45,46 @@ schemas were deliberately left UNTOUCHED during the rework.
 **Regenerate data:** `python3 scripts/gen_set_menus.py` /
 `python3 scripts/gen_custom_menu.py` (self-contained; read the CSVs directly).
 
+# 🗄️ Phase 8 — CMS (DONE in code, needs a live project)
+
+Everything the builder shows is now Sanity-managed, with the generated/static
+data demoted to a fallback. **One rule: UI components never import the data —
+they read `useCatalog()`.** Whether a value came from Sanity or the fallback is
+decided in `queries.ts` alone.
+
+- **Schemas** (`sanity/schemaTypes/`): `setMenu`, `customMenuSection`,
+  `cuisineGroup`, `presentationOption` (5 kinds via a `kind` field),
+  `outdoorCatalogItem`, `packagingStyle`, `pricingSettings` (**singleton**:
+  GST, add-on price, discount codes, quote heading/terms/validity/deposit/
+  contact). Legacy `dish`/`category`/`cuisine`/`presetMenu` are still
+  registered but HIDDEN from the desk — nothing reads them.
+- **Desk** (`sanity/structure.ts`): one "Menu Builder" folder, presentation
+  options split into 5 filtered lists (each with a pre-filled + button, via
+  templates in `sanity.config.ts`). `SINGLETONS` now exported from structure.ts.
+- **Queries** (`queries.ts`): `getSetMenus`, `getCustomMenuSections`,
+  `getCuisineCards(sections)`, `getPresentationCatalog`,
+  `getOutdoorCatalogItems`, `getPackagingStyles`, `getPricingSettings` — each
+  falls back per-collection (an empty Sanity list keeps the hardcoded one).
+  `getCatalog()` fetches all of it in parallel for `app/menu-builder/layout.tsx`.
+- **Context** (`catalog.tsx`): provides the catalog PLUS lookups (`getSetMenu`,
+  `getCustomItem`, `getCatalogItem`, `getPackaging`, `getCuisineCard`,
+  `sectionsForCuisines`, `itemIdsForCuisine`). `catalog-hooks.ts/usePricingData()`
+  bundles what `pricing.ts` needs.
+- **Pricing** (`pricing.ts`): no constants left — every fn takes
+  `(state, data: PricingData)`. Adds real discount codes (`findDiscountCode`)
+  applied pre-GST, and per-menu add-on overrides.
+- **Shared helpers** (`menu-utils.ts`): counts / filtering used by both the
+  fallback (`cuisine-groups.ts`) and the Sanity path.
+- **Seed**: `npm run seed-menu-builder` (`scripts/seed-menu-builder.ts`) →
+  120 docs (55 sections/1128 dishes, 7 set menus, 15 cuisine cards, 32
+  presentation options, 6+4 outdoor, 1 settings) + uploads the `/public` photos
+  as assets. Idempotent (deterministic `_id`s + `--replace`); array `_key`s ARE
+  the existing app ids, so saved bookings survive. `--dry-run` / `--only=`.
+  Re-running overwrites client edits — say so before re-running.
+  Runs plain TS through `scripts/ts-loader.mjs` (resolve hook that adds `.ts`
+  and maps `@/`) — no new dependency.
+- **Client docs**: `docs/CMS_GUIDE.md` (field-by-field), `SANITY_SETUP.md` §3.
+
 **Responsiveness (done this cycle):** all `clamp(min,Xvw,max)` font ceilings
 were **capped to their 1440px value** (`scripts/*` one-off; the vw coeff stays,
 only the ceiling dropped) so laptops ≥1440px render identically and the client's
@@ -50,14 +95,21 @@ SiteHeader nav wraps on phones.
 
 **OPEN ITEMS (waiting on client / decisions):**
 1. Real per-person prices for Signature / Royal Feast / Elite set menus.
-2. Real add-on surcharge rule (currently ₹100/head placeholder per extra dish).
-3. Real prices in `RAEC_master_menu.csv` `price` column (custom items).
+   → now editable in Studio (Set Menus → Pricing), no code change needed.
+2. Real add-on surcharge rule (₹100/head placeholder) → Studio (Pricing &
+   Quote Settings, or per-menu override).
+3. Real prices for the 1128 custom items → Studio (À-la-carte Menu), or refill
+   the `price` column in `RAEC_master_menu.csv` + regenerate + re-seed.
 4. Presentation step: per-live-counter mapping (which counter → which cutlery /
    presentation / stall options). Currently selecting any counter reveals ALL
    options — see TODO in `app/menu-builder/presentation/page.tsx`.
 5. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
 6. Responsiveness calibration: reference width assumed 1440 — if the owner's Mac
    `window.innerWidth` differs a lot, recompute (recluster from the vw coeffs).
+7. No photo yet for the "Salads & Wellness Bowls" cuisine card (uses
+   `mb-placeholder.jpg`); the client can upload one in Studio.
+8. Live Sanity project: run `npx sanity init` + `npm run seed-menu-builder`,
+   then add the publish webhook (SANITY_SETUP.md §3–4).
 
 Reference designs: `docs/reference/screens/`. Data sources: `docs/menu-source/`.
 
@@ -86,9 +138,13 @@ Sanity is absent — always coalesce to a fallback.
   (a valid placeholder when unset so clients/builders never throw at module load).
 - `client.ts` — server-only read client. Never import into a `"use client"` file.
 - `image.ts` — `urlFor()` / `imageUrl()` CDN helpers (returns fallback on miss).
-- `schemaTypes/` — `dish`, `category`, `cuisine`, `presetMenu`, `venue`,
-  `occasion` (WS1); `siteImages` singleton (WS2); `blogPost`, `author` (WS3).
-- `structure.ts` — desk structure with singleton handling (Site Photos).
+- `schemaTypes/` — Menu Builder (Phase 8): `setMenu`, `customMenuSection`,
+  `cuisineGroup`, `presentationOption`, `outdoorCatalogItem`, `packagingStyle`,
+  `pricingSettings` (singleton), plus `venue`, `occasion`. Legacy WS1 types
+  (`dish`, `category`, `cuisine`, `presetMenu`) stay registered but hidden.
+  `siteImages` singleton (WS2); `blogPost`, `author` (WS3).
+- `structure.ts` — desk (Menu Builder folder first) + exported `SINGLETONS`
+  (`siteImages`, `pricingSettings`).
 - `sanity.config.ts` / `sanity.cli.ts` — Studio + CLI config (root of repo).
 
 ### Studio route (`app/studio/[[...tool]]/`)
@@ -104,24 +160,30 @@ Sanity is absent — always coalesce to a fallback.
 - `context.tsx` — `useBooking()` reducer (SET_FIELD, ADD_DISH/REMOVE_DISH,
   SET_SET_MENU, TOGGLE_SET_MENU_DISH [soft cap, no block], presentation actions,
   outdoor actions, RESET_WIZARD). Persists to localStorage.
-- `data.ts` — client-safe placeholder + generated data: re-exports `SET_MENUS`
-  and `CUSTOM_MENU_SECTIONS` from `generated/`, plus `CATALOG_ITEMS` /
-  `PACKAGING_STYLES` (placeholder) and lookups (`getSetMenuById`,
-  `getCustomMenuItemById`, `getCatalogItemById`, `getPackagingById`).
-- `generated/set-menus.ts`, `generated/custom-menu.ts` — GENERATED (see scripts).
-- `flow.ts` — `getSteps(state)`, `stepIndexOf`, `venueKindOf` (kept for pricing
-  labels only; routing no longer branches on venue kind).
-- `pricing.ts` — GST 5% (placeholder), set-menu per-head + add-ons, custom
-  per-head = Σ item prices, outdoor subtotal, `formatINR`. `queries.ts`/
-  `fallback.ts`/`config.ts`/`catalog.tsx` still exist (Sanity catalog for
-  occasions/venues; cuisines+dishes now unused by the wizard) — untouched.
+- `queries.ts` — **the only Sanity door.** Per-collection fetch + fallback;
+  `getCatalog()` runs them in parallel for the wizard layout.
+- `catalog.tsx` — `useCatalog()`: the fetched catalog + lookups. UI reads this,
+  never the raw data. `catalog-hooks.ts` — `usePricingData()`.
+- `pricing.ts` — settings-driven math: `(state, PricingData)` everywhere, GST +
+  discount codes (`findDiscountCode`, pre-GST) + per-menu add-on override.
+- FALLBACK data (only used when Sanity is unset/empty/unreachable):
+  `data.ts` (outdoor + packaging), `generated/set-menus.ts`,
+  `generated/custom-menu.ts` (GENERATED — see scripts), `cuisine-groups.ts`
+  (the card → section mapping, all 55 sections mapped exactly once),
+  `config.ts` (presentation options + `DEFAULT_PRICING_SETTINGS`),
+  `fallback.ts` (venues/occasions + legacy WS1 arrays).
+- `menu-utils.ts` — pure helpers shared by the fallback and the Sanity path
+  (`withCuisineCounts`, `sectionsForCuisines`, `itemIdsForCuisine`, maps).
+- `flow.ts` — `getSteps(state)` (6 steps in custom mode), `stepIndexOf`,
+  `menuStepIndex`, `venueKindOf` (pricing labels only).
 - Shared components (`components/menu-builder/`): `BuilderLayout` (shell + nav +
   sidebar, responsive), `ProgressBar` (dynamic, mobile-compact), `NavFooter`,
   `BookingSummary` (3 variants), `SetMenuStep`, `CustomMenuStep`.
-- Routes (`app/menu-builder/`): `client`, `venue`, `menu`, `custom-menu`,
-  `presentation`, `catalog`, `packaging`, `quote` (+ `layout.tsx` fetches the
-  Sanity catalog for occasions/venues, `loading.tsx` skeleton). Each page guards
-  its prerequisites and redirects to Step 1 / Venue if deep-linked.
+- Routes (`app/menu-builder/`): `client`, `venue`, `menu`, `cuisine`,
+  `custom-menu`, `presentation`, `catalog`, `packaging`, `quote`
+  (+ `layout.tsx` fetches the whole catalog once, `loading.tsx` skeleton). Each
+  page guards its prerequisites and redirects to Step 1 / Venue / Cuisine if
+  deep-linked.
 
 ### Blog (WS3) — `lib/blog/` + `app/blog/`
 - `queries.ts` — `getAllBlogPosts`, `getBlogSlugs`, `getBlogPostBySlug` (fallback
@@ -155,7 +217,9 @@ stub, and Step-5 wiring remain.
 npm run dev            # site :3000, Studio :3000
 npm run build          # production build (SANITY_TELEMETRY_DISABLED=1 to quiet)
 npx tsc --noEmit       # typecheck
-npm run import-menu -- ./data/menu-data.json   # idempotent menu import
+npm run seed-menu-builder                      # push menu data + photos to Sanity
+npm run seed-menu-builder -- --dry-run         # ...write the NDJSON only
+npm run import-menu -- ./data/menu-data.json   # legacy (pre-rework types)
 ```
 
 ## Setup & activation

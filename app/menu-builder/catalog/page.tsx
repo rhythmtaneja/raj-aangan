@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { CATALOG_ITEMS } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { formatINR } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, STEPS_OUTDOOR, type CatalogItem } from "@/lib/menu-builder/types";
 
@@ -34,6 +34,7 @@ const CATALOG_STEP_INDEX = 2; // Client, [Catalog], Packaging, Quote
 
 export default function CatalogStepPage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { catalogItems } = useCatalog();
   const router = useRouter();
 
   // Route protection — outdoor sub-flow only.
@@ -71,7 +72,7 @@ export default function CatalogStepPage() {
         </p>
 
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {CATALOG_ITEMS.map((item) => (
+          {catalogItems.map((item) => (
             <CatalogCard
               key={item.id}
               item={item}

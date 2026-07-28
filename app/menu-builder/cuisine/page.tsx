@@ -20,7 +20,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { CUISINE_CARDS, itemIdsForCuisine } from "@/lib/menu-builder/cuisine-groups";
+import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
 import { MB_COLORS, MEAL_TYPES, type MealType } from "@/lib/menu-builder/types";
 
@@ -51,6 +51,7 @@ const CAT_LABEL_BG_SELECTED = "rgba(244,232,220,0.97)";
 
 export default function CustomCuisinePage() {
   const { state, dispatch, hydrated } = useBooking();
+  const { cuisineCards, itemIdsForCuisine } = useCatalog();
   const router = useRouter();
 
   // Route protection — venue-event flow with a venue selected.
@@ -136,7 +137,7 @@ export default function CustomCuisinePage() {
         <div className="mt-2 h-px w-full" style={{ backgroundColor: GOLD }} />
 
         <div className={`mt-5 grid ${CAT_GRID_COLS} gap-4 sm:gap-5`}>
-          {CUISINE_CARDS.map((cat) => {
+          {cuisineCards.map((cat) => {
             const selected = selectedCuisines.includes(cat.id);
             return (
               <button

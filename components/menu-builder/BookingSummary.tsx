@@ -11,7 +11,7 @@
 
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
-import { getCustomMenuItemById, getSetMenuById } from "@/lib/menu-builder/data";
+import { usePricingData } from "@/lib/menu-builder/catalog-hooks";
 import { venueKindOf } from "@/lib/menu-builder/flow";
 import {
   formatINR,
@@ -20,6 +20,7 @@ import {
   getVenueEventEstimatedTotal,
   getVenueEventPerHead,
   getVenueLogisticsPerHead,
+  type PricingData,
 } from "@/lib/menu-builder/pricing";
 import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
 
@@ -46,7 +47,8 @@ type Props = {
 
 export default function BookingSummary({ currentStep }: Props) {
   const { state, hydrated } = useBooking();
-  const { venues, occasions } = useCatalog();
+  const { venues, occasions, getCustomItem, getSetMenu } = useCatalog();
+  const pricingData = usePricingData();
 
   const outdoor = state.cateringType === "outdoor";
 
@@ -63,7 +65,12 @@ export default function BookingSummary({ currentStep }: Props) {
       </p>
 
       {outdoor ? (
-        <OutdoorSummary hydrated={hydrated} state={state} currentStep={currentStep} />
+        <OutdoorSummary
+          hydrated={hydrated}
+          state={state}
+          currentStep={currentStep}
+          pricingData={pricingData}
+        />
       ) : (
         <VenueEventSummary
           hydrated={hydrated}
@@ -71,6 +78,9 @@ export default function BookingSummary({ currentStep }: Props) {
           currentStep={currentStep}
           venues={venues}
           occasions={occasions}
+          pricingData={pricingData}
+          getCustomItem={getCustomItem}
+          getSetMenu={getSetMenu}
         />
       )}
     </div>
@@ -83,13 +93,15 @@ function OutdoorSummary({
   hydrated,
   state,
   currentStep,
+  pricingData,
 }: {
   hydrated: boolean;
   state: ReturnType<typeof useBooking>["state"];
   currentStep: number;
+  pricingData: PricingData;
 }) {
   const itemCount = Object.values(state.catalogSelections).reduce((a, b) => a + b, 0);
-  const showTotal = currentStep >= 2 && getOutdoorSubtotal(state) > 0;
+  const showTotal = currentStep >= 2 && getOutdoorSubtotal(state, pricingData) > 0;
 
   return (
     <>
@@ -102,7 +114,7 @@ function OutdoorSummary({
       {showTotal && (
         <div className="mt-6">
           <TotalBlock
-            total={getOutdoorEstimatedTotal(state)}
+            total={getOutdoorEstimatedTotal(state, pricingData)}
             caption="incl. GST"
             subCaption={`${itemCount} item${itemCount === 1 ? "" : "s"} · bulk / delivery`}
           />
@@ -120,12 +132,18 @@ function VenueEventSummary({
   currentStep,
   venues,
   occasions,
+  pricingData,
+  getCustomItem,
+  getSetMenu,
 }: {
   hydrated: boolean;
   state: ReturnType<typeof useBooking>["state"];
   currentStep: number;
   venues: ReturnType<typeof useCatalog>["venues"];
   occasions: ReturnType<typeof useCatalog>["occasions"];
+  pricingData: PricingData;
+  getCustomItem: ReturnType<typeof useCatalog>["getCustomItem"];
+  getSetMenu: ReturnType<typeof useCatalog>["getSetMenu"];
 }) {
   const customMenu = state.menuMode === "custom";
   const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
@@ -133,12 +151,13 @@ function VenueEventSummary({
     state.occasions.length > 0
       ? occasions.find((o) => o.id === state.occasions[0])?.label
       : null;
-  const setMenu = getSetMenuById(state.selectedSetMenuId);
+  const setMenu = getSetMenu(state.selectedSetMenuId);
 
   const showItemsAndTotal = currentStep >= 3;
 
-  const perHead = getVenueEventPerHead(state) + getVenueLogisticsPerHead(state, venues);
-  const total = getVenueEventEstimatedTotal(state, venues);
+  const perHead =
+    getVenueEventPerHead(state, pricingData) + getVenueLogisticsPerHead(state, venues);
+  const total = getVenueEventEstimatedTotal(state, pricingData);
 
   return (
     <>
@@ -167,7 +186,7 @@ function VenueEventSummary({
           </h4>
           <ul className="space-y-2">
             {state.selectedDishes.map(({ dishId }) => {
-              const item = getCustomMenuItemById(dishId);
+              const item = getCustomItem(dishId);
               if (!item) return null;
               return (
                 <li

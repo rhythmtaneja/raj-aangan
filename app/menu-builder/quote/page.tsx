@@ -15,24 +15,28 @@ import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
-import { getCatalogItemById, getPackagingById, getSetMenuById } from "@/lib/menu-builder/data";
+import { usePricingData } from "@/lib/menu-builder/catalog-hooks";
 import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
 import {
-  CUTLERY_OPTIONS,
-  LIVE_COUNTERS,
-  LIVE_COUNTER_TILES,
-} from "@/lib/menu-builder/config";
-import {
+  findDiscountCode,
   formatINR,
   getAddOnPricePerItem,
-  getGstPercent,
+  getDiscountAmount,
+  getGstAmount,
   getOutdoorSubtotal,
   getSetMenuAddOnCount,
   getSetMenuAddOnPerHead,
   getVenueEventPerHead,
   getVenueLogisticsPerHead,
 } from "@/lib/menu-builder/pricing";
-import { MB_COLORS, STEPS_OUTDOOR } from "@/lib/menu-builder/types";
+import {
+  MB_COLORS,
+  STEPS_OUTDOOR,
+  type BookingState,
+  type CatalogItem,
+  type DiscountCode as DiscountCodeType,
+  type PricingSettings,
+} from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -46,8 +50,7 @@ const INK_MUTED      = MB_COLORS.inkMuted;
 const GOLD           = MB_COLORS.gold;
 const CARD_PADDING   = "p-8 md:p-10";
 
-const DISCOUNT_PLACEHOLDER = "Enter code e.g. RAEC30";
-const NO_VALID_CODES_MSG   = "No valid discount codes yet.";
+const DISCOUNT_PLACEHOLDER = "Enter discount code";
 const START_OVER_CONFIRM   = "Start over? All your selections will be cleared.";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -70,9 +73,11 @@ export default function QuotePage() {
 
 function VenueEventQuote() {
   const { state, dispatch } = useBooking();
-  const { venues, occasions } = useCatalog();
+  const { venues, occasions, presentation, getSetMenu, pricing } = useCatalog();
+  const pricingData = usePricingData();
   const router = useRouter();
   const { toast, showToast } = useToast();
+  const discount = useDiscount(state, pricing, showToast);
 
   const customMenu = state.menuMode === "custom";
   const steps = getSteps(state);
@@ -81,26 +86,34 @@ function VenueEventQuote() {
     state.occasions.length > 0
       ? state.occasions.map((id) => occasions.find((o) => o.id === id)?.label).filter(Boolean).join(", ")
       : "—";
-  const setMenu = getSetMenuById(state.selectedSetMenuId);
+  const setMenu = getSetMenu(state.selectedSetMenuId);
 
   // Per-head basis differs by menu mode; the breakdown shape is identical.
-  const addOnCount = customMenu ? 0 : getSetMenuAddOnCount(state);
-  const addOnPerHead = customMenu ? 0 : getSetMenuAddOnPerHead(state);
-  const packageBase = getVenueEventPerHead(state) - addOnPerHead;
-  const perHeadBase = getVenueEventPerHead(state);
+  const addOnCount = customMenu ? 0 : getSetMenuAddOnCount(state, pricingData);
+  const addOnPerHead = customMenu ? 0 : getSetMenuAddOnPerHead(state, pricingData);
+  const perHeadBase = getVenueEventPerHead(state, pricingData);
+  const packageBase = perHeadBase - addOnPerHead;
   const venueLogistic = getVenueLogisticsPerHead(state, venues);
-  const subtotal = (perHeadBase + venueLogistic) * state.guests * state.eventDays;
-  const gst = subtotal * (getGstPercent() / 100);
+  const gross = (perHeadBase + venueLogistic) * state.guests * state.eventDays;
+  const discountAmount = discount.applied
+    ? getDiscountAmount(gross, discount.applied.percentOff)
+    : 0;
+  const subtotal = gross - discountAmount;
+  const gst = getGstAmount(subtotal, pricing);
   const total = subtotal + gst;
 
   // Presentation summary
   const p = state.presentationChoices;
   const counterNames = [
-    ...p.liveCounters.map((id) => LIVE_COUNTER_TILES.find((t) => t.id === id)?.name),
-    ...p.liveCounterDesigns.map((id) => LIVE_COUNTERS.find((t) => t.id === id)?.name),
+    ...p.liveCounters.map(
+      (id) => presentation.liveCounterTiles.find((t) => t.id === id)?.name,
+    ),
+    ...p.liveCounterDesigns.map(
+      (id) => presentation.liveCounters.find((t) => t.id === id)?.name,
+    ),
   ].filter(Boolean) as string[];
   const cutleryName = p.cutlery
-    ? CUTLERY_OPTIONS.find((c) => c.id === p.cutlery)?.name ?? "—"
+    ? presentation.cutlery.find((c) => c.id === p.cutlery)?.name ?? "—"
     : "—";
 
   const handleStartOver = () => startOver(dispatch, router);
@@ -108,10 +121,7 @@ function VenueEventQuote() {
   return (
     <BuilderLayout steps={steps} currentStep={stepIndexOf(steps, "quote")} backHref="/menu-builder/presentation">
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
-        <QuoteHeader
-          title="Review & Quote"
-          subtitle="Everything you have chosen review before generating the final quote."
-        />
+        <QuoteHeader title={pricing.quoteHeading} subtitle={pricing.quoteSubheading} />
 
         <SectionTitle>Client &amp; Event</SectionTitle>
         <KV label="Client"    value={state.clientName || "—"} />
@@ -134,27 +144,43 @@ function VenueEventQuote() {
         </p>
         <KV label="Base Table Cutlery" value={cutleryName} />
 
-        <SectionTitle>Discount Code</SectionTitle>
-        <DiscountCode onApply={() => showToast(NO_VALID_CODES_MSG)} />
+        {pricing.showDiscountField && (
+          <>
+            <SectionTitle>Discount Code</SectionTitle>
+            <DiscountCode
+              code={discount.code}
+              onChange={discount.setCode}
+              onApply={discount.apply}
+              applied={discount.applied}
+            />
+          </>
+        )}
 
         <SectionTitle>Estimated Total</SectionTitle>
         <div className="space-y-1.5 text-sm">
           <KVRow label="Per head base" value={formatINR(packageBase)} />
           {addOnCount > 0 && (
             <KVRow
-              label={`Add-ons / head (${addOnCount} × ${formatINR(getAddOnPricePerItem())})`}
+              label={`Add-ons / head (${addOnCount} × ${formatINR(getAddOnPricePerItem(state, pricingData))})`}
               value={formatINR(addOnPerHead)}
             />
           )}
           <KVRow label="Venue logistic / head" value={formatINR(venueLogistic)} />
           <KVRow
             label={`x ${state.guests} guest x ${state.eventDays} day${state.eventDays > 1 ? "s" : ""}`}
-            value={formatINR(subtotal)}
+            value={formatINR(gross)}
           />
-          <KVRow label={`GST (${getGstPercent()}%)`} value={formatINR(gst)} />
+          {discount.applied && (
+            <KVRow
+              label={`Discount (${discount.applied.code} · ${discount.applied.percentOff}%)`}
+              value={`- ${formatINR(discountAmount)}`}
+            />
+          )}
+          <KVRow label={`GST (${pricing.gstPercent}%)`} value={formatINR(gst)} />
         </div>
         <EstimatedTotalRow value={formatINR(total)} />
 
+        <QuoteTerms pricing={pricing} />
         <ActionRow showToast={showToast} />
         <StartOver onClick={handleStartOver} />
         <Toast toast={toast} />
@@ -167,20 +193,27 @@ function VenueEventQuote() {
 
 function OutdoorQuote() {
   const { state, dispatch } = useBooking();
+  const { getCatalogItem, getPackaging, pricing } = useCatalog();
+  const pricingData = usePricingData();
   const router = useRouter();
   const { toast, showToast } = useToast();
+  const discount = useDiscount(state, pricing, showToast);
 
-  const packaging = getPackagingById(state.packagingStyleId);
+  const packaging = getPackaging(state.packagingStyleId);
   const lineItems = Object.entries(state.catalogSelections)
     .filter(([, qty]) => qty > 0)
     .map(([itemId, qty]) => {
-      const item = getCatalogItemById(itemId);
+      const item = getCatalogItem(itemId);
       return item ? { item, qty, lineTotal: item.price * qty } : null;
     })
-    .filter(Boolean) as { item: NonNullable<ReturnType<typeof getCatalogItemById>>; qty: number; lineTotal: number }[];
+    .filter(Boolean) as { item: CatalogItem; qty: number; lineTotal: number }[];
 
-  const subtotal = getOutdoorSubtotal(state);
-  const gst = subtotal * (getGstPercent() / 100);
+  const gross = getOutdoorSubtotal(state, pricingData);
+  const discountAmount = discount.applied
+    ? getDiscountAmount(gross, discount.applied.percentOff)
+    : 0;
+  const subtotal = gross - discountAmount;
+  const gst = getGstAmount(subtotal, pricing);
   const total = subtotal + gst;
 
   const handleStartOver = () => startOver(dispatch, router);
@@ -221,16 +254,32 @@ function OutdoorQuote() {
           </ul>
         )}
 
-        <SectionTitle>Discount Code</SectionTitle>
-        <DiscountCode onApply={() => showToast(NO_VALID_CODES_MSG)} />
+        {pricing.showDiscountField && (
+          <>
+            <SectionTitle>Discount Code</SectionTitle>
+            <DiscountCode
+              code={discount.code}
+              onChange={discount.setCode}
+              onApply={discount.apply}
+              applied={discount.applied}
+            />
+          </>
+        )}
 
         <SectionTitle>Estimated Total</SectionTitle>
         <div className="space-y-1.5 text-sm">
-          <KVRow label="Subtotal" value={formatINR(subtotal)} />
-          <KVRow label={`GST (${getGstPercent()}%)`} value={formatINR(gst)} />
+          <KVRow label="Subtotal" value={formatINR(gross)} />
+          {discount.applied && (
+            <KVRow
+              label={`Discount (${discount.applied.code} · ${discount.applied.percentOff}%)`}
+              value={`- ${formatINR(discountAmount)}`}
+            />
+          )}
+          <KVRow label={`GST (${pricing.gstPercent}%)`} value={formatINR(gst)} />
         </div>
         <EstimatedTotalRow value={formatINR(total)} />
 
+        <QuoteTerms pricing={pricing} />
         <ActionRow showToast={showToast} />
         <StartOver onClick={handleStartOver} />
         <Toast toast={toast} />
@@ -240,6 +289,32 @@ function OutdoorQuote() {
 }
 
 // ─── Shared behaviour ──────────────────────────────────────────────────────
+
+/**
+ * Discount-code box state. Codes, their rules and the rejection message all
+ * come from Sanity (Pricing & Quote Settings → Discounts).
+ */
+function useDiscount(
+  state: BookingState,
+  pricing: PricingSettings,
+  showToast: (msg: string) => void,
+) {
+  const [code, setCode] = useState("");
+  const [applied, setApplied] = useState<DiscountCodeType | null>(null);
+
+  const apply = () => {
+    const match = findDiscountCode(code, state, pricing);
+    if (match) {
+      setApplied(match);
+      showToast(`${match.code} applied — ${match.percentOff}% off.`);
+    } else {
+      setApplied(null);
+      showToast(pricing.invalidCodeMessage);
+    }
+  };
+
+  return { code, setCode, applied, apply };
+}
 
 function useToast() {
   const [toast, setToast] = useState<string | null>(null);
@@ -319,17 +394,26 @@ function EstimatedTotalRow({ value }: { value: string }) {
   );
 }
 
-function DiscountCode({ onApply }: { onApply: () => void }) {
-  const [code, setCode] = useState("");
+function DiscountCode({
+  code,
+  onChange,
+  onApply,
+  applied,
+}: {
+  code: string;
+  onChange: (value: string) => void;
+  onApply: () => void;
+  applied: DiscountCodeType | null;
+}) {
   return (
     <div className="flex gap-3">
       <input
         type="text"
         value={code}
-        onChange={(e) => setCode(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={DISCOUNT_PLACEHOLDER}
-        className="flex-1 rounded border border-gray-300 px-4 py-2.5 text-sm focus:border-gray-600 focus:outline-none"
-        style={{ color: INK }}
+        className="flex-1 rounded border px-4 py-2.5 text-sm focus:outline-none"
+        style={{ color: INK, borderColor: applied ? GOLD : "#d1d5db" }}
       />
       <button
         onClick={onApply}
@@ -338,6 +422,52 @@ function DiscountCode({ onApply }: { onApply: () => void }) {
       >
         Apply
       </button>
+    </div>
+  );
+}
+
+/**
+ * Validity, deposit, terms and contact details — every line optional and
+ * editable in Studio (Pricing & Quote Settings → Quote Page). Renders nothing
+ * when the client hasn't filled any of them in.
+ */
+function QuoteTerms({ pricing }: { pricing: PricingSettings }) {
+  const lines: string[] = [];
+  if (pricing.quoteValidityDays > 0) {
+    lines.push(
+      `This estimate is valid for ${pricing.quoteValidityDays} day${
+        pricing.quoteValidityDays === 1 ? "" : "s"
+      }.`,
+    );
+  }
+  if (pricing.depositPercent > 0) {
+    lines.push(`A ${pricing.depositPercent}% deposit confirms the booking.`);
+  }
+  lines.push(...pricing.quoteTerms);
+
+  const contact = [pricing.contactPhone, pricing.contactEmail].filter(Boolean).join(" · ");
+  if (!lines.length && !contact) return null;
+
+  return (
+    <div className="mt-8">
+      <SectionTitle>Terms &amp; Notes</SectionTitle>
+      {lines.length > 0 && (
+        <ul className="space-y-1.5">
+          {lines.map((line, i) => (
+            <li key={i} style={{ color: INK_MUTED }} className="flex gap-2 text-sm">
+              <span style={{ color: GOLD }} aria-hidden>
+                •
+              </span>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {contact && (
+        <p style={{ color: INK }} className="mt-3 text-sm">
+          Questions? {contact}
+        </p>
+      )}
     </div>
   );
 }

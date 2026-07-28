@@ -40,65 +40,40 @@ const BG_IMAGE = "/images/events-entertainment-bg.jpg";
 // Raise for a darker bg (better card legibility), lower to let bg breathe.
 const OVERLAY_OPACITY = 0.55;
 
-// ─ Card dimensions (viewport-relative so they scale on any screen) ─────────
-// Reference cards are tall portrait rectangles ~4:7 ratio.
-const CARD_WIDTH_VW = 26;  // ↑ = wider cards
-const CARD_HEIGHT_VH = 65;  // ↑ = taller cards
+// ─ Card dimensions ──
+const CARD_WIDTH_VW = 22; // slightly narrower than Events (26) since more cards
+const CARD_HEIGHT_VH = 45; // slightly shorter — content per card is smaller
+const ROW_SPACING_VH = 32;
 
-// ─ Vertical spacing between adjacent card rows ─────────────────────────────
-// Cards intentionally OVERLAP vertically (CARD_HEIGHT_VH > ROW_SPACING_VH).
-// Safe because adjacent rows use different columns.
-// ↓ = tighter stack (shorter pin); ↑ = more air (longer pin)
-const ROW_SPACING_VH = 45;
-
-// ─ Column centre positions (% across viewport) ─────────────────────────────
-// Cards are horizontally centred on these anchors via translateX(-50%).
-const COL_LEFT_PCT = 22;
+// ─ Column positions (% across viewport) ──
+const COL_LEFT_PCT = 20;
 const COL_CENTER_PCT = 50;
-const COL_RIGHT_PCT = 78;
+const COL_RIGHT_PCT = 80;
 
-// ─ Strip motion range ──────────────────────────────────────────────────────
-// INITIAL_Y_VH: strip's top position when pin starts (in vh from viewport top)
-//   80 = first card peeks in from bottom (only ~20% visible initially)
-//   Lower → cards further off-screen at start (more anticipation)
-//   Higher → cards more visible at start (less anticipation)
-const INITIAL_Y_VH = 80;
+// ─ Strip motion range ──
+const INITIAL_Y_VH = 80; // first card peeks in from bottom
+const FINAL_LAST_CARD_TOP_VH = 15; // last card sits high before release
 
-// FINAL_LAST_CARD_TOP_VH: where the LAST card's top lands at pin end
-//   15 = last card ends near top of viewport (nice reading position)
-//   Lower → longer pin, last card ends higher up
-//   Higher → shorter pin, last card ends lower down (release sooner)
-const FINAL_LAST_CARD_TOP_VH = 15;
-
-// ─ Scrub smoothness ────────────────────────────────────────────────────────
-// number = seconds of smoothing (1 feels premium; 0.3 tighter; 2 loose)
-// true   = instant follow (no smoothing)
+// ─ Scrub smoothness ──
 const SCRUB: number | boolean = 1;
 
-// ─ Card styling ────────────────────────────────────────────────────────────
-const CARD_BG = "#d9cbbb";  // darker cream rectangle for stronger contrast
-const CARD_TEXT = "#0b0b0bff";
-const CARD_DESC_TEXT = "#202020";
-const CARD_SHADOW = "0 20px 50px rgba(0,0,0,0.35)";
-
-// Subtle inner outline frame — dark since cards are cream (not on photos)
-const CARD_FRAME_INSET = "12px";
-const CARD_FRAME_BORDER = "1px solid rgba(0, 0, 0, 0.48)";
+// ─ Card styling ──
+const CARD_BG = "#ffffff";
+const CARD_TEXT = "#000000ff";
+const CARD_DESC_TEXT = "#000000ff";
+const CARD_SHADOW = "0 20px 50px rgba(0,0,0,0.30)";
+const CARD_FRAME_INSET = "10px";
+const CARD_FRAME_BORDER = "1px solid rgba(0, 0, 0, 0.47)";
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived — leave alone; tune the knobs above.
-const ROW_COUNT = 6;
+// Derived — 7 rows for 10 cards (1-2-1-2-1-2-1 pattern).
+const ROW_COUNT = 7;
 const STRIP_HEIGHT_VH = (ROW_COUNT - 1) * ROW_SPACING_VH + CARD_HEIGHT_VH;
 const LAST_ROW_TOP_VH = (ROW_COUNT - 1) * ROW_SPACING_VH;
 // ═══════════════════════════════════════════════════════════════════════════
 
 type Column = "left" | "center" | "right";
-type Card = {
-  title: string;
-  description: string;
-  row: number;   // 0..5
-  col: Column;
-};
+type Card = { title: string; description: string; row: number; col: Column };
 
 // Card layout — 6 rows, 9 cards in an alternating staggered pattern:
 //   Row 0: [_______C_______]   1 card (center)

@@ -17,7 +17,8 @@ import { useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
-import { SET_MENUS, getSetMenuById } from "@/lib/menu-builder/data";
+import { useCatalog } from "@/lib/menu-builder/catalog";
+import { usePricingData } from "@/lib/menu-builder/catalog-hooks";
 import { getSteps, menuStepIndex } from "@/lib/menu-builder/flow";
 import { formatINR, getAddOnPricePerItem } from "@/lib/menu-builder/pricing";
 import {
@@ -47,6 +48,8 @@ const MENU_IMAGE_HEIGHT = "sm:h-[165px]";
 
 export default function SetMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
+  const { setMenus, getSetMenu } = useCatalog();
+  const pricingData = usePricingData();
   const router = useRouter();
 
   // Step-set follows the mode: 5 steps on the set path, 6 (with Cuisine) once
@@ -54,7 +57,9 @@ export default function SetMenuStep() {
   const steps = getSteps(state);
 
   const selectedId = state.selectedSetMenuId;
-  const selectedMenu = getSetMenuById(selectedId);
+  const selectedMenu = getSetMenu(selectedId);
+  // Surcharge per extra pick: the menu's own override, else the global setting.
+  const addOnPrice = getAddOnPricePerItem(state, pricingData);
 
   // Accordion: which course sections are expanded. Collapsed by default so the
   // guest sees only headings; selections persist in state regardless.
@@ -113,7 +118,7 @@ export default function SetMenuStep() {
           className={`mt-6 grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--menu-card-width)))] xl:grid-cols-[repeat(3,minmax(0,var(--menu-card-width)))] ${MENU_CARD_GAP}`}
           style={{ "--menu-card-width": MENU_CARD_WIDTH } as CSSProperties}
         >
-          {SET_MENUS.map((menu) => (
+          {setMenus.map((menu) => (
             <SetMenuCard
               key={menu.id}
               menu={menu}
@@ -212,6 +217,7 @@ export default function SetMenuStep() {
                               <AddToCartToggle
                                 selected={isSelected}
                                 isAddOn={isAddOn}
+                                addOnPrice={addOnPrice}
                                 onClick={() => toggleDish(section, opt.id)}
                               />
                             </li>
@@ -320,10 +326,13 @@ function Chevron({ open }: { open: boolean }) {
 function AddToCartToggle({
   selected,
   isAddOn,
+  addOnPrice,
   onClick,
 }: {
   selected: boolean;
   isAddOn: boolean;
+  /** Per-head surcharge for an extra pick (Sanity: menu override → settings). */
+  addOnPrice: number;
   onClick: () => void;
 }) {
   if (selected) {
@@ -332,14 +341,14 @@ function AddToCartToggle({
         onClick={onClick}
         className="flex shrink-0 items-center gap-1.5 rounded border px-4 py-1.5 text-sm transition-colors"
         style={{ borderColor: GOLD, backgroundColor: `${GOLD}22`, color: INK }}
-        title={isAddOn ? `Add-on · +${formatINR(getAddOnPricePerItem())}/head` : "Included"}
+        title={isAddOn ? `Add-on · +${formatINR(addOnPrice)}/head` : "Included"}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={3}>
           <polyline points="20 6 9 17 4 12" />
         </svg>
         {isAddOn ? (
           <span style={{ color: GOLD }} className="font-medium">
-            Add-on +{formatINR(getAddOnPricePerItem())}
+            Add-on +{formatINR(addOnPrice)}
           </span>
         ) : (
           <span>Added</span>
