@@ -61,7 +61,7 @@ export default function Step2VenuePage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Select Venue
         </h2>
@@ -120,7 +120,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div className="mt-8 mb-5 flex items-center gap-4">
       <h3
         style={{ ...serif, color: INK }}
-        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold tracking-wide"
       >
         {children}
       </h3>
@@ -168,7 +168,7 @@ function VenueCard({
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent px-4 pb-4 pt-10">
           <h3
             style={{ ...serif }}
-            className="text-center text-[clamp(1.3rem,1.7vw,22px)] font-semibold leading-tight text-white"
+            className="text-center text-[clamp(1.3rem,1.7vw,1.375rem)] font-semibold leading-tight text-white"
           >
             {venue.name}
           </h3>

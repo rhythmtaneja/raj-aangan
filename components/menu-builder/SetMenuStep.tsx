@@ -7,7 +7,8 @@
 //
 // Soft "choose N" rule: the first N picks (in order) are included in the
 // package price; any further picks are flagged as paid ADD-ONS and surcharge
-// the package. Continue unlocks once every course has at least its N picks.
+// the package. Dish selection is optional, so guests can continue as soon as
+// they choose a package.
 // ═══════════════════════════════════════════════════════════════════════════
 
 "use client";
@@ -33,16 +34,16 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const CARD_BG      = MB_COLORS.card;
-const INK          = MB_COLORS.ink;
-const INK_MUTED    = MB_COLORS.inkMuted;
-const GOLD         = MB_COLORS.gold;
+const CARD_BG = MB_COLORS.card;
+const INK = MB_COLORS.ink;
+const INK_MUTED = MB_COLORS.inkMuted;
+const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
 // Set-menu card knobs. Desktop dimensions match the Figma reference.
-const MENU_CARD_WIDTH = "244px";
+const MENU_CARD_WIDTH = "15.25rem";
 const MENU_CARD_GAP = "gap-8";
-const MENU_CARD_HEIGHT = "sm:h-[223px]";
-const MENU_IMAGE_HEIGHT = "sm:h-[165px]";
+const MENU_CARD_HEIGHT = "sm:h-[13.9375rem]";
+const MENU_IMAGE_HEIGHT = "sm:h-[10.3125rem]";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -85,10 +86,10 @@ export default function SetMenuStep() {
 
   const chosenIn = (sectionId: string): string[] => state.setMenuSelections[sectionId] ?? [];
 
-  // Continue once every course has AT LEAST its required picks (extras optional).
+  // Used only for the per-course selection status; selecting dishes is optional.
   const allSectionsComplete = Boolean(
     selectedMenu &&
-      selectedMenu.sections.every((s) => chosenIn(s.id).length >= s.chooseCount),
+    selectedMenu.sections.every((s) => chosenIn(s.id).length >= s.chooseCount),
   );
 
   return (
@@ -98,12 +99,12 @@ export default function SetMenuStep() {
       backHref="/menu-builder/venue"
       nextHref="/menu-builder/presentation"
       nextLabel="Next"
-      nextDisabled={!hydrated || !allSectionsComplete}
+      nextDisabled={!hydrated || !selectedMenu}
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Choose Your Menu
         </h2>
@@ -128,13 +129,35 @@ export default function SetMenuStep() {
           ))}
         </div>
 
+        {/* Custom builder CTA */}
+        <div
+          className="mt-10 flex flex-col items-start gap-3 rounded-lg border border-dashed p-6 sm:flex-row sm:items-center sm:justify-between"
+          style={{ borderColor: GOLD, backgroundColor: `${GOLD}0d` }}
+        >
+          <div>
+            <p style={{ ...serif, color: INK }} className="text-lg font-semibold">
+              Don&apos;t want a fixed package?
+            </p>
+            <p style={{ color: INK_MUTED }} className="text-sm">
+              Build your own menu by selecting each dish from scratch.
+            </p>
+          </div>
+          <button
+            onClick={goCustom}
+            className="shrink-0 rounded-full border px-6 py-2.5 text-sm font-medium transition-colors hover:bg-white"
+            style={{ borderColor: GOLD, color: GOLD }}
+          >
+            Build a Custom Menu →
+          </button>
+        </div>
+
         {/* Section pickers for the selected menu */}
         {selectedMenu && (
           <div className="mt-10">
             <div className="mb-3 flex items-center gap-4">
               <h3
                 style={{ ...serif, color: INK }}
-                className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+                className="shrink-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold tracking-wide"
               >
                 {selectedMenu.name} — Choose Your Dishes
               </h3>
@@ -170,7 +193,7 @@ export default function SetMenuStep() {
                         <div>
                           <h3
                             style={{ ...serif, color: INK }}
-                            className="text-[clamp(1.15rem,1.4vw,20px)] font-semibold leading-tight"
+                            className="text-[clamp(1.15rem,1.4vw,1.25rem)] font-semibold leading-tight"
                           >
                             {section.label}
                           </h3>
@@ -232,34 +255,12 @@ export default function SetMenuStep() {
 
             {!allSectionsComplete && (
               <p style={{ color: INK_MUTED }} className="mt-8 text-xs">
-                Pick at least the required dishes in every course to continue — or
-                build a custom menu below.
+                Dish choices are optional — you can continue now or select items
+                from any course before moving on.
               </p>
             )}
           </div>
         )}
-
-        {/* Custom builder CTA */}
-        <div
-          className="mt-10 flex flex-col items-start gap-3 rounded-lg border border-dashed p-6 sm:flex-row sm:items-center sm:justify-between"
-          style={{ borderColor: GOLD, backgroundColor: `${GOLD}0d` }}
-        >
-          <div>
-            <p style={{ ...serif, color: INK }} className="text-lg font-semibold">
-              Don&apos;t want a fixed package?
-            </p>
-            <p style={{ color: INK_MUTED }} className="text-sm">
-              Build your own menu by selecting each dish from scratch.
-            </p>
-          </div>
-          <button
-            onClick={goCustom}
-            className="shrink-0 rounded-full border px-6 py-2.5 text-sm font-medium transition-colors hover:bg-white"
-            style={{ borderColor: GOLD, color: GOLD }}
-          >
-            Build a Custom Menu →
-          </button>
-        </div>
       </div>
     </BuilderLayout>
   );
@@ -279,7 +280,7 @@ function SetMenuCard({
   return (
     <button
       onClick={onClick}
-      className={`group overflow-hidden rounded-[10px] border text-left transition-all ${MENU_CARD_HEIGHT}`}
+      className={`group overflow-hidden rounded-[0.625rem] border text-left transition-all ${MENU_CARD_HEIGHT}`}
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
         backgroundColor: MB_COLORS.cardCream,
@@ -295,7 +296,7 @@ function SetMenuCard({
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
       </div>
-      <div className="flex min-h-[52px] items-center px-3 py-2.5">
+      <div className="flex min-h-[3.25rem] items-center px-3 py-2.5">
         <span style={{ ...serif, color: GOLD }} className="text-sm font-medium leading-snug">
           {menu.name}
         </span>

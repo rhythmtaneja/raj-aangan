@@ -37,7 +37,7 @@ const CARD_PADDING = "p-8 md:p-10";
 
 // ─ Photo inside the card ──
 const PHOTO_ASPECT = "aspect-[4/3]";
-const PHOTO_FRAME_INSET = "12px";
+const PHOTO_FRAME_INSET = "0.75rem";
 const PHOTO_FRAME_COLOR = "rgba(255, 255, 255, 0.55)";
 
 // ─ Hover zoom (image scales inside the overflow-hidden container) ──
@@ -46,7 +46,7 @@ const HOVER_TRANSITION = "transition-transform duration-[800ms] ease-out";
 
 // ─ Date (small, muted, tracked-out) ──
 const DATE_COLOR = "#8a7f6b";
-const DATE_FONT_SIZE = "text-[clamp(0.75rem,0.9vw,13px)]";
+const DATE_FONT_SIZE = "text-[clamp(0.75rem,0.9vw,0.8125rem)]";
 const DATE_TRACKING = "0.15em";
 
 // ─ Decorative divider line between date and title ──
@@ -55,7 +55,7 @@ const DIVIDER_COLOR = "rgba(25,25,25,0.25)";
 
 // ─ Title (bottom of card) ──
 const TITLE_COLOR = "#191919";
-const TITLE_FONT_SIZE = "text-[clamp(1.1rem,1.4vw,20px)]";
+const TITLE_FONT_SIZE = "text-[clamp(1.1rem,1.4vw,1.25rem)]";
 
 // ═══════════════════════════════════════════════════════════════════════════
 

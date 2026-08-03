@@ -42,14 +42,18 @@ const OVERLAY_OPACITY = 0.45;
 const HERO_BLEND_TO_COLOR = "#ffffff";
 const HERO_BLEND_HEIGHT = "0vh";
 
-// ─ Tagline ──
+// ─ Title + tagline ──
+// The section heading matches the large title treatment in VenueHero.
+const SECTION_TITLE_TEXT = "Catering";
+const SECTION_TITLE_FONT_SIZE = "clamp(3rem, 7vw, 6.3125rem)";
 const TAGLINE_TEXT = "A journey of flavors, cultures, and unforgettable tastes.";
-const TAGLINE_FONT_SIZE = "clamp(2rem, 4.2vw, 60px)";
-const TAGLINE_MAX_W = "1100px";
+const TAGLINE_FONT_SIZE = "clamp(2rem, 4.2vw, 3.75rem)";
+const TAGLINE_MAX_W = "68.75rem";
+const TITLE_HEADER_TO_TAGLINE_GAP = "1.5rem";
 
 // ─ Decorative logo ──
 const LOGO_TOP = "clamp(18rem, 33vh, 23rem)";
-const LOGO_SIZE = "clamp(180px, 34vw, 220px)";
+const LOGO_SIZE = "clamp(11.25rem, 34vw, 13.75rem)";
 const LOGO_CROP_HEIGHT = `calc(${LOGO_SIZE} * 0.327)`;
 const LOGO_CROP_OFFSET = `calc(${LOGO_SIZE} * -0.314)`;
 
@@ -155,49 +159,31 @@ export default function CateringHero({ bgImage }: { bgImage?: string }) {
 
       <SiteHeader animateEntrance />
 
-      {/* Decorative RAEC logo block — matches AboutHero composition exactly */}
-      <div
-        className="absolute inset-x-0 z-10 flex flex-col items-center"
-        style={{ top: LOGO_TOP }}
-      >
-        {/* <Image src="/images/logo-round.png" alt="" width={58} height={58} priority /> */}
-        <div
-          className="-mt-3 overflow-hidden"
-          style={{ width: LOGO_SIZE, height: LOGO_CROP_HEIGHT }}
-        >
-          <Image
-            src="/images/logo.png"
-            alt="Raj Aangan Events and Caterers"
-            width={220}
-            height={220}
-            priority
-            className="max-w-none"
-            style={{
-              width: LOGO_SIZE,
-              height: LOGO_SIZE,
-              transform: `translateY(${LOGO_CROP_OFFSET})`,
-            }}
-          />
-        </div>
-      </div>
 
       {/* Centered flex column — same pt-65 as AboutHero pushes title below logo block */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
-          style={{ ...serif, fontSize: TAGLINE_FONT_SIZE, maxWidth: TAGLINE_MAX_W }}
+          style={{ ...serif, fontSize: SECTION_TITLE_FONT_SIZE }}
+          className="font-medium leading-none"
+        >
+          <Letters text={SECTION_TITLE_TEXT} />
+        </h1>
+
+        <h2
+          style={{ ...serif, fontSize: TAGLINE_FONT_SIZE, maxWidth: TAGLINE_MAX_W, marginTop: TITLE_HEADER_TO_TAGLINE_GAP }}
           className="font-medium leading-[1.15]"
         >
           <Letters text={TAGLINE_TEXT} />
-        </h1>
+        </h2>
 
         <div className="hero-cta mt-14">
           <CircleButton
             href="/menu-builder"
             circleColor="#6c7c7b" /* sage — matches Homepage hero */
             arrowColor="#ffffff"
-            circleSize={120}
+            circleSize="7.5rem"
             magnet={0.4}
-            className="rounded-full border border-white/80 px-10 py-4 text-white uppercase tracking-[0.15em] text-[clamp(0.9rem,1.05vw,15px)]"
+            className="rounded-full border border-white/80 px-10 py-4 text-white uppercase tracking-[0.15em] text-[clamp(0.9rem,1.05vw,0.9375rem)]"
           >
             Plan Your Event
           </CircleButton>

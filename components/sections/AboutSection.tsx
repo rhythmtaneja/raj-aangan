@@ -1,3 +1,5 @@
+"use client";
+
 // ══════════════════════════════════════════════════════════════════
 // PATH IN REPO: components/sections/AboutSection.tsx
 // ══════════════════════════════════════════════════════════════════
@@ -12,12 +14,18 @@
 // hover scales the image element, different DOM nodes, no conflict.
 // ══════════════════════════════════════════════════════════════════
 
+import { useRef } from "react";
 import Image from "next/image";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import NumeralMarker from "@/components/ui/NumeralMarker";
 import Reveal from "@/components/anim/Reveal";
 import Parallax from "@/components/anim/Parallax";
 import CountUp from "@/components/anim/CountUp";
 import CircleButton from "@/components/anim/CircleButton";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -30,6 +38,12 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 const HOVER_TRANSITION = "transition-transform duration-[1200ms] ease-out";
 const HOVER_SCALE = "group-hover:scale-105";
 
+// Continues Cuisine's final colour, then arrives at Events' base colour.
+const BG_START_COLOR = "#ebe5dbff";
+const BG_END_COLOR = "#f1ece3";
+const COLOR_TRANSITION_START = "top bottom";
+const COLOR_TRANSITION_END = "top top";
+
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── ADD ABOUT IMAGES HERE ───────────────────────────────────────────────────
@@ -40,19 +54,45 @@ const ABOUT_IMAGES = [
 ];
 
 export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const colorProxy = { c: BG_START_COLOR };
+      gsap.to(colorProxy, {
+        c: BG_END_COLOR,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: COLOR_TRANSITION_START,
+          end: COLOR_TRANSITION_END,
+          scrub: true,
+        },
+        onUpdate: () => {
+          document.documentElement.style.setProperty("--page-bg", colorProxy.c);
+        },
+      });
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section className="flex w-full flex-col items-center bg-[#fdfbf5] px-6 py-24 text-center">
+    <section
+      ref={sectionRef}
+      className="flex w-full flex-col items-center px-6 py-24 text-center"
+      style={{ backgroundColor: `var(--page-bg, ${BG_START_COLOR})` }}
+    >
       {/* III ABOUT + OUR STORY + gold heading */}
       <Reveal stagger staggerEach={0.12} className="flex flex-col items-center">
         <div className="flex items-center gap-4">
           <NumeralMarker numeral="III" />
-          <span style={serif} className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,18px)]">About</span>
+          <span style={serif} className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,1.125rem)]">About</span>
         </div>
         <div className="mt-12">
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,14px)]">Our Story</p>
+          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,0.875rem)]">Our Story</p>
           <span className="mx-auto mt-2 block h-px w-16 bg-[#bf9a3f]" />
         </div>
-        <h2 style={serif} className="mt-8 font-semibold text-[#bf9a3f] text-[clamp(2rem,3.4vw,49px)]">
+        <h2 style={serif} className="mt-8 font-semibold text-[#bf9a3f] text-[clamp(2rem,3.4vw,3.0625rem)]">
           Raj Aangan Events and Caterers
         </h2>
       </Reveal>
@@ -74,7 +114,7 @@ export default function AboutSection() {
           <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
         </div>
         <Reveal>
-          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,21px)] md:px-6">
+          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,1.3125rem)] md:px-6">
             What started as a passion for bringing people together has grown into one of Jaipur&rsquo;s trusted names in luxury events, destination weddings, and premium catering experiences. Inspired by Rajasthan&rsquo;s royal culture and timeless traditions, Raj Aangan blends heritage hospitality with modern event craftsmanship.
           </p>
         </Reveal>
@@ -112,7 +152,7 @@ export default function AboutSection() {
           href="#"
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={120}
+          circleSize="7.5rem"
           magnet={0.4}
           className="mt-16 rounded-full border border-[#191919] px-8 py-3 text-sm font-medium text-[#191919]"
         >
@@ -127,7 +167,7 @@ function Stat({ icon, end, suffix, label }: { icon: React.ReactNode; end: number
   return (
     <div className="flex flex-col items-center text-center">
       <span className="mb-3 text-[#444444]">{icon}</span>
-      <p style={serif} className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,30px)]">
+      <p style={serif} className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,1.875rem)]">
         <span className="font-medium">
           <CountUp end={end} suffix={suffix} />{" "}
         </span>

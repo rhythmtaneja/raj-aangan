@@ -11,7 +11,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Section title ──
-const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 52px)";
+const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 3.25rem)";
 const TITLE_COLOR = "#ffffff";
 const TITLE_TRACKING = "0.02em";
 const TITLE_MARGIN_BOT = "3.5rem";
@@ -25,7 +25,7 @@ const RIGHT_COLUMN_OFFSET = "md:mt-24";
 // Thin white line inset from the image edges, matches figma image 1.
 // FRAME_INSET bigger = frame sits further inside the image.
 // FRAME_COLOR opacity — 0.5 is subtle; push to 0.7 for stronger, 0.35 for whisper-soft.
-const FRAME_INSET = "14px";
+const FRAME_INSET = "0.875rem";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.55)";
 
 // ─ Hover zoom ──
@@ -91,9 +91,9 @@ export default function GalleryGridSection({
             href={moreButtonHref}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={150}
+            circleSize="9.375rem"
             magnet={0.35}
-            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,15px)]"
+            className="rounded-full border border-white px-8 py-3 text-white text-[clamp(0.9rem,1.04vw,0.9375rem)]"
           >
             More Photos
           </CircleButton>

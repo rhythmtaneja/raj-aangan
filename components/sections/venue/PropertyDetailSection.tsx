@@ -28,7 +28,7 @@ const SECTION_PAD  = "py-16 md:py-24";
 
 // Image styling on left column
 const IMAGE_ASPECT = "aspect-[4/3]";
-const FRAME_INSET  = "12px";
+const FRAME_INSET  = "0.75rem";
 const FRAME_COLOR  = "rgba(255,255,255,0.55)";
 
 // Vertical rhythm between rows
@@ -85,7 +85,7 @@ export default function PropertyDetailSection({
           <NumeralMarker numeral={numeral} />
           <span
             style={serif}
-            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,14px)]"
+            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,0.875rem)]"
           >
             {label}
           </span>
@@ -96,7 +96,7 @@ export default function PropertyDetailSection({
       <Reveal>
         <h1
           style={serif}
-          className="mx-auto mb-20 max-w-4xl text-center font-medium leading-tight text-[clamp(2rem,3.6vw,52px)]"
+          className="mx-auto mb-20 max-w-4xl text-center font-medium leading-tight text-[clamp(2rem,3.6vw,3.25rem)]"
         >
           {title}
         </h1>
@@ -108,7 +108,7 @@ export default function PropertyDetailSection({
           <FramedImage src={heroImage} alt={label} />
           <p
             style={{ ...serif, color: MUTED_COLOR }}
-            className="text-center leading-relaxed md:text-left text-[clamp(0.95rem,1.15vw,17px)]"
+            className="text-center leading-relaxed md:text-left text-[clamp(0.95rem,1.15vw,1.0625rem)]"
           >
             {intro}
           </p>
@@ -134,20 +134,20 @@ function AreaRow({ area }: { area: Area }) {
       <div className="flex flex-col">
         <h3
           style={serif}
-          className="mb-4 font-semibold text-[clamp(1.25rem,1.65vw,24px)]"
+          className="mb-4 font-semibold text-[clamp(1.25rem,1.65vw,1.5rem)]"
         >
           {area.title}
         </h3>
         <p
           style={{ ...serif, color: MUTED_COLOR }}
-          className="leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
+          className="leading-relaxed text-[clamp(0.95rem,1.1vw,1rem)]"
         >
           {area.description}
         </p>
         {area.capacityLines && area.capacityLines.length > 0 && (
           <div
             style={{ ...serif, color: MUTED_COLOR }}
-            className="mt-4 leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
+            className="mt-4 leading-relaxed text-[clamp(0.95rem,1.1vw,1rem)]"
           >
             {area.capacityLines.map((line, i) => (
               <p key={i}>{line}</p>

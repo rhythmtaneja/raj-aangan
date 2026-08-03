@@ -26,7 +26,7 @@ const CONTENT_PAD_X = "px-4 md:px-10";
 const CONTENT_MAX_W = "max-w-7xl";
 // Content + live-preview summary live in ONE white panel (figma). Two columns
 // split by a vertical divider from lg up; the summary stacks below on smaller.
-const GRID_COLS = "lg:grid-cols-[minmax(0,1fr)_360px]";
+const GRID_COLS = "lg:grid-cols-[minmax(0,1fr)_22.5rem]";
 const SUMMARY_PAD = "p-6 md:p-8";
 
 // ═══════════════════════════════════════════════════════════════════════════

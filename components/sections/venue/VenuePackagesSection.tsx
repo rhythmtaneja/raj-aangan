@@ -17,12 +17,12 @@ const MIDDLE_BG = "#0f2f3b"; // dark navy card strip
 const TITLE_COLOR = "#191919";
 
 // ─ Padding ──
-const TOP_PAD = "min-h-[220px] py-16 md:min-h-[252px] md:py-20";
+const TOP_PAD = "min-h-[13.75rem] py-16 md:min-h-[15.75rem] md:py-20";
 const MIDDLE_PAD = "py-16 md:py-20";
 
 // ─ Card image ──
 const CARD_ASPECT = "aspect-square";
-const FRAME_INSET = "10px";
+const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -53,7 +53,7 @@ export default function VenuePackagesSection() {
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.9rem,3.2vw,46px)]"
+            className="text-center font-medium text-[clamp(1.9rem,3.2vw,2.875rem)]"
           >
             Venue packages
           </h2>
@@ -96,7 +96,7 @@ function PackageCard({ name, image, href }: Property) {
       </div>
       <p
         style={serif}
-        className="mt-6 text-center uppercase text-white leading-tight tracking-wide text-[clamp(1.15rem,1.5vw,22px)]"
+        className="mt-6 text-center uppercase text-white leading-tight tracking-wide text-[clamp(1.15rem,1.5vw,1.375rem)]"
       >
         {name}
       </p>

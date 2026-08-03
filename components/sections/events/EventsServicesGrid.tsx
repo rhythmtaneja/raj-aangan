@@ -25,7 +25,7 @@ const TITLE_COLOR = "#191919";
 const CARD_ASPECT = "aspect-square"; // matches Figma; use aspect-[4/5] for taller
 
 // ─ Frame on each card ──
-const FRAME_INSET = "16px";
+const FRAME_INSET = "1rem";
 const FRAME_COLOR = "rgba(255,255,255,0.7)";
 
 // ─ Grid gap ──
@@ -108,7 +108,7 @@ export default function EventsServicesGrid() {
       <Reveal>
         <h2
           style={serif}
-          className="mx-auto mb-16 max-w-4xl text-center font-medium text-[clamp(1.8rem,3vw,43px)]"
+          className="mx-auto mb-16 max-w-4xl text-center font-medium text-[clamp(1.8rem,3vw,2.6875rem)]"
         >
           {SECTION_TITLE}
         </h2>
@@ -148,13 +148,13 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
           <h3
             style={serif}
-            className="font-semibold leading-tight text-[clamp(1.15rem,1.5vw,22px)] [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]"
+            className="font-semibold leading-tight text-[clamp(1.15rem,1.5vw,1.375rem)] [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]"
           >
             {title}
           </h3>
           <p
             style={serif}
-            className="mt-3 max-w-[240px] leading-snug text-[clamp(0.8rem,0.9vw,13px)] text-white/95 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]"
+            className="mt-3 max-w-[15rem] leading-snug text-[clamp(0.8rem,0.9vw,0.8125rem)] text-white/95 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]"
           >
             {description}
           </p>
@@ -167,9 +167,9 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={120}
+          circleSize="7.5rem"
           magnet={0.3}
-          className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,14px)]"
+          className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,0.875rem)]"
         >
           See our services
         </CircleButton>

@@ -105,7 +105,7 @@ export default function CustomCuisinePage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Cuisine Preferences
         </h2>
@@ -130,7 +130,7 @@ export default function CustomCuisinePage() {
         {/* CUISINE CATEGORIES */}
         <h3
           style={{ ...serif, color: INK }}
-          className="mt-10 text-[clamp(1.4rem,2vw,29px)] font-semibold"
+          className="mt-10 text-[clamp(1.4rem,2vw,1.8125rem)] font-semibold"
         >
           Select Cuisine Categories
         </h3>
@@ -163,7 +163,7 @@ export default function CustomCuisinePage() {
                 <div
                   aria-hidden
                   className="pointer-events-none absolute z-10"
-                  style={{ inset: "8px", border: "1px solid rgba(255,255,255,0.5)" }}
+                  style={{ inset: "0.5rem", border: "1px solid rgba(255,255,255,0.5)" }}
                 />
                 {selected && <SelectedTick />}
                 <div
@@ -178,7 +178,7 @@ export default function CustomCuisinePage() {
                   >
                     {cat.name}
                   </span>
-                  <span style={{ color: INK_MUTED }} className="text-[11px]">
+                  <span style={{ color: INK_MUTED }} className="text-[0.6875rem]">
                     {cat.itemCount} {cat.itemCount === 1 ? "Item" : "Items"}
                   </span>
                 </div>

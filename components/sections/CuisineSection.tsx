@@ -39,7 +39,7 @@ const COLOR_TRANSITION_START = "top bottom";
 const COLOR_TRANSITION_END = "top top";
 
 // ─ Heading "Our Cuisine" ──
-const TITLE_FONT_SIZE = "clamp(1.8rem, 4vw, 58px)";
+const TITLE_FONT_SIZE = "clamp(1.8rem, 4vw, 3.625rem)";
 const TITLE_TRACKING = "0.15em";
 const TITLE_COLOR = "#6b4f3a";
 const TITLE_MARGIN_BOTTOM = "2.75rem";
@@ -57,7 +57,7 @@ const CARD_GAP = 24;      // px between cards
 const SCROLL_DURATION = 34;
 
 // ─ Card frame (matches the site-wide inner-outline pattern) ──
-const FRAME_INSET = "20px";
+const FRAME_INSET = "1.25rem";
 const FRAME_COLOR = "rgba(255,255,255,0.7)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -170,9 +170,9 @@ export default function CuisineSection() {
             href="#"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={150}
+            circleSize="9.375rem"
             magnet={0.4}
-            className="rounded-full border border-[#191919] px-10 py-4 font-medium text-[#191919] text-[clamp(1rem,1.04vw,15px)]"
+            className="rounded-full border border-[#191919] px-10 py-4 font-medium text-[#191919] text-[clamp(1rem,1.04vw,0.9375rem)]"
           >
             Create Booking
           </CircleButton>
@@ -206,13 +206,13 @@ function CuisineCard({ name, img, price }: { name: string; img: string; price: s
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center text-white">
         <h3
           style={serif}
-          className="font-semibold uppercase tracking-[0.15em] text-[clamp(1.5rem,2.6vw,37px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]"
+          className="font-semibold uppercase tracking-[0.15em] text-[clamp(1.5rem,2.6vw,2.3125rem)] [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]"
         >
           {name}
         </h3>
         <p
           style={serif}
-          className="mt-3 text-[clamp(0.9rem,1.15vw,17px)] [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]"
+          className="mt-3 text-[clamp(0.9rem,1.15vw,1.0625rem)] [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]"
         >
           {price}
         </p>

@@ -99,7 +99,7 @@ export default function FooterSection() {
             className={`flex items-center gap-3 rounded-full ${PILL_BG} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}
           >
             <DehazeIcon className="h-5 w-5 md:h-6 md:w-6" />
-            <span className="font-semibold text-[clamp(0.9rem,1.15vw,17px)]">Menu</span>
+            <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Menu</span>
           </Link>
 
           <Link href="/" className="hidden shrink-0 md:block" aria-label="Home">
@@ -117,7 +117,7 @@ export default function FooterSection() {
             className={`flex items-center gap-3 rounded-full ${PILL_BG} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}
           >
             <TripIcon className="h-5 w-5 md:h-6 md:w-6" />
-            <span className="font-semibold text-[clamp(0.9rem,1.15vw,17px)]">Booking</span>
+            <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
           </Link>
         </div>
 
@@ -129,14 +129,14 @@ export default function FooterSection() {
               <li key={label} className="flex items-baseline gap-6 md:gap-10">
                 <span
                   style={serif}
-                  className="w-8 shrink-0 text-white/45 text-[clamp(0.8rem,0.9vw,13px)]"
+                  className="w-8 shrink-0 text-white/45 text-[clamp(0.8rem,0.9vw,0.8125rem)]"
                 >
                   {num}
                 </span>
                 <Link
                   href={href}
                   style={serif}
-                  className="transition-opacity duration-300 hover:opacity-70 text-[clamp(1.8rem,3vw,43px)]"
+                  className="transition-opacity duration-300 hover:opacity-70 text-[clamp(1.8rem,3vw,2.6875rem)]"
                 >
                   {label}
                 </Link>
@@ -149,7 +149,7 @@ export default function FooterSection() {
             <div className="flex items-center gap-6">
               <h3
                 style={serif}
-                className="text-[clamp(1.3rem,1.9vw,27px)]"
+                className="text-[clamp(1.3rem,1.9vw,1.6875rem)]"
               >
                 {MORE_ABOUT_TITLE}
               </h3>
@@ -178,7 +178,7 @@ export default function FooterSection() {
                   <Link
                     href={link.href}
                     style={serif}
-                    className="text-white/70 transition-colors duration-300 hover:text-white text-[clamp(1rem,1.15vw,17px)]"
+                    className="text-white/70 transition-colors duration-300 hover:text-white text-[clamp(1rem,1.15vw,1.0625rem)]"
                   >
                     {link.label}
                   </Link>
@@ -191,7 +191,7 @@ export default function FooterSection() {
           <div>
             <h2
               style={serif}
-              className="leading-tight text-[clamp(1.7rem,2.4vw,35px)]"
+              className="leading-tight text-[clamp(1.7rem,2.4vw,2.1875rem)]"
             >
               {BRAND_LINE_1}
               <br />
@@ -200,21 +200,21 @@ export default function FooterSection() {
 
             <div
               style={serif}
-              className="mt-8 space-y-1 text-white/80 text-[clamp(1rem,1.15vw,17px)]"
+              className="mt-8 space-y-1 text-white/80 text-[clamp(1rem,1.15vw,1.0625rem)]"
             >
               {ADDRESS_LINES.map((line) => (
                 <p key={line}>{line}</p>
               ))}
             </div>
 
-            <div className="mt-8 space-y-1 text-white/80 text-[clamp(1rem,1.15vw,17px)]">
+            <div className="mt-8 space-y-1 text-white/80 text-[clamp(1rem,1.15vw,1.0625rem)]">
               <p>{PHONE}</p>
               <p>{EMAIL}</p>
             </div>
 
             <Link
               href={CONTACTS_HREF}
-              className="mt-8 inline-flex items-center gap-3 text-[clamp(1rem,1.15vw,17px)] transition-opacity duration-300 hover:opacity-70"
+              className="mt-8 inline-flex items-center gap-3 text-[clamp(1rem,1.15vw,1.0625rem)] transition-opacity duration-300 hover:opacity-70"
             >
               <span>Contacts</span>
               <span aria-hidden>→</span>
@@ -232,10 +232,10 @@ export default function FooterSection() {
         {/* ─── COPYRIGHT BAR ───────────────────────────────────────────── */}
         <div className="border-t border-white/10 px-8 py-6 md:px-16">
           <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
-            <p style={serif} className="text-white/50 text-[clamp(0.85rem,0.9vw,13px)]">
+            <p style={serif} className="text-white/50 text-[clamp(0.85rem,0.9vw,0.8125rem)]">
               {COPYRIGHT}
             </p>
-            <p className="uppercase tracking-widest text-white/50 text-[clamp(0.75rem,0.8vw,12px)]">
+            <p className="uppercase tracking-widest text-white/50 text-[clamp(0.75rem,0.8vw,0.75rem)]">
               {CREDIT}
             </p>
           </div>

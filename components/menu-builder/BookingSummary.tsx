@@ -56,7 +56,7 @@ export default function BookingSummary({ currentStep }: Props) {
     <div>
       <h3
         style={{ ...serif, color: TITLE_COLOR }}
-        className="text-[clamp(1.3rem,1.7vw,23px)] font-semibold"
+        className="text-[clamp(1.3rem,1.7vw,1.4375rem)] font-semibold"
       >
         Booking Summary
       </h3>
@@ -147,9 +147,12 @@ function VenueEventSummary({
 }) {
   const customMenu = state.menuMode === "custom";
   const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
-  const occasion =
+  const occasionsLabel =
     state.occasions.length > 0
-      ? occasions.find((o) => o.id === state.occasions[0])?.label
+      ? state.occasions
+          .map((id) => occasions.find((o) => o.id === id)?.label)
+          .filter((label): label is string => Boolean(label))
+          .join(", ")
       : null;
   const setMenu = getSetMenu(state.selectedSetMenuId);
 
@@ -163,7 +166,7 @@ function VenueEventSummary({
     <>
       <div className="mt-6">
         <Row label="Client" value={hydrated ? state.clientName || "—" : "—"} />
-        <Row label="Occasion" value={hydrated ? occasion || "—" : "—"} />
+        <Row label="Occasion" value={hydrated ? occasionsLabel || "—" : "—"} />
         <Row label="Date" value={hydrated ? state.eventDate || "—" : "—"} />
         <Row label="Guests" value={hydrated ? String(state.guests) : "—"} />
         <Row label="Venue" value={hydrated ? venue?.name || state.customVenueAddress || "—" : "—"} />
@@ -191,7 +194,7 @@ function VenueEventSummary({
               return (
                 <li
                   key={dishId}
-                  className="flex items-center justify-between text-[clamp(0.8rem,0.85vw,12px)]"
+                  className="flex items-center justify-between text-[clamp(0.8rem,0.85vw,0.75rem)]"
                   style={{ color: VALUE_COLOR }}
                 >
                   <span className="truncate pr-2">
@@ -254,7 +257,7 @@ function TotalBlock({
       </h4>
       <p
         style={{ ...serif, color: GOLD }}
-        className="mt-2 text-[clamp(1.6rem,2vw,29px)] font-semibold leading-none"
+        className="mt-2 text-[clamp(1.6rem,2vw,1.8125rem)] font-semibold leading-none"
       >
         {formatINR(total)}
       </p>
@@ -270,7 +273,7 @@ function TotalBlock({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-2 items-baseline gap-3 py-2.5 text-[clamp(0.9rem,1vw,15px)]">
+    <div className="grid grid-cols-2 items-baseline gap-3 py-2.5 text-[clamp(0.9rem,1vw,0.9375rem)]">
       <span style={{ ...serif, color: ROW_LABEL_COLOR }}>{label}</span>
       <span style={{ ...serif, color: VALUE_COLOR }} className="truncate">
         {value}

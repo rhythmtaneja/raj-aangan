@@ -27,16 +27,16 @@ const ADDRESS_LINES = [
 const MAP_HREF = "https://maps.google.com/?q=Raj+Aangan+Resort+Jaipur"; // ← replace with real link
 
 // ─ Typography ──
-const SMALL_LABEL_SIZE = "clamp(1.25rem, 1.6vw, 23px)";
-const TITLE_SIZE = "clamp(2.2rem, 4vw, 58px)";
-const ADDRESS_SIZE = "clamp(1.15rem, 1.45vw, 21px)";
+const SMALL_LABEL_SIZE = "clamp(1.25rem, 1.6vw, 1.4375rem)";
+const TITLE_SIZE = "clamp(2.2rem, 4vw, 3.625rem)";
+const ADDRESS_SIZE = "clamp(1.15rem, 1.45vw, 1.3125rem)";
 
 // ─ Photo ──
 const PHOTO_SRC = "/images/contact-address.jpg";
 const PHOTO_ASPECT = "aspect-[4/5]";
 
 // ─ White inner outline frame (same pattern as gallery / about) ──
-const FRAME_INSET = "14px";
+const FRAME_INSET = "0.875rem";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.65)";
 
 // ─ Hover zoom on the photo ──
@@ -91,9 +91,9 @@ export default function AddressSection() {
               href={MAP_HREF}
               circleColor="#191919"
               arrowColor="#ffffff"
-              circleSize={120}
+              circleSize="7.5rem"
               magnet={0.35}
-              className="rounded-full border border-[#191919] px-10 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,16px)]"
+              className="rounded-full border border-[#191919] px-10 py-3.5 text-[#191919] text-[clamp(0.95rem,1.1vw,1rem)]"
             >
               Open Map
             </CircleButton>

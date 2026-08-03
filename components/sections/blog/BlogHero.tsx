@@ -17,11 +17,11 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
 // ─ Title ──
 const TITLE_TEXT = "Blog";
-const TITLE_FONT_SIZE = "clamp(3rem, 8vw, 115px)";
+const TITLE_FONT_SIZE = "clamp(3rem, 8vw, 7.1875rem)";
 
 // ─ Subtitle (single line beneath the title) ──
 const SUBTITLE_TEXT = "Where every event becomes a cherished memory worth sharing.";
-const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.6vw, 23px)";
+const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.6vw, 1.4375rem)";
 const SUBTITLE_MAX_W = "40rem";
 
 // ─ Letter-by-letter reveal ──
@@ -137,7 +137,7 @@ export default function BlogHero() {
             href="#posts"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={120}
+            circleSize="7.5rem"
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-7 py-3 text-white"

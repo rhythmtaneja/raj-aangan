@@ -12,7 +12,7 @@ export default function MenuBuilderLoading() {
           <div className="mt-2 h-3 w-1/4 animate-pulse rounded bg-gray-100" />
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-[130px] animate-pulse rounded bg-gray-200" />
+              <div key={i} className="h-[8.125rem] animate-pulse rounded bg-gray-200" />
             ))}
           </div>
           <div className="mt-8 space-y-3">

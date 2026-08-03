@@ -76,7 +76,7 @@ export default function PresentationStepPage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Live Counters, Cutlery & Presentation
         </h2>
@@ -161,7 +161,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div className="mt-8 mb-5 flex items-center gap-4">
       <h3
         style={{ ...serif, color: INK }}
-        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold tracking-wide"
       >
         {children}
       </h3>
@@ -204,7 +204,7 @@ function PhotoGrid({
             <div
               aria-hidden
               className="pointer-events-none absolute z-10"
-              style={{ inset: "8px", border: "1px solid rgba(255,255,255,0.5)" }}
+              style={{ inset: "0.5rem", border: "1px solid rgba(255,255,255,0.5)" }}
             />
             {selected && (
               <div

@@ -1,5 +1,61 @@
 @import "tailwindcss";
 
+@layer base {
+  /* ═══════════════════════════════════════════════════════════════════════
+     ─── TUNE THESE KNOBS ──────────────────────────────────────────────────
+     ═══════════════════════════════════════════════════════════════════════
+
+     FLUID ROOT FONT-SIZE — the whole desktop layout scales as one unit.
+
+     Every rem-based value in the app (Tailwind's p-8 / gap-6 / text-lg, and
+     the hand-written `rem` tokens in the section components) is a multiple of
+     this one number. Change it and the ENTIRE desktop layout scales — no
+     breakpoint hopping, no per-component tuning.
+
+       REFERENCE VIEWPORT     1440px   ← the Figma artboard width
+       REFERENCE ROOT SIZE      16px   ← 1rem at 1440px
+       MIN CLAMP                12px   ← floor; reached at 1080px and below
+       MAX CLAMP                20px   ← ceiling; reached at 1800px and above
+
+     FORMULA
+       divisor = referenceWidth / referenceRootFontSize = 1440 / 16 = 90
+       → font-size: clamp(MIN, calc(100vw / divisor), MAX)
+
+       To change the reference viewport, recompute the divisor:
+         1512px design → 1512 / 16 = 94.5  → calc(100vw / 94.5)
+       To change where the clamps bite:
+         minViewport = MIN * divisor   (12 * 90 = 1080px)
+         maxViewport = MAX * divisor   (20 * 90 = 1800px)
+       So to keep scaling out to 1920px, raise MAX to 1920/90 = 21.33px.
+
+     WHAT THIS GIVES YOU
+       1080px →   12px (clamped)   1440px → 16px (design reference, 1:1)
+       1280px → 14.22px            1728px → 19.2px
+       1512px → 16.8px             1800px+ → 20px (clamped)
+
+     NOTE: between 768px and 1080px the root is pinned at the 12px floor, so
+     that band renders the desktop layout at a fixed 75% of the design size
+     rather than continuing to shrink. Raise MIN (or lower the md: breakpoint
+     handoff) if that band matters for this audience.
+
+     Media-query breakpoints are UNAFFECTED: `rem` inside a media query always
+     resolves against the browser's initial 16px, never against this value, so
+     Tailwind's md:/lg:/xl: still fire at 768/1024/1280px exactly as before.
+     ═══════════════════════════════════════════════════════════════════════ */
+  html {
+    /* MUST stay in px — `rem` on the root element is self-referential. */
+    font-size: clamp(12px, calc(100vw / 90), 20px);
+  }
+
+  /* Mobile keeps a fixed 16px root and uses ordinary responsive breakpoints —
+     the fluid scaling above is a DESKTOP-only mechanism. */
+  @media (max-width: 767px) {
+    html {
+      font-size: 16px;
+    }
+  }
+}
+
 :root {
   /* Brand tokens */
   --color-ink: #191919;

@@ -190,13 +190,13 @@ export default function SiteHeader({
           className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}
         >
           <DehazeIcon className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="font-semibold text-[clamp(0.9rem,1.15vw,17px)]">Menu</span>
+          <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Menu Builder</span>
         </Link>
 
         {variant === "full" && (
           <Link
             href="/"
-            className="site-header-item absolute left-1/2 top-4 -translate-x-1/2"
+            className="site-header-item absolute left-1/2 top-1 -translate-x-1/2"
           >
             <Image
               src="/images/logo-round.png"
@@ -211,7 +211,7 @@ export default function SiteHeader({
         {/* BOOKING */}
         <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
           <TripIcon className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="font-semibold text-[clamp(0.9rem,1.15vw,17px)]">Booking</span>
+          <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
         </button>
       </div>
 
@@ -230,7 +230,7 @@ export default function SiteHeader({
             onMouseLeave={handleNavContainerLeave}
           >
             <nav
-              className={`group flex flex-wrap items-center justify-center px-4 md:flex-nowrap ${NAV_LINK_GAP} py-4 font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,13px)]`}
+              className={`group flex flex-wrap items-center justify-center px-4 py-5 md:flex-nowrap md:py-6 ${NAV_LINK_GAP} font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,0.8125rem)]`}
             >
               {NAV_LINKS.map((link, i) => (
                 <Link

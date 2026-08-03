@@ -33,7 +33,7 @@ const components: PortableTextComponents = {
     normal: ({ children }) => (
       <p
         style={{ color: INK }}
-        className="mx-auto mb-6 max-w-2xl text-[clamp(1rem,1.15vw,17px)] leading-[1.85]"
+        className="mx-auto mb-6 max-w-2xl text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.85]"
       >
         {children}
       </p>
@@ -41,7 +41,7 @@ const components: PortableTextComponents = {
     h2: ({ children }) => (
       <h2
         style={{ ...serif, color: INK }}
-        className="mx-auto mt-14 mb-5 max-w-2xl text-[clamp(1.75rem,3vw,43px)] font-semibold leading-[1.2]"
+        className="mx-auto mt-14 mb-5 max-w-2xl text-[clamp(1.75rem,3vw,2.6875rem)] font-semibold leading-[1.2]"
       >
         {children}
       </h2>
@@ -57,7 +57,7 @@ const components: PortableTextComponents = {
     blockquote: ({ children }) => (
       <blockquote
         style={{ ...serif, color: INK, borderColor: GOLD }}
-        className="mx-auto my-10 max-w-2xl border-l-2 pl-6 text-[clamp(1.3rem,2vw,29px)] italic leading-[1.5]"
+        className="mx-auto my-10 max-w-2xl border-l-2 pl-6 text-[clamp(1.3rem,2vw,1.8125rem)] italic leading-[1.5]"
       >
         {children}
       </blockquote>
@@ -67,7 +67,7 @@ const components: PortableTextComponents = {
     bullet: ({ children }) => (
       <ul
         style={{ color: INK }}
-        className="mx-auto mb-6 max-w-2xl list-disc space-y-2 pl-6 text-[clamp(1rem,1.15vw,17px)] leading-[1.8] marker:text-[color:var(--gold,#b08d57)]"
+        className="mx-auto mb-6 max-w-2xl list-disc space-y-2 pl-6 text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.8] marker:text-[color:var(--gold,#b08d57)]"
       >
         {children}
       </ul>
@@ -75,7 +75,7 @@ const components: PortableTextComponents = {
     number: ({ children }) => (
       <ol
         style={{ color: INK }}
-        className="mx-auto mb-6 max-w-2xl list-decimal space-y-2 pl-6 text-[clamp(1rem,1.15vw,17px)] leading-[1.8]"
+        className="mx-auto mb-6 max-w-2xl list-decimal space-y-2 pl-6 text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.8]"
       >
         {children}
       </ol>

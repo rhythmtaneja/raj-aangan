@@ -52,7 +52,7 @@ export default function VideoSection({ poster }: { poster?: string }) {
               href="#"
               circleColor="#ffffff"
               arrowColor="#191919"
-              circleSize={150}
+              circleSize="9.375rem"
               magnet={0.35}
               className="rounded-full border border-white px-10 py-4 text-white"
             >

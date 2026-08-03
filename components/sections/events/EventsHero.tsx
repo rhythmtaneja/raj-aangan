@@ -28,12 +28,14 @@ const OVERLAY_TOP  = "rgba(15,12,10,0.55)";  // top of overlay (behind nav)
 const OVERLAY_BOT  = "rgba(10,8,7,0.88)";    // bottom of overlay (behind cards)
 
 // ─ Card sizing ──
-const CARD_WIDTH  = 340; // px
-const CARD_HEIGHT = 340; // px (square-ish)
-const CARD_GAP    = 32;  // px between cards
+// rem so the cards scale with the fluid root font-size (see globals.css).
+// 21.25rem = 340px, 2rem = 32px at the 1440px reference.
+const CARD_WIDTH  = "21.25rem";
+const CARD_HEIGHT = "21.25rem";
+const CARD_GAP    = "2rem"; // between cards
 
 // ─ Card frame (matches the site-wide inner-outline pattern) ──
-const FRAME_INSET = "12px";
+const FRAME_INSET = "0.75rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 // ─ Auto-scroll speed ──
@@ -70,15 +72,25 @@ export default function EventsHero() {
       // The track holds TWO copies of CATEGORIES. Moving by exactly one copy's
       // worth of width lands the second copy exactly where the first started,
       // so the loop is seamless.
-      const originalWidth = CATEGORIES.length * (CARD_WIDTH + CARD_GAP);
+      //
+      // MEASURED, not computed: the card width/gap are now rem, so their
+      // rendered px size depends on the fluid root font-size (and on the
+      // clamp's 30vw term at narrow widths). Deriving the distance from the
+      // constants would desync the loop on any viewport where 1rem !== 16px.
+      const originalWidth = () => track.scrollWidth / 2;
 
       gsap.set(track, { x: 0 });
-      gsap.to(track, {
-        x: -originalWidth,
+      const tween = gsap.to(track, {
+        x: () => -originalWidth(),
         duration: SCROLL_DURATION,
         ease: "none",
         repeat: -1,
       });
+
+      // Re-read the measurement after a resize changes the rendered width.
+      const onResize = () => tween.invalidate();
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
     },
     { scope: trackRef }
   );
@@ -117,7 +129,7 @@ export default function EventsHero() {
         className="absolute inset-x-0 flex items-center overflow-x-auto"
         style={{ top: CARDS_TOP, height: CARDS_HEIGHT }}
       >
-        <div ref={trackRef} className="flex" style={{ gap: `${CARD_GAP}px` }}>
+        <div ref={trackRef} className="flex" style={{ gap: CARD_GAP }}>
           {cards.map((c, i) => (
             <CategoryCard key={i} label={c.label} image={c.image} />
           ))}
@@ -131,11 +143,11 @@ function CategoryCard({ label, image }: { label: string; image: string }) {
   return (
     <div
       className="group shrink-0 flex flex-col items-center"
-      style={{ width: `clamp(200px, 30vw, ${CARD_WIDTH}px)` }}
+      style={{ width: `clamp(12.5rem, 30vw, ${CARD_WIDTH})` }}
     >
       <div
         className="relative overflow-hidden"
-        style={{ width: `clamp(200px, 30vw, ${CARD_WIDTH}px)`, height: `clamp(200px, 30vw, ${CARD_HEIGHT}px)` }}
+        style={{ width: `clamp(12.5rem, 30vw, ${CARD_WIDTH})`, height: `clamp(12.5rem, 30vw, ${CARD_HEIGHT})` }}
       >
         <Image
           src={image}
@@ -153,7 +165,7 @@ function CategoryCard({ label, image }: { label: string; image: string }) {
       </div>
       <p
         style={serif}
-        className="mt-6 text-white uppercase tracking-[0.25em] text-[clamp(0.85rem,1.05vw,15px)]"
+        className="mt-6 text-white uppercase tracking-[0.25em] text-[clamp(0.85rem,1.05vw,0.9375rem)]"
       >
         {label}
       </p>

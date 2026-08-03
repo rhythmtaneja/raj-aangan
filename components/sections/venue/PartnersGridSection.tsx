@@ -17,7 +17,7 @@ const SECTION_PAD = "py-20 md:py-24";
 
 // ─ Card image ──
 const CARD_ASPECT = "aspect-[4/5]"; // matches figma tall card
-const FRAME_INSET = "12px";
+const FRAME_INSET = "0.75rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -68,7 +68,7 @@ export default function PartnersGridSection() {
       <Reveal>
         <h1
           style={serif}
-          className="mx-auto mb-16 max-w-4xl text-center font-medium text-[clamp(2rem,3.5vw,50px)]"
+          className="mx-auto mb-16 max-w-4xl text-center font-medium text-[clamp(2rem,3.5vw,3.125rem)]"
         >
           Our Partners
         </h1>
@@ -105,19 +105,19 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
 
       <h3
         style={serif}
-        className="mt-6 text-center font-semibold text-[clamp(1.15rem,1.4vw,20px)]"
+        className="mt-6 text-center font-semibold text-[clamp(1.15rem,1.4vw,1.25rem)]"
       >
         {name}
       </h3>
       <p
         style={{ ...serif, color: MUTED_COLOR }}
-        className="mt-1 text-center italic text-[clamp(0.9rem,1vw,14px)]"
+        className="mt-1 text-center italic text-[clamp(0.9rem,1vw,0.875rem)]"
       >
         {location}
       </p>
 
       {/* Capacity stats row */}
-      <div className="mt-4 flex items-center justify-between px-4 text-[clamp(0.9rem,1vw,14px)]">
+      <div className="mt-4 flex items-center justify-between px-4 text-[clamp(0.9rem,1vw,0.875rem)]">
         <div className="flex items-center gap-2">
           <BedIcon className="h-5 w-5" />
           <span>{rooms}</span>
@@ -130,7 +130,7 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
 
       <p
         style={serif}
-        className="mt-4 text-center leading-relaxed text-[clamp(0.85rem,0.95vw,14px)]"
+        className="mt-4 text-center leading-relaxed text-[clamp(0.85rem,0.95vw,0.875rem)]"
       >
         {description}
       </p>
@@ -140,9 +140,9 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize={150}
+          circleSize="9.375rem"
           magnet={0.3}
-          className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,14px)]"
+          className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,0.875rem)]"
         >
           View Property
         </CircleButton>

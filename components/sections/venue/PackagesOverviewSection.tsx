@@ -19,7 +19,7 @@ const TOP_PAD    = "py-12 md:py-14";
 const MIDDLE_PAD = "py-14 md:py-16";
 
 const CARD_ASPECT = "aspect-square";
-const FRAME_INSET = "10px";
+const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -51,7 +51,7 @@ export default function PackagesOverviewSection({
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.6rem,2.8vw,40px)]"
+            className="text-center font-medium text-[clamp(1.6rem,2.8vw,2.5rem)]"
           >
             {title}
           </h2>
@@ -98,7 +98,7 @@ function OverviewCard({ name, image, href }: PackageOverview) {
       </div>
       <p
         style={serif}
-        className="mt-5 text-center text-white leading-tight text-[clamp(0.95rem,1.1vw,16px)]"
+        className="mt-5 text-center text-white leading-tight text-[clamp(0.95rem,1.1vw,1rem)]"
       >
         {name}
       </p>

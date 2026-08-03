@@ -67,29 +67,29 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
       <SiteHeader animateEntrance />
 
       {/* RAEC logo block (decorative, page content) */}
-      <div className="hero-logo absolute inset-x-0 top-[clamp(12rem,24vh,17rem)] z-10 flex flex-col items-center">
-        <Image src="/images/logo-round.png" alt="" width={58} height={58} priority />
-        <div className="-mt-2 h-18 w-[min(50vw,220px)] overflow-hidden">
+      <div className="hero-logo absolute inset-x-0 top-[clamp(15rem,27vh,20rem)] z-10 flex flex-col items-center">
+        {/* <Image src="/images/logo-round.png" alt="" width={58} height={58} priority /> */}
+        <div className="-mt-0 h-18 w-[min(50vw,13.75rem)] overflow-hidden">
           <Image
             src="/images/logo.png"
             alt="Raj Aangan Events and Caterers"
             width={220}
             height={220}
             priority
-            className="h-[220px] w-[220px] max-w-none -translate-y-[69px]"
+            className="h-[13.75rem] w-[13.75rem] max-w-none -translate-y-[4.3125rem]"
           />
         </div>
       </div>
 
       {/* Center content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-[calc(16.25rem+0.75rem)] sm:pt-[calc(16.25rem+1rem)] text-center">
         <div className="overflow-hidden">
-          <h1 className="hero-title max-w-275 font-medium leading-[1.03] text-white text-[clamp(2.75rem,6.25vw,90px)]">
+          <h1 className="hero-title max-w-275 font-medium leading-[1.03] text-white text-[clamp(2.75rem,6.25vw,5.625rem)]">
             The Crown of Heritage Hospitality
           </h1>
         </div>
 
-        <p className="hero-sub mt-10 max-w-4xl text-center font-medium leading-relaxed text-white text-[clamp(1.125rem,1.56vw,22px)]">
+        <p className="hero-sub mt-10 max-w-4xl text-center font-medium leading-relaxed text-white text-[clamp(1.125rem,1.56vw,1.375rem)]">
           Where ancient architecture
           <br />
           meets modern comfort to create unforgettable royal experience
@@ -99,9 +99,9 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           href="#"
           circleColor="#6c7c7b"
           arrowColor="#ffffff"
-          circleSize={150}
+          circleSize="9.375rem"
           magnet={0.6}
-          className="hero-cta mt-12 rounded-full border border-white px-8 py-3.75 text-[12px] font-medium uppercase tracking-[0.18em] text-white"
+          className="hero-cta mt-12 rounded-full border border-white px-8 py-3.75 text-[0.75rem] font-medium uppercase tracking-[0.18em] text-white"
         >
           Plan Your Event
         </CircleButton>

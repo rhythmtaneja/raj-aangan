@@ -27,6 +27,15 @@ const CARDS = [
   { title: "Catering", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt." },
 ];
 
+// ─── TUNE THESE KNOBS ────────────────────────────────────────────────────
+// More track height = more page scrolling needed to move the cards, which
+// makes the pinned-card movement feel less sensitive.
+const CARD_SCROLL_TRACK_HEIGHT = "358vh";
+const CARD_GAP = "14vh";
+
+const CARD_INNER_FRAME_INSET = "1rem";
+const CARD_INNER_FRAME_COLOR = "rgba(0, 0, 0, 0.37)";
+
 export default function EventsSection() {
   const [active, setActive] = useState(0);
   const track = useRef<HTMLDivElement>(null);
@@ -60,14 +69,14 @@ export default function EventsSection() {
     <section className="w-full bg-[#f1ece3]">
       {/*
         ── TUNING KNOBS ──
-        track height  (h-[260vh])  → longer = slower card scroll / more pin time
+        CARD_SCROLL_TRACK_HEIGHT → longer = slower card scroll / more pin time
         image size    (h-[82vh] max-w-[1180px]) → the contained photo
         V Events pos  (top-[6%])    → heading height inside the image
         marquee pos   (top-[40%])   → where the running word sits (the gap)
         cards start   (bottom-[-2%]) + yPercent:8 in the GSAP above → first-card peek
-        card gap      (gap-[8vh])    → space between cards (smaller = tighter)
+        CARD_GAP      → space between cards (larger = farther apart)
       */}
-      <div ref={track} className="relative h-[260vh]">
+      <div ref={track} className="relative" style={{ height: CARD_SCROLL_TRACK_HEIGHT }}>
         <div className="sticky top-0 flex h-screen items-center justify-center">
           {/* Contained background image (with margins, like Featured) */}
           <div className="relative h-[82vh] w-[92%] max-w-295 overflow-hidden">
@@ -79,7 +88,7 @@ export default function EventsSection() {
             {/* V Events — upper part of the image */}
             <div className="absolute inset-x-0 top-[6%] z-20 flex items-center justify-center gap-5">
               <NumeralMarker numeral="IV" light />
-              <span style={serif} className="font-bold uppercase tracking-[0.3em] text-white text-[clamp(1.45rem,2vw,29px)]">
+              <span style={serif} className="font-bold uppercase tracking-[0.3em] text-white text-[clamp(1.45rem,2vw,1.8125rem)]">
                 Events
               </span>
             </div>
@@ -87,7 +96,7 @@ export default function EventsSection() {
             {/* Running "Events" — in the gap between heading and cards */}
             <div className="absolute inset-x-0 top-[40%] z-10 -translate-y-1/2">
               <Marquee speed={70} repeat={4}>
-                <span style={serif} className="px-6 font-semibold uppercase text-white/15 text-[clamp(70px,12vw,173px)]">
+                <span style={serif} className="px-6 font-semibold text-white/15 text-[clamp(4.375rem,12vw,10.8125rem)]">
                   Events
                 </span>
               </Marquee>
@@ -95,18 +104,26 @@ export default function EventsSection() {
 
             {/* Cards — anchored to the LOWER area, scrubbed upward */}
             <div className="absolute inset-x-0 bottom-[-2%] z-30 overflow-visible">
-              <div ref={cards} className="mx-auto flex w-[86%] max-w-145 flex-col items-center gap-[8vh]">
+              <div ref={cards} className="mx-auto flex w-[86%] max-w-145 flex-col items-center" style={{ gap: CARD_GAP }}>
                 {CARDS.map((card) => (
                   <div key={card.title} className="relative w-full p-3">
                     <div className="pointer-events-none absolute inset-0 border border-white/60" />
-                    <div className="relative flex min-h-[400px] flex-col items-center justify-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-14 text-center shadow-xl">
-                      <h3 style={serif} className="font-bold leading-[1.05] text-[#242424] text-[clamp(2rem,3.15vw,45px)]">{card.title}</h3>
-                      <p className="mt-5 max-w-lg leading-relaxed text-[#3f3f3f] text-[clamp(1rem,1.18vw,17px)]">{card.body}</p>
+                    <div className="relative flex min-h-[25rem] flex-col items-center justify-center border border-[#d8d2c8] bg-[#f1ece3] px-8 py-14 text-center shadow-xl">
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute"
+                        style={{
+                          inset: CARD_INNER_FRAME_INSET,
+                          border: `1px solid ${CARD_INNER_FRAME_COLOR}`,
+                        }}
+                      />
+                      <h3 style={serif} className="font-bold leading-[1.05] text-[#242424] text-[clamp(2rem,3.15vw,2.8125rem)]">{card.title}</h3>
+                      <p className="mt-5 max-w-lg leading-relaxed text-[#3f3f3f] text-[clamp(1rem,1.18vw,1.0625rem)]">{card.body}</p>
                       <CircleButton
                         href="#"
                         circleColor="#191919"
                         arrowColor="#ffffff"
-                        circleSize={116}
+                        circleSize="7.25rem"
                         magnet={0.4}
                         className="mt-9 rounded-full border border-[#191919] px-9 py-3.5 text-base font-medium text-[#191919]"
                       >

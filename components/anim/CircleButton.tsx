@@ -37,7 +37,7 @@ gsap.registerPlugin(useGSAP);
 // ─── TUNE THESE KNOBS ────────────────────────────────────────────────
 // Default ball diameter. Reference site is ~140px. Override per-instance
 // with the `circleSize` prop.
-const DEFAULT_CIRCLE_SIZE = 140;
+const DEFAULT_CIRCLE_SIZE = "8.75rem";
 
 // How far the whole ball drifts toward the cursor. 0 = locked centre, 1 =
 // ball snaps to cursor. Reference feels ~0.35–0.45. Override with `magnet`.

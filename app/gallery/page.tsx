@@ -12,7 +12,7 @@ import { getSiteImages } from "@/lib/site-images/queries";
 // will land on the wrong colour and create a visible seam.
 // ═══════════════════════════════════════════════════════════════════════════
 const PAGE_BG = "#0a1e26"; // ↓ push toward "#050f14" for near-black
-                            // ↑ push toward "#0f3a4a" to lighten
+// ↑ push toward "#0f3a4a" to lighten
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Image lists per section.
@@ -81,7 +81,7 @@ export default async function GalleryPage() {
         />
       </div>
 
-      <GalleryBackNav />
+      {/* <GalleryBackNav /> */}
 
       <FooterSection />
     </main>

@@ -23,7 +23,8 @@ const IMAGE_HOVER_SCALE = "group-hover:scale-105";
 const STORY_TITLE = "One of Jaipur's most trusted names in luxury events and premium catering";
 const TITLE_ITALIC_PORTION = "most trusted";
 const STORY_PARAGRAPH =
-  "At Raj Aangan Events & Caterers, we believe every celebration tells its own story. From intimate gatherings to grand royal weddings, we bring together heritage elegance, exceptional cuisine, and meticulous planning to create moments that last a lifetime. With a passion for creating unforgettable experiences, we handle every detail with care—from elegant décor and seamless event coordination to customized catering that delights every guest. Whether it's a wedding, family celebration, or corporate event, our dedicated team ensures every occasion reflects your vision with style, precision, and warm hospitality. At Raj Aangan, we don't just plan events—we create memories that you and your loved ones will cherish for years to come.";
+  "At Raj Aangan Events & Caterers, we believe every celebration tells its own story. From intimate gatherings to grand royal weddings, we bring together heritage elegance, exceptional cuisine, and meticulous planning to create moments that last a lifetime. With a passion for creating unforgettable experiences, we handle every detail with care—from elegant décor and seamless event coordination to customized catering that delights every guest.";
+const STORY_PARAGRAPH_FONT_SIZE = "clamp(1.0625rem, 1.35vw, 1.25rem)";
 // Gap between numeral and title (bigger = more breathing room above heading)
 const NUMERAL_TO_TITLE_GAP = "3.5rem";
 
@@ -67,8 +68,8 @@ const PHOTOS = [
 ];
 
 // ─ Bullet-box frame styling ──
-const BOX_OUTER_OFFSET = "14px";
-const BOX_INNER_INSET = "12px";
+const BOX_OUTER_OFFSET = "0.875rem";
+const BOX_INNER_INSET = "0.75rem";
 const BOX_OUTER_COLOR = "rgba(255,255,255,0.30)";
 const BOX_INNER_COLOR = "rgba(255,255,255,0.50)";
 
@@ -106,7 +107,7 @@ export default function AboutStorySection() {
           <Reveal>
             <h2
               style={serif}
-              className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,37px)]"
+              className="font-semibold leading-[1.25] text-[clamp(1.6rem,2.6vw,2.3125rem)]"
             >
               {renderItalicEmphasis(STORY_TITLE, TITLE_ITALIC_PORTION)}
             </h2>
@@ -114,8 +115,8 @@ export default function AboutStorySection() {
 
           <Reveal>
             <p
-              style={serif}
-              className="max-w-lg leading-relaxed text-white/85 text-[clamp(0.95rem,1.15vw,17px)]"
+              style={{ ...serif, fontSize: STORY_PARAGRAPH_FONT_SIZE }}
+              className="max-w-lg leading-relaxed text-white/85"
             >
               {STORY_PARAGRAPH}
             </p>
@@ -137,7 +138,7 @@ export default function AboutStorySection() {
             <div
               aria-hidden
               className="pointer-events-none absolute z-10"
-              style={{ inset: "20px", border: "1px solid rgba(255,255,255,0.45)" }}
+              style={{ inset: "1.25rem", border: "1px solid rgba(255,255,255,0.45)" }}
             />
           </div>
         </Reveal>
@@ -172,7 +173,7 @@ export default function AboutStorySection() {
                 <div
                   aria-hidden
                   className="pointer-events-none absolute z-10"
-                  style={{ inset: "20px", border: "1px solid rgba(255,255,255,0.45)" }}
+                  style={{ inset: "1.25rem", border: "1px solid rgba(255,255,255,0.45)" }}
                 />
               </div>
             </Reveal>
@@ -242,7 +243,7 @@ function BulletBox({ bullets }: { bullets: string[] }) {
           <li
             key={b}
             style={{ ...serif, color: "#ffffff" }}
-            className="text-[clamp(1.1rem,1.45vw,21px)]"
+            className="text-[clamp(1.1rem,1.45vw,1.3125rem)]"
           >
             {b}
           </li>

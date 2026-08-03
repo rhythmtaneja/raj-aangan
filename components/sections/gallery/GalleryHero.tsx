@@ -35,7 +35,7 @@ const HERO_BLEND_START = "0%";
 
 // ─ Title ──
 const TITLE_TEXT = "Resort Gallery";
-const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 86px)";
+const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 5.375rem)";
 
 // ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.05;
@@ -46,7 +46,7 @@ const LETTER_START_DELAY = 0.4;
 // ─ Down-arrow CTA (appears after the title finishes) ──
 const CTA_DELAY = 1;
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[clamp(44px,12vw,64px)] w-[clamp(108px,30vw,170px)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
+  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.75rem,30vw,10.625rem)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -159,7 +159,7 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
             href="#gallery"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize="clamp(116px,32vw,170px)"
+            circleSize="clamp(7.25rem,32vw,10.625rem)"
             magnet={0.35}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}

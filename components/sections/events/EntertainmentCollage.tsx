@@ -62,7 +62,7 @@ const CARD_BG = "#ffffff";
 const CARD_TEXT = "#000000ff";
 const CARD_DESC_TEXT = "#000000ff";
 const CARD_SHADOW = "0 20px 50px rgba(0,0,0,0.30)";
-const CARD_FRAME_INSET = "10px";
+const CARD_FRAME_INSET = "0.625rem";
 const CARD_FRAME_BORDER = "1px solid rgba(0, 0, 0, 0.47)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -215,13 +215,13 @@ function CardBlock({ card }: { card: Card }) {
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
         <h3
           style={{ ...serif, color: CARD_TEXT }}
-          className="font-bold leading-tight text-[clamp(1.3rem,1.7vw,24px)]"
+          className="font-bold leading-tight text-[clamp(1.3rem,1.7vw,1.5rem)]"
         >
           {card.title}
         </h3>
         <p
           style={{ ...serif, color: CARD_DESC_TEXT }}
-          className="mt-6 leading-relaxed text-[clamp(0.9rem,1vw,14px)]"
+          className="mt-6 leading-relaxed text-[clamp(0.9rem,1vw,0.875rem)]"
         >
           {card.description}
         </p>

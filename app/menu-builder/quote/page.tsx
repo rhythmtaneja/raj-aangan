@@ -339,7 +339,7 @@ function startOver(
 function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <>
-      <h2 style={{ ...serif, color: INK }} className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold">
+      <h2 style={{ ...serif, color: INK }} className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold">
         {title}
       </h2>
       <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
@@ -352,7 +352,7 @@ function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-8 mb-3 flex items-center gap-4">
-      <h3 style={{ ...serif, color: INK }} className="text-[clamp(1.1rem,1.35vw,19px)] font-semibold">
+      <h3 style={{ ...serif, color: INK }} className="text-[clamp(1.1rem,1.35vw,1.1875rem)] font-semibold">
         {children}
       </h3>
       <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
@@ -384,10 +384,10 @@ function KVRow({ label, value }: { label: string; value: string }) {
 function EstimatedTotalRow({ value }: { value: string }) {
   return (
     <div className="mt-4 flex items-baseline justify-between border-t pt-4" style={{ borderColor: MB_COLORS.border }}>
-      <span style={{ ...serif, color: INK }} className="text-[clamp(1.2rem,1.6vw,23px)] font-semibold">
+      <span style={{ ...serif, color: INK }} className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold">
         Estimated total
       </span>
-      <span style={{ ...serif, color: GOLD }} className="text-[clamp(1.2rem,1.6vw,23px)] font-semibold">
+      <span style={{ ...serif, color: GOLD }} className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold">
         {value}
       </span>
     </div>

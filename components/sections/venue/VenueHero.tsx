@@ -35,7 +35,7 @@ const HERO_BLEND_HEIGHT = "0vh";
 
 // ─ Title ──
 const TITLE_TEXT = "Venue";
-const TITLE_FONT_SIZE = "clamp(3rem, 7vw, 101px)";
+const TITLE_FONT_SIZE = "clamp(3rem, 7vw, 6.3125rem)";
 
 // ─ Letter reveal ──
 const LETTER_STAGGER = 0.06;
@@ -46,7 +46,7 @@ const LETTER_START_DELAY = 0.4;
 // ─ Down-arrow CTA ──
 const CTA_DELAY = 1.5;
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[clamp(44px,12vw,64px)] w-[clamp(104px,29vw,150px)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
+  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
 
 // ─ Smooth scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "properties";
@@ -167,7 +167,7 @@ export default function VenueHero({ bgImage }: { bgImage?: string }) {
             onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize="clamp(116px,32vw,190px)"
+            circleSize="clamp(7.25rem,32vw,11.875rem)"
             magnet={0.35}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}

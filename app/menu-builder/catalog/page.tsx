@@ -62,7 +62,7 @@ export default function CatalogStepPage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Outdoor Catering Catalog
         </h2>
@@ -143,7 +143,7 @@ function QtyStepper({ qty, onChange }: { qty: number; onChange: (q: number) => v
         −
       </button>
       <span
-        className="min-w-[24px] text-center text-base font-medium"
+        className="min-w-[1.5rem] text-center text-base font-medium"
         style={{ color: qty > 0 ? INK : MB_COLORS.inkLight }}
       >
         {qty}

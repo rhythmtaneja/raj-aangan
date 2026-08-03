@@ -93,7 +93,7 @@ export default function CustomMenuStep() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Build Your Custom Menu
         </h2>
@@ -141,7 +141,7 @@ export default function CustomMenuStep() {
                     <Chevron open={isOpen} />
                     <h3
                       style={{ ...serif, color: INK }}
-                      className="text-[clamp(1.15rem,1.4vw,24px)] font-semibold leading-tight"
+                      className="text-[clamp(1.15rem,1.4vw,1.5rem)] font-semibold leading-tight"
                     >
                       {section.label}
                     </h3>

@@ -51,8 +51,16 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Wave SVG height in px. Reference feels ~90–130px.
+// Wave SVG COORDINATE height. This is the viewBox's own unit space, not a
+// rendered size — `preserveAspectRatio="none"` + `h-full` stretch the SVG to
+// whatever WAVE_RENDER_HEIGHT below says. Leave in px: it is the space the
+// sine-wave amplitudes/yOffsets in LAYERS are expressed in.
 const WAVE_HEIGHT = 100;
+
+// Rendered thickness of the wave band. rem so it scales with the fluid root
+// font-size (see globals.css). 6.25rem = 100px at the 1440px reference, i.e.
+// visually identical to before at the design width.
+const WAVE_RENDER_HEIGHT = "6.25rem";
 
 // SVG viewBox width — arbitrary; SVG stretches to 100vw via
 // preserveAspectRatio="none".
@@ -251,7 +259,7 @@ export default function WaveTop() {
         ref={waveRef}
         className="absolute inset-x-0 top-0"
         style={{
-          height: WAVE_HEIGHT,
+          height: WAVE_RENDER_HEIGHT,
           transform: "translateY(200vh)",
         }}
       >

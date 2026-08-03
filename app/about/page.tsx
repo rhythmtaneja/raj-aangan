@@ -34,7 +34,7 @@ export default async function AboutPage() {
         ]}
         // italicTail="the warmth of Rajasthan"
         buttonText="BEGIN YOUR JOURNEY"
-        buttonCircleSize={120}
+        buttonCircleSize="7.5rem"
         buttonClassName="rounded-full border border-[#191919] px-8 py-3 text-sm font-medium text-[#191919]"
       />
 

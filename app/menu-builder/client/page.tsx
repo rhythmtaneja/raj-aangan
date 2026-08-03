@@ -41,7 +41,7 @@ const CARD_PADDING = "p-8 md:p-10";
 const SECTION_GAP = "mt-8";
 // Card sizing and spacing knobs. The desktop measurements match the Figma cards.
 // Tailwind gap steps: gap-4 = 16px, gap-6 = 24px, gap-8 = 32px.
-const CARD_DESKTOP_WIDTH = "244px";
+const CARD_DESKTOP_WIDTH = "15.25rem";
 const CATERING_CARD_GAP = "gap-10";
 const OCCASION_CARD_GAP = "gap-12";
 const CATERING_IMAGE_ASPECT = "aspect-[1.43/1]"; // 244px card x 223px total height
@@ -94,7 +94,7 @@ export default function Step1ClientPage() {
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <h2
           style={{ ...serif, color: INK }}
-          className="text-[clamp(1.6rem,2.3vw,33px)] font-semibold"
+          className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
         >
           Menu Builder
         </h2>
@@ -123,7 +123,7 @@ export default function Step1ClientPage() {
         {/* ─── Occasion (venue-event only) ───────────────────────────────── */}
         {!outdoor && (
           <>
-            <Divider label="OCCASSION TYPE" />
+            <Divider label="Occasion Type" />
             <div
               className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] xl:grid-cols-[repeat(3,minmax(0,var(--card-width)))] ${OCCASION_CARD_GAP}`}
               style={{ "--card-width": CARD_DESKTOP_WIDTH } as CSSProperties}
@@ -204,7 +204,7 @@ export default function Step1ClientPage() {
             <div className="mt-3 inline-flex items-center gap-3">
               <StepButton onClick={decGuests}>−</StepButton>
               <div
-                className="min-w-[80px] text-center text-lg font-medium"
+                className="min-w-[5rem] text-center text-lg font-medium"
                 style={{ color: INK }}
               >
                 {hydrated ? state.guests : "—"}
@@ -265,7 +265,7 @@ function MediaCard({
   return (
     <button
       onClick={onClick}
-      className="group overflow-hidden rounded-[10px] border text-left transition-all"
+      className="group overflow-hidden rounded-[0.625rem] border text-left transition-all"
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
         boxShadow: selected ? `0 0 0 1px ${GOLD}` : "0 1px 3px rgba(0,0,0,0.06)",
@@ -289,19 +289,24 @@ function MediaCard({
           {label}
         </span>
         {showCheck && selected && (
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={MB_COLORS.greenCheck}
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="shrink-0"
+          <span
+            aria-label="Selected"
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+            style={{ backgroundColor: GOLD }}
           >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </span>
         )}
       </div>
     </button>
@@ -313,7 +318,7 @@ function Divider({ label }: { label: string }) {
     <div className="mt-8 mb-5 flex items-center gap-4">
       <h3
         style={{ ...serif, color: INK }}
-        className="shrink-0 text-[clamp(1.15rem,1.7vw,22px)] font-semibold tracking-wide"
+        className="shrink-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold tracking-wide"
       >
         {label}
       </h3>
@@ -324,7 +329,7 @@ function Divider({ label }: { label: string }) {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ ...serif, color: INK }} className="text-[15px] font-semibold">
+    <p style={{ ...serif, color: INK }} className="text-[0.9375rem] font-semibold">
       {children}
     </p>
   );

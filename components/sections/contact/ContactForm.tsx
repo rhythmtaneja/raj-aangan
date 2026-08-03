@@ -69,13 +69,13 @@ export default function ContactForm() {
             {/* LEFT — form */}
             <div className={`${CARD_PAD_X} ${CARD_PAD_Y}`}>
               <h2
-                style={{ ...serif, fontSize: "clamp(2rem, 3vw, 43px)" }}
+                style={{ ...serif, fontSize: "clamp(2rem, 3vw, 2.6875rem)" }}
                 className="mb-4 font-semibold text-[#191919]"
               >
                 {TITLE_TEXT}
               </h2>
 
-              <p className="mb-10 max-w-md text-[clamp(0.95rem,1.05vw,15px)] text-[#4a4a4a]">
+              <p className="mb-10 max-w-md text-[clamp(0.95rem,1.05vw,0.9375rem)] text-[#4a4a4a]">
                 {SUBTITLE_TEXT}
               </p>
 
@@ -122,7 +122,7 @@ export default function ContactForm() {
                     style={{ backgroundColor: SUBMIT_BG }}
                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SUBMIT_HOVER)}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SUBMIT_BG)}
-                    className="mt-4 w-fit px-8 py-3.5 font-medium text-[#191919] transition-colors text-[clamp(0.95rem,1.1vw,16px)]"
+                    className="mt-4 w-fit px-8 py-3.5 font-medium text-[#191919] transition-colors text-[clamp(0.95rem,1.1vw,1rem)]"
                   >
                     {SUBMIT_TEXT}
                   </button>
@@ -154,7 +154,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        "w-full rounded border border-[#191919]/25 bg-transparent px-5 py-3.5 text-[#191919] outline-none placeholder:text-[#8a8a8a] focus:border-[#191919] transition-colors text-[clamp(0.95rem,1.05vw,15px)] " +
+        "w-full rounded border border-[#191919]/25 bg-transparent px-5 py-3.5 text-[#191919] outline-none placeholder:text-[#8a8a8a] focus:border-[#191919] transition-colors text-[clamp(0.95rem,1.05vw,0.9375rem)] " +
         (props.className ?? "")
       }
     />
@@ -166,7 +166,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={
-        "w-full resize-none rounded border border-[#191919]/25 bg-transparent px-5 py-3.5 text-[#191919] outline-none placeholder:text-[#8a8a8a] focus:border-[#191919] transition-colors text-[clamp(0.95rem,1.05vw,15px)] " +
+        "w-full resize-none rounded border border-[#191919]/25 bg-transparent px-5 py-3.5 text-[#191919] outline-none placeholder:text-[#8a8a8a] focus:border-[#191919] transition-colors text-[clamp(0.95rem,1.05vw,0.9375rem)] " +
         (props.className ?? "")
       }
     />

@@ -39,13 +39,18 @@ const HERO_BLEND_TO_COLOR = "#081b24"; // ← keep in sync with AboutStorySectio
 const HERO_BLEND_HEIGHT = "30vh";    // ↑ for longer, gentler blend
 
 // ─ Title ──
-const TITLE_TEXT = "One of the most premium resort for wedding & events";
-const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 65px)";
-const TITLE_MAX_W = "1200px";
+// The section heading uses the same large, Cormorant treatment as VenueHero.
+const SECTION_TITLE_TEXT = "About Us";
+const SECTION_TITLE_FONT_SIZE = "clamp(3rem, 7vw, 6.3125rem)";
+const TITLE_FIRST_LINE = "One of the most premium resort for";
+const TITLE_SECOND_LINE = "weddings & events";
+const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 4.0625rem)";
+const TITLE_MAX_W = "75rem";
+const TITLE_HEADER_TO_TAGLINE_GAP = "2rem";
 
 // ─ Decorative logo ──
 const LOGO_TOP = "clamp(18rem, 33vh, 23rem)";
-const LOGO_SIZE = "clamp(180px, 34vw, 220px)";
+const LOGO_SIZE = "clamp(11.25rem, 34vw, 13.75rem)";
 const LOGO_CROP_HEIGHT = `calc(${LOGO_SIZE} * 0.327)`;
 const LOGO_CROP_OFFSET = `calc(${LOGO_SIZE} * -0.314)`;
 
@@ -181,39 +186,23 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
 
       <SiteHeader />
 
-      {/* Decorative RAEC logo block */}
-      <div
-        className="absolute inset-x-0 z-10 flex flex-col items-center"
-        style={{ top: LOGO_TOP }}
-      >
-        {/* <Image src="/images/logo-round.png" alt="" width={58} height={58} priority /> */}
-        <div
-          className="-mt-3 overflow-hidden"
-          style={{ width: LOGO_SIZE, height: LOGO_CROP_HEIGHT }}
-        >
-          <Image
-            src="/images/logo.png"
-            alt="Raj Aangan Events and Caterers"
-            width={220}
-            height={220}
-            priority
-            className="max-w-none"
-            style={{
-              width: LOGO_SIZE,
-              height: LOGO_SIZE,
-              transform: `translateY(${LOGO_CROP_OFFSET})`,
-            }}
-          />
-        </div>
-      </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
-          style={{ ...serif, fontSize: TITLE_FONT_SIZE, maxWidth: TITLE_MAX_W }}
+          style={{ ...serif, fontSize: SECTION_TITLE_FONT_SIZE }}
+          className="font-medium leading-none"
+        >
+          <Letters text={SECTION_TITLE_TEXT} />
+        </h1>
+
+        <h2
+          style={{ ...serif, fontSize: TITLE_FONT_SIZE, maxWidth: TITLE_MAX_W, marginTop: TITLE_HEADER_TO_TAGLINE_GAP }}
           className="font-medium leading-[1.1]"
         >
-          <Letters text={TITLE_TEXT} />
-        </h1>
+          <Letters text={TITLE_FIRST_LINE} />
+          <br />
+          <Letters text={TITLE_SECOND_LINE} />
+        </h2>
 
         <div className="about-hero-cta mt-14">
           <CircleButton
@@ -221,7 +210,7 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
             onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={120}
+            circleSize="7.5rem"
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-7 py-3 text-white"

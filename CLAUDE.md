@@ -2,11 +2,14 @@
 
 # ⏱️ CURRENT STATE — Menu Builder + Phase 8 CMS (read this first)
 
-Menu Builder rework is DONE, and **Phase 8 (Sanity CMS wiring) is DONE in code**
-— schemas, queries, seed script and docs all land green. What remains is
-*operational*: connect a real Sanity project and run the seed (see
-"Phase 8 — CMS" below). Everything still runs identically with no Sanity
-project at all (graceful fallback preserved).
+Menu Builder rework is DONE, and **Phase 8 (Sanity CMS wiring) is DONE and
+LIVE** — project `ze6ciec4` / dataset `production` is connected and **seeded
+(120 docs + 31 image assets, 2026-07-28)**. Studio at `/studio` is fully
+populated; the client can edit real content today. Everything still runs
+identically with no Sanity project at all (graceful fallback preserved).
+
+🚨 **All Phase 8 work is UNCOMMITTED** — 34 changed/untracked files, local only.
+Last commit is `5086f31`. Push before anything else. See "Remaining work" below.
 
 **Flow.** Step 1 picks a **catering type**: `venue-event` or `outdoor`
 (`state.cateringType`). Progress bar is dynamic (`flow.ts/getSteps(state)`).
@@ -45,7 +48,7 @@ project at all (graceful fallback preserved).
 **Regenerate data:** `python3 scripts/gen_set_menus.py` /
 `python3 scripts/gen_custom_menu.py` (self-contained; read the CSVs directly).
 
-# 🗄️ Phase 8 — CMS (DONE in code, needs a live project)
+# 🗄️ Phase 8 — CMS (DONE + LIVE + SEEDED)
 
 Everything the builder shows is now Sanity-managed, with the generated/static
 data demoted to a fallback. **One rule: UI components never import the data —
@@ -80,9 +83,15 @@ decided in `queries.ts` alone.
   presentation options, 6+4 outdoor, 1 settings) + uploads the `/public` photos
   as assets. Idempotent (deterministic `_id`s + `--replace`); array `_key`s ARE
   the existing app ids, so saved bookings survive. `--dry-run` / `--only=`.
-  Re-running overwrites client edits — say so before re-running.
   Runs plain TS through `scripts/ts-loader.mjs` (resolve hook that adds `.ts`
   and maps `@/`) — no new dependency.
+  **✅ ALREADY RUN (2026-07-28)** — 120 docs + 31 image assets are in
+  `production`. Verified: 7 setMenu / 55 customMenuSection / 15 cuisineGroup /
+  32 presentationOption / 6 outdoorCatalogItem / 4 packagingStyle / 1
+  pricingSettings. Needs the Sanity CLI logged in (`npx sanity login`), NOT the
+  write token (it shells out to `sanity dataset import`).
+  ⛔ **DO NOT re-run the whole seed** — it now overwrites the client's Studio
+  edits. Use `--only=<type>` to refresh one collection, and say so first.
 - **Client docs**: `docs/CMS_GUIDE.md` (field-by-field), `SANITY_SETUP.md` §3.
 
 **Responsiveness (done this cycle):** all `clamp(min,Xvw,max)` font ceilings
@@ -93,23 +102,70 @@ sidebar stacks below content (no inline grid override; two-col only lg+),
 ProgressBar has a compact "Step X of N" bar on mobile, card padding p-5 md:p-10,
 SiteHeader nav wraps on phones.
 
-**OPEN ITEMS (waiting on client / decisions):**
-1. Real per-person prices for Signature / Royal Feast / Elite set menus.
-   → now editable in Studio (Set Menus → Pricing), no code change needed.
-2. Real add-on surcharge rule (₹100/head placeholder) → Studio (Pricing &
-   Quote Settings, or per-menu override).
-3. Real prices for the 1128 custom items → Studio (À-la-carte Menu), or refill
-   the `price` column in `RAEC_master_menu.csv` + regenerate + re-seed.
-4. Presentation step: per-live-counter mapping (which counter → which cutlery /
-   presentation / stall options). Currently selecting any counter reveals ALL
-   options — see TODO in `app/menu-builder/presentation/page.tsx`.
-5. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
-6. Responsiveness calibration: reference width assumed 1440 — if the owner's Mac
+# ✅ REMAINING WORK (as of 2026-07-28)
+
+## A. Ours — blocking, do in this order
+1. **Commit + push the 34 uncommitted files.** The entire Phase 8 CMS (all
+   `sanity/schemaTypes/*`, `scripts/seed-menu-builder.ts`, `scripts/ts-loader*`,
+   `lib/menu-builder/{queries,catalog,catalog-hooks,menu-utils,pricing}`,
+   `docs/CMS_GUIDE.md`) is local-only. Suggested split: schemas / queries+context
+   / seed script / docs. `npx tsc --noEmit` is green.
+2. **Deploy on Vercel.** Root directory MUST be `raj-aangan/` (Next app is a
+   subdir). Env vars needed: `NEXT_PUBLIC_SANITY_PROJECT_ID=ze6ciec4`,
+   `NEXT_PUBLIC_SANITY_DATASET=production`, `SANITY_REVALIDATE_SECRET=<random>`.
+3. **Publish webhook** (SANITY_SETUP.md §4). Code already exists at
+   `app/api/revalidate/route.ts`; what's missing is `SANITY_REVALIDATE_SECRET`
+   (empty in `.env.local`) + registering the hook on sanity.io/manage.
+   Without it, Studio edits take up to **30s** to appear (`REVALIDATE = 30` in
+   `queries.ts`, `useCdn: true` in `client.ts`). Only works once deployed —
+   Sanity cannot call `localhost`.
+   ⚠️ Do NOT let the client start entering prices before this exists; they'll
+   hit the 30s delay and think the CMS is broken.
+4. **Decide `/studio` vs `/admin`.** Studio is a normal route
+   (`app/studio/[[...tool]]/page.tsx`) that ships with the site — no separate
+   deploy, lands at `<domain>/studio`. To truly move it: rename the folder AND
+   change `basePath` in `sanity.config.ts:25`. Both must match. A plain
+   `next.config.ts` redirect works too but the URL bar still shows `/studio`.
+
+## B. Ours — code work, not data entry
+5. **Presentation step per-live-counter mapping** (which counter → which
+   cutlery / presentation / stall options). Selecting any counter currently
+   reveals ALL options — TODO in `app/menu-builder/presentation/page.tsx`.
+   Not in the CMS at all yet; needs schema work.
+6. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
+7. Responsiveness calibration: reference width assumed 1440 — if the owner's Mac
    `window.innerWidth` differs a lot, recompute (recluster from the vw coeffs).
-7. No photo yet for the "Salads & Wellness Bowls" cuisine card (uses
-   `mb-placeholder.jpg`); the client can upload one in Studio.
-8. Live Sanity project: run `npx sanity init` + `npm run seed-menu-builder`,
-   then add the publish webhook (SANITY_SETUP.md §3–4).
+
+## C. Client's — data entry in Studio, no code change
+8. Real per-person prices for Signature (₹1450) / Royal Feast (₹2200) /
+   Elite (₹2800) — all PLACEHOLDERS → Set Menus → Pricing.
+9. Real add-on surcharge (₹100/head placeholder) → Pricing & Quote Settings,
+   or the per-menu override.
+10. Prices for the 1128 à-la-carte items, currently all null → À-la-carte Menu.
+    (Alternative: refill the `price` column in `RAEC_master_menu.csv`,
+    regenerate, then re-seed with `--only=customMenuSection`.)
+11. Photo for the "Salads & Wellness Bowls" cuisine card (uses
+    `mb-placeholder.jpg`) → Cuisine Cards.
+
+## D. Handover — must not be forgotten
+12. **Transfer the Sanity project to the client's account** (or invite their
+    team as Editor at sanity.io/manage → Members). It currently sits under
+    `rhythm1501taneja@gmail.com` — if the engagement ends they lose their CMS.
+13. Point the client at `docs/CMS_GUIDE.md` (field-by-field walkthrough).
+14. 🚨 **Bookings are saved NOWHERE.** A finished quote lives only in the
+    guest's `localStorage` (`context.tsx`) — no server record, no email, no
+    lead capture. That's Workstream 4 (deferred), but it must be flagged to
+    the client IN WRITING before handover: a quote tool that silently drops
+    every lead is worse than none.
+
+# 📌 Live CMS facts
+- Sanity project `ze6ciec4`, dataset `production` (public read).
+- Studio: `/studio` locally and on any deploy. Desk = `sanity/structure.ts`.
+- Sanity IS the database — nothing else to provision. No Postgres, no separate
+  host. Free tier (~100k API req/month) is plenty for this site.
+- `.env.local` has the project id/dataset set; `SANITY_API_READ_TOKEN`,
+  `SANITY_API_WRITE_TOKEN` and `SANITY_REVALIDATE_SECRET` are all still EMPTY.
+  Read/write tokens aren't needed yet (dataset is public; seed uses CLI auth).
 
 Reference designs: `docs/reference/screens/`. Data sources: `docs/menu-source/`.
 

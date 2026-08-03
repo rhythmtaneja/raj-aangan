@@ -28,11 +28,11 @@ const HERO_BLEND_START = "0%";
 
 // ─ Title ──
 const TITLE_TEXT = "Contact Us";
-const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 86px)";
+const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 5.375rem)";
 
 // ─ Subtitle beneath the title (from figma image 1) ──
 const SUBTITLE_TEXT = "Let's start a conversation. Our team is here to help you create something extraordinary.";
-const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.5vw, 22px)";
+const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.5vw, 1.375rem)";
 const SUBTITLE_MAX_W = "42rem";
 
 // ─ Letter-by-letter reveal ──
@@ -174,7 +174,7 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
             href="#address"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize={120}
+            circleSize="7.5rem"
             magnet={0.35}
             arrowDirection="down"
             className="rounded-full border border-white px-7 py-3 text-white"

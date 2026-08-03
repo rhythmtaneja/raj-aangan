@@ -32,7 +32,7 @@ const CARD_GRID_ROW_GAP = "gap-y-10";
 const CARD_ASPECT = "aspect-[4/5]";
 const IMAGE_BASE_SCALE = "scale-[1.05]";
 const IMAGE_HOVER_SCALE = "group-hover:scale-[1.1]";
-const FRAME_INSET = "10px";
+const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.88)";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -54,7 +54,7 @@ export default function WeddingPackagesSection() {
         <Reveal>
           <h2
             style={{ ...serif, color: TITLE_COLOR }}
-            className="text-center font-medium text-[clamp(1.9rem,3.2vw,46px)]"
+            className="text-center font-medium text-[clamp(1.9rem,3.2vw,2.875rem)]"
           >
             Wedding Packages
           </h2>
@@ -82,10 +82,10 @@ export default function WeddingPackagesSection() {
             href="#plan-wedding"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={150}
+            circleSize="9.375rem"
             magnet={0.35}
             arrowDirection="right"
-            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,15px)]"
+            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,0.9375rem)]"
           >
             Plan Your wedding
           </CircleButton>
@@ -94,10 +94,10 @@ export default function WeddingPackagesSection() {
             href="/brochure.pdf"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={150}
+            circleSize="9.375rem"
             magnet={0.35}
             arrowDirection="down"
-            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,15px)]"
+            className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,0.9375rem)]"
           >
             Download Brochure
           </CircleButton>
@@ -126,7 +126,7 @@ function PackageCard({ name, image }: Pkg) {
       </div>
       <p
         style={serif}
-        className="mt-5 text-center text-white text-[clamp(1.1rem,1.35vw,19px)]"
+        className="mt-5 text-center text-white text-[clamp(1.1rem,1.35vw,1.1875rem)]"
       >
         {name}
       </p>

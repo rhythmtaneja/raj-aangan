@@ -14,8 +14,8 @@ const SECTION_BG = "#f5efe6"; // same cream as AddressSection — no seam betwee
 const TEXT_COLOR = "#191919";
 
 // ─ Row typography ──
-const ROW_TITLE_SIZE = "clamp(1.4rem, 2.4vw, 35px)";
-const ROW_DESC_SIZE  = "clamp(0.95rem, 1.1vw, 16px)";
+const ROW_TITLE_SIZE = "clamp(1.4rem, 2.4vw, 2.1875rem)";
+const ROW_DESC_SIZE  = "clamp(0.95rem, 1.1vw, 1rem)";
 
 // ─ Expand/collapse animation duration ──
 const EXPAND_DURATION_MS = 500;
@@ -187,12 +187,12 @@ function HoursRow({ day, range }: { day: string; range: string }) {
         <ClockIcon />
       </span>
       <span
-        style={{ ...serif, fontSize: "clamp(1.05rem, 1.35vw, 19px)" }}
+        style={{ ...serif, fontSize: "clamp(1.05rem, 1.35vw, 1.1875rem)" }}
         className="flex-1 font-medium"
       >
         {day}
       </span>
-      <span className="text-[clamp(0.95rem,1.1vw,16px)] text-[#3a3a3a]">
+      <span className="text-[clamp(0.95rem,1.1vw,1rem)] text-[#3a3a3a]">
         {range}
       </span>
     </div>
@@ -207,19 +207,19 @@ function ContactRowLine({ row }: { row: ContactRow }) {
       </span>
 
       <span
-        style={{ ...serif, fontSize: "clamp(1.05rem, 1.35vw, 19px)" }}
+        style={{ ...serif, fontSize: "clamp(1.05rem, 1.35vw, 1.1875rem)" }}
         className="w-24 md:w-40"
       >
         {row.label}
       </span>
 
-      <span className="flex-1 text-[clamp(0.95rem,1.1vw,16px)] text-[#3a3a3a]">
+      <span className="flex-1 text-[clamp(0.95rem,1.1vw,1rem)] text-[#3a3a3a]">
         {row.value}
       </span>
 
       <Link
         href={row.href}
-        className="rounded-full border border-[#191919] px-6 py-2.5 text-[clamp(0.85rem,1vw,14px)] font-medium text-[#191919] transition-colors hover:bg-[#191919] hover:text-white md:px-8 md:py-3"
+        className="rounded-full border border-[#191919] px-6 py-2.5 text-[clamp(0.85rem,1vw,0.875rem)] font-medium text-[#191919] transition-colors hover:bg-[#191919] hover:text-white md:px-8 md:py-3"
       >
         {row.actionLabel}
       </Link>

@@ -27,7 +27,7 @@ const MUTED_COLOR = "#4a4a4a";
 const SECTION_PAD = "py-16 md:py-24";
 
 const IMAGE_ASPECT = "aspect-[4/3]";
-const FRAME_INSET = "10px";
+const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
 const IMAGE_STACK_GAP = "gap-y-6";
@@ -73,7 +73,7 @@ export default function PackagesDetailSection({
           <NumeralMarker numeral={numeral} />
           <span
             style={serif}
-            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,14px)]"
+            className="uppercase tracking-[0.22em] text-[clamp(0.85rem,1vw,0.875rem)]"
           >
             {label}
           </span>
@@ -84,7 +84,7 @@ export default function PackagesDetailSection({
       <Reveal>
         <h1
           style={serif}
-          className="mx-auto mb-20 text-center font-medium text-[clamp(2.2rem,4vw,58px)]"
+          className="mx-auto mb-20 text-center font-medium text-[clamp(2.2rem,4vw,3.625rem)]"
         >
           {title}
         </h1>
@@ -115,14 +115,14 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
       <div className="flex flex-col">
         <h3
           style={serif}
-          className="mb-5 font-semibold uppercase tracking-wide leading-tight text-[clamp(1.2rem,1.55vw,22px)]"
+          className="mb-5 font-semibold uppercase tracking-wide leading-tight text-[clamp(1.2rem,1.55vw,1.375rem)]"
         >
           {pkg.title}
         </h3>
 
         <p
           style={{ ...serif, color: MUTED_COLOR }}
-          className="leading-relaxed text-[clamp(0.95rem,1.1vw,16px)]"
+          className="leading-relaxed text-[clamp(0.95rem,1.1vw,1rem)]"
         >
           {pkg.description}
         </p>
@@ -133,7 +133,7 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
               <li
                 key={item}
                 style={{ ...serif, color: MUTED_COLOR }}
-                className="flex items-start gap-3 leading-snug text-[clamp(0.9rem,1.05vw,15px)]"
+                className="flex items-start gap-3 leading-snug text-[clamp(0.9rem,1.05vw,0.9375rem)]"
               >
                 <span aria-hidden className="mt-[0.4em] shrink-0 leading-none">
                   •
@@ -149,9 +149,9 @@ function PackageRow({ pkg }: { pkg: PackageDetail }) {
             href={pkg.href ?? "#"}
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize={150}
+            circleSize="9.375rem"
             magnet={0.3}
-            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,14px)]"
+            className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,0.875rem)]"
           >
             View package
           </CircleButton>

@@ -29,13 +29,13 @@ const SECTION_PAD = "py-20 md:py-24";
 
 // Image
 const IMAGE_ASPECT = "aspect-square"; // matches Figma
-const FRAME_INSET = "14px";
+const FRAME_INSET = "0.875rem";
 const FRAME_COLOR = "rgba(255,255,255,0.6)"; // reads against darker photos
 
 // Text column
 const TEXT_COLUMN_OFFSET = "md:pl-8 lg:pl-12";
-const TITLE_SIZE = "text-[clamp(2rem,3.2vw,46px)]";
-const BULLET_SIZE = "text-[clamp(1.1rem,1.35vw,19px)]";
+const TITLE_SIZE = "text-[clamp(2rem,3.2vw,2.875rem)]";
+const BULLET_SIZE = "text-[clamp(1.1rem,1.35vw,1.1875rem)]";
 const BULLET_MARKER_SIZE = "text-xl";
 
 // Bullet layout

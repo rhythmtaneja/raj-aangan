@@ -15,7 +15,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Box dimensions (em = relative to BASE_FONT_SIZE below) ──
-const BASE_FONT_SIZE = "18px"; // ↑ everything scales with this. Bump up to make WHOLE marker bigger.
+const BASE_FONT_SIZE = "1.125rem"; // ↑ everything scales with this. Bump up to make WHOLE marker bigger.
 
 const OUTER_W = "4.2em";   // bigger frame width
 const OUTER_H = "5.4em";   // bigger frame height

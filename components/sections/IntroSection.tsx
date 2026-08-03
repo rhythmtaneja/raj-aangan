@@ -84,7 +84,7 @@ type IntroSectionProps = {
   /** Button label. */
   buttonText: string;
   buttonHref?: string;
-  buttonCircleSize?: number;
+  buttonCircleSize?: number | string;
   buttonClassName?: string;
 };
 
@@ -96,8 +96,8 @@ export default function IntroSection({
   secondaryLines,
   buttonText,
   buttonHref = "#",
-  buttonCircleSize = 150,
-  buttonClassName = "rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,18px)]",
+  buttonCircleSize = "9.375rem",
+  buttonClassName = "rounded-full border border-[#737272] px-10 py-4 text-[#191919] text-[clamp(1rem,1.25vw,1.125rem)]",
 }: IntroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const textBlockRef = useRef<HTMLDivElement>(null);
@@ -181,7 +181,7 @@ export default function IntroSection({
         {label && (
           <span
             style={{ ...serif, color: LABEL_COLOR }}
-            className="uppercase tracking-[0.2em] text-[clamp(1rem,1.25vw,18px)]"
+            className="uppercase tracking-[0.2em] text-[clamp(1rem,1.25vw,1.125rem)]"
           >
             {label}
           </span>
@@ -195,7 +195,7 @@ export default function IntroSection({
       >
         <h2
           style={serif}
-          className="max-w-[1600px] font-semibold leading-[1.05] text-[#191919] text-[clamp(2rem,3.9vw,56px)]"
+          className="max-w-[100rem] font-semibold leading-[1.05] text-[#191919] text-[clamp(2rem,3.9vw,3.5rem)]"
         >
           <Words text={title} italicTail={italicTail} />
         </h2>
@@ -210,8 +210,8 @@ export default function IntroSection({
                 key={i}
                 className={
                   i === 0
-                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,49px)]"
-                    : "mt-6 text-[clamp(1.25rem,2.86vw,41px)]"
+                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,3.0625rem)]"
+                    : "mt-6 text-[clamp(1.25rem,2.86vw,2.5625rem)]"
                 }
               >
                 <Words text={line} />
