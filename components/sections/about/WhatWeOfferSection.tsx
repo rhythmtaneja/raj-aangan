@@ -28,7 +28,7 @@ const SUBTITLE_ITALIC = "Flawlessly";
 const SUBTITLE_AFTER = " Executed";
 
 // ─ Card layout ──
-const CARD_GRID_GAP_X = "gap-x-10 md:gap-x-20 lg:gap-x-28";
+const CARD_GRID_GAP_X = "gap-x-10 md:gap-x-20 md:gap-x-28";
 const CARD_GRID_GAP_Y = "gap-y-20";
 // Cards alternate left/right. Even-index cards sit at the top of their row;
 // odd-index cards offset DOWN by this amount to create the staggered pattern.

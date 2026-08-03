@@ -231,7 +231,7 @@ function SelectedTick() {
       className="absolute right-3 top-3 z-20 flex h-6 w-6 items-center justify-center rounded-full"
       style={{ backgroundColor: GOLD }}
     >
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+      <svg className="w-[0.8125rem] h-[0.8125rem]" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
       </svg>
     </span>

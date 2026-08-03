@@ -136,7 +136,7 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
           transition: "width .2s ease, height .2s ease",
         }}
       >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+        <svg className="w-[1.625rem] h-[1.625rem]" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
           <path d="M8 7l-4 5 4 5M16 7l4 5-4 5M4 12h16" />
         </svg>
       </div>

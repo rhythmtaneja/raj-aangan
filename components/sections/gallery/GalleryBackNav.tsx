@@ -68,7 +68,7 @@ export default function GalleryBackNav() {
 
 function LeftArrowIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-[1.125rem] h-[1.125rem]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 6l-6 6 6 6" />
     </svg>
   );

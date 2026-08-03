@@ -102,6 +102,48 @@ sidebar stacks below content (no inline grid override; two-col only lg+),
 ProgressBar has a compact "Step X of N" bar on mobile, card padding p-5 md:p-10,
 SiteHeader nav wraps on phones.
 
+# 📐 ZOOM-PROOF LAYOUT — THE ONE RULE (2026-08-03)
+
+The desktop design is a **single-scalar uniform scale**. `globals.css` sets
+`html { font-size: clamp(8.5333px, 100vw/90, 20px) }` — 16px at the 1440px
+reference — and EVERY length in the app is a `rem` multiple of it. Between
+**768px and 1800px the page is a pure proportional scale of itself**: nothing
+can drift, no line-wrap point can flip. Browser zoom divides the CSS viewport
+(a 1440 window reports 1152 @125%, 960 @150%, 823 @175%, 720 @200%), so this
+gives an identical composition from 100% through ~187% zoom, and 200% lands
+below 768px → the phone design. Verified: 0 of 451 elements on `/` shift
+position by >0.6% of viewport width across that whole range.
+
+**Three rules follow. Breaking any one re-breaks zoom:**
+1. **Never size anything in px.** Not `style={{width: 320}}`, not `<svg
+   width="24">` without a rem class, not `width={110}` on `next/image`
+   without a rem className. A px value freezes while everything around it
+   shrinks — it silently doubles in relative size across the zoom range.
+   1px hairlines/borders are the ONLY exception (they scale under real zoom).
+2. **Desktop layout switches on `md:` (768px) ONLY** — never `lg:`/`xl:`.
+   Media-query breakpoints resolve against the browser's initial 16px, not
+   the fluid root, so `lg:`(1024) and `xl:`(1280) fire *inside* the zoom
+   range and reflow the page at 150%/125% zoom. All former lg:/xl: desktop
+   variants were moved to md:.
+3. **Marquee/carousel loop distances must be MEASURED from the DOM and
+   rebuilt in a `ResizeObserver`**, never computed from constants and never
+   via a lazy `x: () => -measure()` (a function-based value is resolved on
+   the tween's first rendered frame — if that lands before layout settles it
+   caches 0 and the marquee animates 0→0 forever). Pattern: eager `build()`
+   + `new ResizeObserver(build)`. See CuisineSection / EventsHero /
+   DecorStylingCarousel. For a `gap`-only track the advance is
+   `(scrollWidth + gap)/2`; with `paddingLeft: gap` it is `scrollWidth/2`.
+
+The `clamp(min, Xvw, max)` font sizes are CORRECT and must stay: inside the
+band the vw term equals the rem ceiling, so they resolve proportionally; below
+768px the root reverts to a fixed 16px and the clamp's `min`/vw term becomes
+the phone sizing. Don't "simplify" them to plain rem — that breaks mobile.
+
+TRADE-OFF: a genuinely narrow *desktop window* (~768–1000px at 100% zoom) now
+renders the full desktop design at a 8.5–11px root, i.e. small text. Under
+zoom the physical size is unchanged, so this only affects deliberately narrow
+windows. Raise the clamp MIN in `globals.css` if that ever matters more.
+
 # ✅ REMAINING WORK (as of 2026-07-28)
 
 ## A. Ours — blocking, do in this order
@@ -133,8 +175,12 @@ SiteHeader nav wraps on phones.
    reveals ALL options — TODO in `app/menu-builder/presentation/page.tsx`.
    Not in the CMS at all yet; needs schema work.
 6. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
-7. Responsiveness calibration: reference width assumed 1440 — if the owner's Mac
-   `window.innerWidth` differs a lot, recompute (recluster from the vw coeffs).
+7. ~~Responsiveness calibration~~ — DONE 2026-08-03, see "ZOOM-PROOF LAYOUT"
+   above. Reference width 1440 confirmed; the fluid-root floor was moved from
+   12px (which bit at 1080px, mid-zoom-range) down to 768/90, all lg:/xl:
+   desktop variants moved to md:, and every fixed-px element (header + footer
+   logos, 26 inline SVG icons, ProgressBar step circles, Cuisine/Decor carousel
+   cards, the nav hover indicator) converted to rem.
 
 ## C. Client's — data entry in Studio, no code change
 8. Real per-person prices for Signature (₹1450) / Royal Feast (₹2200) /

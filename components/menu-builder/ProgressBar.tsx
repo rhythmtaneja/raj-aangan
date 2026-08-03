@@ -16,12 +16,20 @@ import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-const CIRCLE_SIZE_PX     = 36;
-const CIRCLE_RING_WIDTH  = 2;    // outer white ring on current step
-const CIRCLE_RING_GAP    = 3;    // gap between circle and ring
-const CONNECTOR_HEIGHT   = 1;    // line thickness between circles
+// These are in REM, not px. The whole desktop layout scales off the root
+// font-size (see globals.css), so px step-circles would stay 36px while the
+// bar around them shrank — they grew from 2.5% to 4.7% of the viewport across
+// the browser-zoom range and shoved every row below them out of place.
+// They stay plain numbers (not "2.25rem" strings) because the layout below
+// does arithmetic on them; `remOf()` renders them.
+const CIRCLE_SIZE        = 2.25;   // rem — 36px at the 1440px reference
+const CIRCLE_RING_WIDTH  = 0.125;  // rem — 2px; outer white ring on current step
+const CIRCLE_RING_GAP    = 0.1875; // rem — 3px; gap between circle and ring
+const CONNECTOR_HEIGHT   = 1;      // px — hairline, deliberately NOT scaled
 const CONNECTOR_COLOR    = "rgba(255,255,255,0.30)";
-const LABEL_MARGIN_TOP   = 12;
+const LABEL_MARGIN_TOP   = 0.75;   // rem — 12px
+
+const remOf = (n: number) => `${n}rem`;
 const SECTION_PAD_Y      = "pt-4 pb-6 md:pt-6 md:pb-10";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -84,7 +92,7 @@ export default function ProgressBar({ steps, currentStep }: Props) {
                 style={{
                   height: CONNECTOR_HEIGHT,
                   backgroundColor: CONNECTOR_COLOR,
-                  marginTop: CIRCLE_SIZE_PX / 2 + CIRCLE_RING_GAP,
+                  marginTop: remOf(CIRCLE_SIZE / 2 + CIRCLE_RING_GAP),
                 }}
               />
             )}
@@ -122,24 +130,24 @@ function StepCircle({
       <div
         className="relative flex items-center justify-center rounded-full"
         style={{
-          width: CIRCLE_SIZE_PX + (isCurrent ? (CIRCLE_RING_GAP + CIRCLE_RING_WIDTH) * 2 : 0),
-          height: CIRCLE_SIZE_PX + (isCurrent ? (CIRCLE_RING_GAP + CIRCLE_RING_WIDTH) * 2 : 0),
-          border: isCurrent ? `${CIRCLE_RING_WIDTH}px solid #ffffff` : undefined,
+          width: remOf(CIRCLE_SIZE + (isCurrent ? (CIRCLE_RING_GAP + CIRCLE_RING_WIDTH) * 2 : 0)),
+          height: remOf(CIRCLE_SIZE + (isCurrent ? (CIRCLE_RING_GAP + CIRCLE_RING_WIDTH) * 2 : 0)),
+          border: isCurrent ? `${CIRCLE_RING_WIDTH}rem solid #ffffff` : undefined,
         }}
       >
         <div
           className="flex items-center justify-center rounded-full font-semibold"
           style={{
-            width:  CIRCLE_SIZE_PX,
-            height: CIRCLE_SIZE_PX,
+            width:  remOf(CIRCLE_SIZE),
+            height: remOf(CIRCLE_SIZE),
             backgroundColor: filled ? MB_COLORS.gold : "transparent",
             color: "#ffffff",
             border: filled ? "none" : "1px solid rgba(255,255,255,0.65)",
-            fontSize: 14,
+            fontSize: "0.875rem", // rem, not 14px — must scale with the circle
           }}
         >
           {isCompleted ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-[1rem] h-[1rem]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           ) : (
@@ -149,7 +157,7 @@ function StepCircle({
       </div>
       <div
         className="text-white text-[clamp(0.75rem,0.85vw,0.75rem)] uppercase tracking-wide"
-        style={{ marginTop: LABEL_MARGIN_TOP, fontFamily: "var(--font-cormorant-garamond)" }}
+        style={{ marginTop: remOf(LABEL_MARGIN_TOP), fontFamily: "var(--font-cormorant-garamond)" }}
       >
         {label}
       </div>

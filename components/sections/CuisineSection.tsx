@@ -45,12 +45,14 @@ const TITLE_COLOR = "#6b4f3a";
 const TITLE_MARGIN_BOTTOM = "2.75rem";
 
 // ─ Auto-scrolling cards ──
-// Fixed px sizes so the seamless loop math works — same approach as EventsHero.
-// If you want responsive card widths later, we'd need to measure the track in
-// a ResizeObserver and update the tween. Keeping this simple for now.
-const CARD_WIDTH = 440;   // px
-const CARD_HEIGHT = 440;  // px (square)
-const CARD_GAP = 24;      // px between cards
+// rem, NOT px: the whole desktop layout scales off the root font-size (see
+// globals.css), so a px card would stay 440px while everything around it
+// shrank — the card would balloon from 30% to 57% of the viewport across the
+// browser-zoom range. The loop distance is measured from the live DOM below
+// and re-measured on resize, so rem sizing costs nothing.
+const CARD_WIDTH = "27.5rem";   // 440px at the 1440px reference
+const CARD_HEIGHT = "27.5rem";  // square
+const CARD_GAP = "1.5rem";      // 24px at the 1440px reference
 
 // Seconds for one full loop of the ORIGINAL set. Higher = slower drift.
 // EventsHero uses 40 for 7 cards; Cuisine has 6, so 34 keeps a similar pace.
@@ -101,15 +103,39 @@ export default function CuisineSection() {
 
       // The track holds TWO copies of CUISINES. Moving by exactly one copy's
       // width lands the second copy where the first started — seamless loop.
-      const originalWidth = CUISINES.length * (CARD_WIDTH + CARD_GAP);
+      //
+      // The distance MUST be measured, not computed from a constant: the cards
+      // are rem-sized, so their pixel width changes with the root font-size
+      // (i.e. with viewport width and browser zoom). A stale constant would
+      // make the loop visibly jump.
+      //   2 copies laid out with `gap` → scrollWidth = 2N*card + (2N-1)*gap
+      //   one copy's advance          = N*card + N*gap = (scrollWidth + gap)/2
+      const measureAdvance = () => {
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        return (track.scrollWidth + gap) / 2;
+      };
 
-      gsap.set(track, { x: 0 });
-      scrollAnim.current = gsap.to(track, {
-        x: -originalWidth,
-        duration: SCROLL_DURATION,
-        ease: "none",
-        repeat: -1,
-      });
+      const build = () => {
+        scrollAnim.current?.kill();
+        gsap.set(track, { x: 0 });
+        scrollAnim.current = gsap.to(track, {
+          x: -measureAdvance(),
+          duration: SCROLL_DURATION,
+          ease: "none",
+          repeat: -1,
+        });
+      };
+
+      build();
+
+      // Re-measure when the root font-size changes under it (window resize,
+      // browser zoom, device rotation).
+      const ro = new ResizeObserver(build);
+      ro.observe(track);
+      return () => {
+        ro.disconnect();
+        scrollAnim.current?.kill();
+      };
     },
     { scope: sectionRef }
   );
@@ -156,7 +182,7 @@ export default function CuisineSection() {
         <div
           ref={trackRef}
           className="flex"
-          style={{ gap: `${CARD_GAP}px`, willChange: "transform" }}
+          style={{ gap: CARD_GAP, willChange: "transform" }}
         >
           {cards.map((c, i) => (
             <CuisineCard key={`${c.name}-${i}`} name={c.name} img={c.img} price={c.price} />
@@ -193,7 +219,7 @@ function CuisineCard({ name, img, price }: { name: string; img: string; price: s
         alt={`${name} cuisine`}
         fill
         draggable={false}
-        sizes="440px"
+        sizes="(max-width: 767px) 60vw, 31vw"
         className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
       />
       <ImageOverlay opacity={0.44} />

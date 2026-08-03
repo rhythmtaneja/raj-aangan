@@ -278,7 +278,7 @@ export default function CircleButton({
         <span ref={arrowFollow} className="absolute inline-flex">
           <span ref={arrow} className="inline-flex" style={{ color: arrowColor }}>
             <svg
-              width="26"
+              className="w-[1.625rem] h-[1.625rem]" width="26"
               height="26"
               viewBox="0 0 24 24"
               fill="none"

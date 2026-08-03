@@ -125,7 +125,7 @@ export default function Step1ClientPage() {
           <>
             <Divider label="Occasion Type" />
             <div
-              className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] xl:grid-cols-[repeat(3,minmax(0,var(--card-width)))] ${OCCASION_CARD_GAP}`}
+              className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] md:grid-cols-[repeat(3,minmax(0,var(--card-width)))] ${OCCASION_CARD_GAP}`}
               style={{ "--card-width": CARD_DESKTOP_WIDTH } as CSSProperties}
             >
               {occasions.map((o) => (
@@ -295,7 +295,7 @@ function MediaCard({
             style={{ backgroundColor: GOLD }}
           >
             <svg
-              width="13"
+              className="w-[0.8125rem] h-[0.8125rem]" width="13"
               height="13"
               viewBox="0 0 24 24"
               fill="none"

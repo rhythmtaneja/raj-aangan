@@ -46,7 +46,11 @@ const SCROLL_DURATION = 40;
 // ─ Vertical placement of the cards row (as % from top) ──
 // Cards sit centred vertically within this band.
 const CARDS_TOP    = "38%";
-const CARDS_HEIGHT = "48%";
+// NO fixed height. The band used to be `48%` of a viewport-height hero while
+// the cards inside it are rem-sized — two different scales — which left the
+// card LABEL with only ~3px of clearance and clipped it outright whenever the
+// two drifted apart (that is why the category titles vanished on zoom). The
+// band now sizes to its content, so the label can never be cut off.
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -77,20 +81,43 @@ export default function EventsHero() {
       // rendered px size depends on the fluid root font-size (and on the
       // clamp's 30vw term at narrow widths). Deriving the distance from the
       // constants would desync the loop on any viewport where 1rem !== 16px.
-      const originalWidth = () => track.scrollWidth / 2;
+      // EAGER, not `x: () => -measure()`. A function-based value is resolved on
+      // the tween's first rendered frame; if that lands before layout settles it
+      // caches 0 and the marquee animates 0 -> 0 forever. Measuring up front and
+      // rebuilding on resize is both correct and zoom-proof.
+      //
+      // 2N cards in a `gap` row → scrollWidth = 2N*card + (2N-1)*gap, so one
+      // copy's advance is N*(card+gap) = (scrollWidth + gap)/2. This used to be
+      // a plain scrollWidth/2, which fell exactly one HALF-GAP short and made
+      // the loop visibly jump back every cycle.
+      const measureAdvance = () => {
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        return (track.scrollWidth + gap) / 2;
+      };
 
-      gsap.set(track, { x: 0 });
-      const tween = gsap.to(track, {
-        x: () => -originalWidth(),
-        duration: SCROLL_DURATION,
-        ease: "none",
-        repeat: -1,
-      });
+      let tween: gsap.core.Tween | null = null;
+      const build = () => {
+        const advance = measureAdvance();
+        if (advance <= 0) return;            // layout not ready yet — RO will refire
+        tween?.kill();
+        gsap.set(track, { x: 0 });
+        tween = gsap.to(track, {
+          x: -advance,
+          duration: SCROLL_DURATION,
+          ease: "none",
+          repeat: -1,
+        });
+      };
 
-      // Re-read the measurement after a resize changes the rendered width.
-      const onResize = () => tween.invalidate();
-      window.addEventListener("resize", onResize);
-      return () => window.removeEventListener("resize", onResize);
+      build();
+
+      // Rebuild when the rendered width changes (resize, browser zoom, fonts).
+      const ro = new ResizeObserver(build);
+      ro.observe(track);
+      return () => {
+        ro.disconnect();
+        tween?.kill();
+      };
     },
     { scope: trackRef }
   );
@@ -126,8 +153,8 @@ export default function EventsHero() {
 
       {/* Auto-scrolling cards band */}
       <div
-        className="absolute inset-x-0 flex items-center overflow-x-auto"
-        style={{ top: CARDS_TOP, height: CARDS_HEIGHT }}
+        className="absolute inset-x-0 flex items-center overflow-hidden"
+        style={{ top: CARDS_TOP }}
       >
         <div ref={trackRef} className="flex" style={{ gap: CARD_GAP }}>
           {cards.map((c, i) => (

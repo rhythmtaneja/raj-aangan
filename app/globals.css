@@ -14,7 +14,7 @@
 
        REFERENCE VIEWPORT     1440px   ← the Figma artboard width
        REFERENCE ROOT SIZE      16px   ← 1rem at 1440px
-       MIN CLAMP                12px   ← floor; reached at 1080px and below
+       MIN CLAMP           8.5333px   ← floor; == 768/90, i.e. the md: handoff
        MAX CLAMP                20px   ← ceiling; reached at 1800px and above
 
      FORMULA
@@ -24,27 +24,53 @@
        To change the reference viewport, recompute the divisor:
          1512px design → 1512 / 16 = 94.5  → calc(100vw / 94.5)
        To change where the clamps bite:
-         minViewport = MIN * divisor   (12 * 90 = 1080px)
+         minViewport = MIN * divisor   (8.5333 * 90 = 768px)
          maxViewport = MAX * divisor   (20 * 90 = 1800px)
        So to keep scaling out to 1920px, raise MAX to 1920/90 = 21.33px.
 
      WHAT THIS GIVES YOU
-       1080px →   12px (clamped)   1440px → 16px (design reference, 1:1)
-       1280px → 14.22px            1728px → 19.2px
-       1512px → 16.8px             1800px+ → 20px (clamped)
+        768px →  8.53px (floor)     1440px → 16px (design reference, 1:1)
+        960px → 10.67px             1728px → 19.2px
+       1152px → 12.80px             1800px+ → 20px (clamped)
+       1280px → 14.22px
 
-     NOTE: between 768px and 1080px the root is pinned at the 12px floor, so
-     that band renders the desktop layout at a fixed 75% of the design size
-     rather than continuing to shrink. Raise MIN (or lower the md: breakpoint
-     handoff) if that band matters for this audience.
+     ─── WHY THE FLOOR IS AT 768 AND NOT HIGHER ───────────────────────────
+     The floor is the single most important number in this file. Above it the
+     page is a PURE UNIFORM SCALE of the 1440px design — every rem-based
+     length (Tailwind's p-8/gap-6/max-w-4xl and every hand-written token)
+     shrinks by the same factor, so nothing can drift relative to anything
+     else and no line-wrap point can flip. The moment the floor engages, rem
+     values FREEZE while `vw`-based font clamps, `vh`-based heights and `%`
+     bands keep shrinking — and that divergence is what makes the layout look
+     scrambled. The floor used to sit at 12px (== 1080px), which is squarely
+     inside the browser-zoom range, so the design came apart between 125% and
+     150% zoom. At 768/90 the proportional band covers the whole desktop
+     range and hands straight over to the mobile rule below.
+
+     Browser zoom divides the CSS viewport: a 1440px window reports 1152px at
+     125%, 960px at 150%, 823px at 175% and 720px at 200%. So this floor buys
+     an IDENTICAL desktop composition from 100% all the way through 175%, and
+     200% lands below 768px → mobile layout. That is the intended behaviour:
+     zoom magnifies, it never reflows, until the page deliberately becomes
+     the phone design.
+
+     TRADE-OFF: a genuinely narrow DESKTOP window (say 900px at 100% zoom)
+     now renders the full desktop design at 10px root rather than a pinned
+     12px. That is the price of "nothing ever moves" and it is what the
+     reference site (resortkaskady.com, body: 1.3vmax) does too. Raise MIN if
+     narrow desktop windows ever matter more than zoom stability.
 
      Media-query breakpoints are UNAFFECTED: `rem` inside a media query always
      resolves against the browser's initial 16px, never against this value, so
      Tailwind's md:/lg:/xl: still fire at 768/1024/1280px exactly as before.
+     For that reason NOTHING may use lg:/xl: for desktop layout — those fire
+     at 1024/1280px, i.e. INSIDE the zoom range, and would reflow the page at
+     125%/150% zoom. Desktop layout switches on `md:` only.
      ═══════════════════════════════════════════════════════════════════════ */
   html {
-    /* MUST stay in px — `rem` on the root element is self-referential. */
-    font-size: clamp(12px, calc(100vw / 90), 20px);
+    /* MUST stay in px — `rem` on the root element is self-referential.
+       8.5333px == 768/90, so the floor lands exactly on the md: handoff. */
+    font-size: clamp(8.5333px, calc(100vw / 90), 20px);
   }
 
   /* Mobile keeps a fixed 16px root and uses ordinary responsive breakpoints —

@@ -242,7 +242,7 @@ function AddToCartToggle({ selected, onClick }: { selected: boolean; onClick: ()
         className="flex items-center gap-1.5 rounded border px-4 py-1.5 text-sm transition-colors"
         style={{ borderColor: GOLD, backgroundColor: `${GOLD}22`, color: INK }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={3}>
+        <svg className="w-[0.875rem] h-[0.875rem]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={3}>
           <polyline points="20 6 9 17 4 12" />
         </svg>
         <span>Added</span>
@@ -272,7 +272,7 @@ function Chevron({ open }: { open: boolean }) {
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="shrink-0 transition-transform duration-200"
+      className="shrink-0 transition-transform duration-200 w-[1.125rem] h-[1.125rem]"
       style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
     >
       <polyline points="9 6 15 12 9 18" />

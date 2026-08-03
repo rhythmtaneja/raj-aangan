@@ -114,7 +114,7 @@ export default function EventsServicesGrid() {
         </h2>
       </Reveal>
 
-      <div className={`mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${GAP_X} ${GAP_Y}`}>
+      <div className={`mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-2 md:grid-cols-3 ${GAP_X} ${GAP_Y}`}>
         {SERVICES.map((s) => (
           <Reveal key={s.title}>
             <ServiceCard {...s} />

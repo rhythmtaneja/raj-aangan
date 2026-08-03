@@ -53,7 +53,14 @@ const DIMMED_LINK_OPACITY_CLASS = "group-hover:opacity-40";
 
 // The cursor-tracking indicator on the lower divider ─────────────────────
 // SMALL_WIDTH = length of the bright segment when following cursor.
-const INDICATOR_SMALL_WIDTH = 36;
+// Expressed in REM, not px: the header scales off the root font-size, so a
+// fixed-px segment would grow from 2.5% to 4.7% of the bar across the
+// browser-zoom range. GSAP tweens `width` numerically (px), so resolve the
+// rem against the live root size at call time.
+const INDICATOR_SMALL_WIDTH_REM = 2.25; // 36px at the 1440px reference
+const indicatorWidth = () =>
+  INDICATOR_SMALL_WIDTH_REM *
+  parseFloat(getComputedStyle(document.documentElement).fontSize);
 // How lazily the indicator follows the cursor.
 const INDICATOR_FOLLOW_DURATION = 0.35;
 // Fade in/out duration.
@@ -117,7 +124,7 @@ export default function SiteHeader({
       // can only tween real CSS properties, not GSAP shorthands.
       gsap.set(indicator, {
         opacity: 0,
-        width: INDICATOR_SMALL_WIDTH,
+        width: indicatorWidth(),
         x: 0,
       });
 
@@ -147,8 +154,9 @@ export default function SiteHeader({
     if (!nav) return;
     const rect = nav.getBoundingClientRect();
 
-    xTo.current?.(e.clientX - rect.left - INDICATOR_SMALL_WIDTH / 2);
-    widthTo.current?.(INDICATOR_SMALL_WIDTH);
+    const w = indicatorWidth();
+    xTo.current?.(e.clientX - rect.left - w / 2);
+    widthTo.current?.(w);
     opacityTo.current?.(1);
   };
 
@@ -204,6 +212,10 @@ export default function SiteHeader({
               width={110}
               height={110}
               priority
+              /* MUST be a rem class, not the intrinsic 110px: the header's
+                 padding is rem-based, so a fixed-px logo grows relative to
+                 the bar as the root shrinks and collides with the divider. */
+              className="h-[6.875rem] w-[6.875rem]"
             />
           </Link>
         )}
@@ -253,7 +265,7 @@ export default function SiteHeader({
                 ref={indicatorRef}
                 aria-hidden
                 className={`pointer-events-none absolute inset-y-0 left-0 ${indicatorColor}`}
-                style={{ width: INDICATOR_SMALL_WIDTH, willChange: "transform, width, opacity" }}
+                style={{ width: `${INDICATOR_SMALL_WIDTH_REM}rem`, willChange: "transform, width, opacity" }}
               />
             </div>
           </div>

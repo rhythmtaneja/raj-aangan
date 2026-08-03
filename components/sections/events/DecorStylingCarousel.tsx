@@ -29,9 +29,13 @@ const MIDDLE_PAD = "py-16";
 const BOTTOM_PAD = "py-10";
 
 // ─ Card sizing ──
-const CARD_WIDTH = 320; // px
-const CARD_HEIGHT = 320; // px
-const CARD_GAP = 32;  // px between cards
+// rem, NOT px — the desktop layout scales off the root font-size (see
+// globals.css). A px card would stay 320px while everything around it shrank,
+// so it would balloon from 22% to 42% of the viewport across the browser-zoom
+// range. The loop distance is measured from the live DOM instead.
+const CARD_WIDTH = "20rem";   // 320px at the 1440px reference
+const CARD_HEIGHT = "20rem";  // square
+const CARD_GAP = "2rem";      // 32px at the 1440px reference
 
 // ─ Frame on each image ──
 const FRAME_INSET = "0.75rem";
@@ -63,15 +67,36 @@ export default function DecorStylingCarousel() {
       const track = trackRef.current;
       if (!track) return;
 
-      const originalWidth = THEMES.length * (CARD_WIDTH + CARD_GAP);
+      // MEASURED, not computed from the constants: the cards are rem-sized, so
+      // their px width tracks the fluid root font-size. `paddingLeft` adds one
+      // extra gap at the start, so the track's content width is
+      //   gap + 2N*card + (2N-1)*gap  →  one copy's advance = (scrollWidth)/2
+      // EAGER, not `x: () => -measure()` — see EventsHero for why.
+      const measureAdvance = () => track.scrollWidth / 2;
 
-      gsap.set(track, { x: 0 });
-      gsap.to(track, {
-        x: -originalWidth,
-        duration: SCROLL_DURATION,
-        ease: "none",
-        repeat: -1,
-      });
+      let tween: gsap.core.Tween | null = null;
+      const build = () => {
+        const advance = measureAdvance();
+        if (advance <= 0) return;            // layout not ready yet — RO will refire
+        tween?.kill();
+        gsap.set(track, { x: 0 });
+        tween = gsap.to(track, {
+          x: -advance,
+          duration: SCROLL_DURATION,
+          ease: "none",
+          repeat: -1,
+        });
+      };
+
+      build();
+
+      // Rebuild when the rendered width changes (resize, browser zoom, fonts).
+      const ro = new ResizeObserver(build);
+      ro.observe(track);
+      return () => {
+        ro.disconnect();
+        tween?.kill();
+      };
     },
     { scope: trackRef }
   );
@@ -97,7 +122,7 @@ export default function DecorStylingCarousel() {
         className={`w-full ${MIDDLE_PAD} overflow-hidden`}
         style={{ backgroundColor: MIDDLE_BG }}
       >
-        <div ref={trackRef} className="flex" style={{ gap: `${CARD_GAP}px`, paddingLeft: CARD_GAP }}>
+        <div ref={trackRef} className="flex" style={{ gap: CARD_GAP, paddingLeft: CARD_GAP }}>
           {cards.map((c, i) => (
             <ThemeCard key={i} name={c.name} image={c.image} />
           ))}
@@ -137,7 +162,7 @@ function ThemeCard({ name, image }: Theme) {
           src={image}
           alt={name}
           fill
-          sizes="320px"
+          sizes="(max-width: 767px) 60vw, 23vw"
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
         <div

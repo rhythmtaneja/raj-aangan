@@ -26,7 +26,7 @@ const CONTENT_PAD_X = "px-4 md:px-10";
 const CONTENT_MAX_W = "max-w-7xl";
 // Content + live-preview summary live in ONE white panel (figma). Two columns
 // split by a vertical divider from lg up; the summary stacks below on smaller.
-const GRID_COLS = "lg:grid-cols-[minmax(0,1fr)_22.5rem]";
+const GRID_COLS = "md:grid-cols-[minmax(0,1fr)_22.5rem]";
 const SUMMARY_PAD = "p-6 md:p-8";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -90,7 +90,7 @@ export default function BuilderLayout({
         >
           <main className="min-w-0">{children}</main>
           <div
-            className={`border-t lg:border-t-0 lg:border-l ${SUMMARY_PAD}`}
+            className={`border-t md:border-t-0 md:border-l ${SUMMARY_PAD}`}
             style={{ borderColor: MB_COLORS.border }}
           >
             <BookingSummary steps={steps} currentStep={currentStep} />
@@ -113,7 +113,7 @@ export default function BuilderLayout({
 
 function MenuIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+    <svg className="w-[1.125rem] h-[1.125rem]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
       <line x1="3" y1="7" x2="21" y2="7" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="17" x2="21" y2="17" />
@@ -123,7 +123,7 @@ function MenuIcon() {
 
 function BagIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-[1.125rem] h-[1.125rem]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="8" width="16" height="12" rx="2" />
       <path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
     </svg>

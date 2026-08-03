@@ -109,6 +109,8 @@ export default function FooterSection() {
               width={80}
               height={80}
               priority
+              /* rem, not the intrinsic 80px — see SiteHeader. */
+              className="h-[5rem] w-[5rem]"
             />
           </Link>
 
@@ -122,7 +124,7 @@ export default function FooterSection() {
         </div>
 
         {/* ─── MAIN 3-COLUMN GRID ──────────────────────────────────────── */}
-        <div className="grid grid-cols-1 gap-14 px-8 pt-8 pb-16 md:grid-cols-3 md:gap-16 md:px-16 md:pt-12 md:pb-24 lg:gap-20">
+        <div className="grid grid-cols-1 gap-14 px-8 pt-8 pb-16 md:grid-cols-3 md:gap-16 md:px-16 md:pt-12 md:pb-24 md:gap-20">
           {/* LEFT — Roman numeral list */}
           <ul className="space-y-6 md:space-y-8">
             {EXPLORE.map(({ num, label, href }) => (
@@ -165,7 +167,7 @@ export default function FooterSection() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
-                  className="text-white transition-colors duration-300 group-hover:text-[#0f2f3b]"
+                  className="text-white transition-colors duration-300 group-hover:text-[#0f2f3b] w-[1rem] h-[1rem]"
                 >
                   <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -270,7 +272,7 @@ function TripIcon({ className }: { className?: string }) {
 
 function FacebookIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.8-.1-1.6-.15-2.4-.15-2.4 0-4.05 1.45-4.05 4.15v2.3H7.5V13h2.75v8h3.25z" />
     </svg>
   );
@@ -278,7 +280,7 @@ function FacebookIcon() {
 
 function InstagramIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
       <rect x="3" y="3" width="18" height="18" rx="5" />
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
@@ -288,7 +290,7 @@ function InstagramIcon() {
 
 function YoutubeIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg className="w-[1.5rem] h-[1.5rem]" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M22 8.2a2.6 2.6 0 0 0-1.8-1.85C18.6 6 12 6 12 6s-6.6 0-8.2.35A2.6 2.6 0 0 0 2 8.2 27 27 0 0 0 1.75 12 27 27 0 0 0 2 15.8a2.6 2.6 0 0 0 1.8 1.85C5.4 18 12 18 12 18s6.6 0 8.2-.35A2.6 2.6 0 0 0 22 15.8 27 27 0 0 0 22.25 12 27 27 0 0 0 22 8.2zM10 14.6V9.4l4.4 2.6-4.4 2.6z" />
     </svg>
   );

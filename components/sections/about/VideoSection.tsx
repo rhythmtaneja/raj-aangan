@@ -67,7 +67,7 @@ export default function VideoSection({ poster }: { poster?: string }) {
 
 function PlayIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M8 5v14l11-7z" />
     </svg>
   );
