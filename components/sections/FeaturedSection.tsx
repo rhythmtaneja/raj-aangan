@@ -35,10 +35,20 @@ const SLIDE_EASE = "power2.inOut";
 // ─ Image padding (beige strip around image — NOT full-bleed) ──
 // Format: "vertical horizontal" — beige strip thickness on each axis.
 // ↑ bigger = thicker beige border around the photo.
+//
+// PHONE vs DESKTOP: on a 390px screen the desktop values (10vw side strips)
+// left the photo only ~312px wide while the white card below was ~342px — the
+// card was WIDER than the photo it is supposed to sit on top of. Phones get
+// much thinner strips so the photo reads as the backdrop, matching the
+// reference. Applied via a media query in the component (see PHONE_MQ).
 const IMAGE_PADDING_Y = "8vh"; // top + bottom beige strip
 const IMAGE_PADDING_X = "10vw"; // left + right beige strip
+const IMAGE_PADDING_Y_PHONE = "4vh";
+const IMAGE_PADDING_X_PHONE = "5vw";
 
 // ─ Service-list white card ──
+// The phone card must stay comfortably INSIDE the photo above: smaller
+// padding, smaller cap width.
 const BOX_BG = "#ffffff";
 const BOX_PADDING_X = "5rem";
 const BOX_PADDING_Y = "5rem";
@@ -190,11 +200,14 @@ export default function FeaturedSection() {
       */}
       <div
         ref={imageContainerRef}
-        className="absolute inset-0"
-        style={{
-          padding: `${IMAGE_PADDING_Y} ${IMAGE_PADDING_X}`,
-          willChange: "transform, opacity",
-        }}
+        className="absolute inset-0 p-[var(--fs-img-pad-phone)] md:p-[var(--fs-img-pad)]"
+        style={
+          {
+            "--fs-img-pad-phone": `${IMAGE_PADDING_Y_PHONE} ${IMAGE_PADDING_X_PHONE}`,
+            "--fs-img-pad": `${IMAGE_PADDING_Y} ${IMAGE_PADDING_X}`,
+            willChange: "transform, opacity",
+          } as React.CSSProperties
+        }
       >
         <div className="relative w-full h-full overflow-hidden">
           {BG_IMAGES.map((src, i) => (
@@ -221,13 +234,21 @@ export default function FeaturedSection() {
           - INNER frame: inset INSIDE the card (around the text)
         Both are decorative absolute-positioned siblings of the text.
       */}
+      {/*
+        Phone: `mx-12` (48px) keeps the card well inside the photo's 5vw side
+        strips, and the 19rem cap stops it stretching into a tablet-looking
+        block at 767px (i.e. at 200% zoom).
+      */}
       <div
-        className="relative z-10 mx-6"
-        style={{
-          backgroundColor: BOX_BG,
-          padding: `${BOX_PADDING_Y} ${BOX_PADDING_X}`,
-          maxWidth: BOX_MAX_W,
-        }}
+        className="relative z-10 mx-12 max-w-[19rem] px-8 py-10 md:mx-6 md:max-w-[var(--fs-box-max)] md:px-[var(--fs-box-px)] md:py-[var(--fs-box-py)]"
+        style={
+          {
+            backgroundColor: BOX_BG,
+            "--fs-box-max": BOX_MAX_W,
+            "--fs-box-px": BOX_PADDING_X,
+            "--fs-box-py": BOX_PADDING_Y,
+          } as React.CSSProperties
+        }
       >
         {/* OUTER outline — extends beyond the card by BOX_OUTER_FRAME_OFFSET */}
         <div
@@ -250,13 +271,13 @@ export default function FeaturedSection() {
         />
 
         <ul
-          className="relative flex flex-col items-center text-center"
-          style={{ gap: BOX_GAP }}
+          className="relative flex flex-col items-center gap-4 text-center md:gap-[var(--fs-box-gap)]"
+          style={{ "--fs-box-gap": BOX_GAP } as React.CSSProperties}
         >
           {SERVICES.map((s) => (
             <li
               key={s}
-              className="text-sm text-[#191919] uppercase"
+              className="text-[0.6875rem] text-[#191919] uppercase md:text-sm"
               style={{
                 fontFamily: "var(--font-raleway), sans-serif",
                 letterSpacing: LIST_LETTER_SPC,

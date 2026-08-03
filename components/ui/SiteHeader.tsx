@@ -43,7 +43,7 @@ const MENU_BUTTON_HREF = "/menu-builder";
 
 // Space between nav links.
 // Small wrapping gap on phones (7 links won't fit one row); wide single row md+.
-const NAV_LINK_GAP = "gap-x-5 gap-y-1.5 md:gap-14";
+const NAV_LINK_GAP = "gap-x-3.5 gap-y-1 md:gap-14";
 
 // Base opacity of nav links when nothing is hovered.
 const IDLE_LINK_OPACITY = "opacity-90";
@@ -191,20 +191,31 @@ export default function SiteHeader({
 
   return (
     <header ref={root} className={`absolute inset-x-0 top-0 z-30 ${textColor}`}>
-      <div className="relative flex items-center justify-between px-6 pt-9 pb-8 md:px-12">
+      {/*
+        Phone sizing: the pills and the centre logo used to be laid out at
+        desktop scale on a 390px screen, where "Menu Builder" + a 110px logo +
+        "Booking" cannot fit a single row — the logo ended up sitting under the
+        pills and colliding with the divider. Phones get compact pills, a short
+        "Menu" label and a 3.25rem logo, which leaves clear space between all
+        three. Desktop (md+) is unchanged.
+      */}
+      <div className="relative flex items-center justify-between px-4 pt-5 pb-4 md:px-12 md:pt-9 md:pb-8">
         {/* MENU */}
         <Link
           href={MENU_BUTTON_HREF}
-          className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}
+          className={`site-header-item flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
         >
-          <DehazeIcon className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Menu Builder</span>
+          <DehazeIcon className="h-4 w-4 md:h-6 md:w-6" />
+          <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
+            <span className="md:hidden">Menu</span>
+            <span className="hidden md:inline">Menu Builder</span>
+          </span>
         </Link>
 
         {variant === "full" && (
           <Link
             href="/"
-            className="site-header-item absolute left-1/2 top-1 -translate-x-1/2"
+            className="site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1 md:translate-y-0"
           >
             <Image
               src="/images/logo-round.png"
@@ -215,15 +226,15 @@ export default function SiteHeader({
               /* MUST be a rem class, not the intrinsic 110px: the header's
                  padding is rem-based, so a fixed-px logo grows relative to
                  the bar as the root shrinks and collides with the divider. */
-              className="h-[6.875rem] w-[6.875rem]"
+              className="h-[2.5rem] w-[2.5rem] md:h-[6.875rem] md:w-[6.875rem]"
             />
           </Link>
         )}
 
         {/* BOOKING */}
-        <button className={`site-header-item flex items-center gap-3 rounded-full ${pillBg} px-6 py-3 transition-opacity hover:opacity-90 md:px-7 md:py-3.5`}>
-          <TripIcon className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="font-semibold text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
+        <button className={`site-header-item flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}>
+          <TripIcon className="h-4 w-4 md:h-6 md:w-6" />
+          <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
         </button>
       </div>
 
@@ -242,7 +253,7 @@ export default function SiteHeader({
             onMouseLeave={handleNavContainerLeave}
           >
             <nav
-              className={`group flex flex-wrap items-center justify-center px-4 py-5 md:flex-nowrap md:py-6 ${NAV_LINK_GAP} font-medium uppercase tracking-widest text-[clamp(0.7rem,0.9vw,0.8125rem)]`}
+              className={`group flex flex-wrap items-center justify-center px-3 py-3 md:flex-nowrap md:px-4 md:py-6 ${NAV_LINK_GAP} font-medium uppercase tracking-[0.12em] text-[0.625rem] md:tracking-widest md:text-[clamp(0.7rem,0.9vw,0.8125rem)]`}
             >
               {NAV_LINKS.map((link, i) => (
                 <Link

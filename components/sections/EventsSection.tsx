@@ -78,8 +78,15 @@ export default function EventsSection() {
       */}
       <div ref={track} className="relative" style={{ height: CARD_SCROLL_TRACK_HEIGHT }}>
         <div className="sticky top-0 flex h-screen items-center justify-center">
-          {/* Contained background image (with margins, like Featured) */}
-          <div className="relative h-[82vh] w-[92%] max-w-295 overflow-hidden">
+          {/*
+            Background image.
+            PHONE: full-bleed — edge to edge and the full viewport height, so
+            the photo covers the screen behind the cards (matching the
+            reference). The contained, margined treatment (82vh tall, 92% wide)
+            is a desktop-only look; on a 390px screen those margins left a
+            visible band of page background around the photo.
+          */}
+          <div className="relative h-dvh w-full overflow-hidden md:h-[82vh] md:w-[92%] md:max-w-295">
             {BG_IMAGES.map((src, i) => (
               <Image key={src} src={src} alt="" fill priority={i === 0} sizes="92vw" className="object-cover transition-opacity duration-1000" style={{ opacity: i === active ? 1 : 0 }} />
             ))}

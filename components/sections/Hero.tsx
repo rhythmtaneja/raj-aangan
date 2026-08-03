@@ -48,9 +48,18 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
   );
 
   return (
-    <section ref={container} className="relative h-screen w-full overflow-hidden">
-      {/* Background photo */}
-      <div className="hero-bg absolute inset-0">
+    <section ref={container} className="relative h-dvh w-full overflow-hidden md:h-screen">
+      {/*
+        Background photo.
+        BLEED (-inset-x-[30px]): the ken-burns tween drifts this layer
+        horizontally by MOVE.heroDrift (20px) each way while it starts at
+        scale 1 — with a flush `inset-0` that drift exposed a bare strip down
+        the left edge until the zoom caught up. 30px of fixed-px bleed on each
+        side always covers the 20px drift. Fixed px is correct here: the drift
+        it compensates for is itself a fixed px value, and this is a bleeding
+        background, not layout.
+      */}
+      <div className="hero-bg absolute inset-y-0 -inset-x-[30px]">
         <Image
           src={bgImage ?? HERO_BG_FALLBACK}
           alt="Luxury resort pool at Raj Aangan"
@@ -66,10 +75,21 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
       {/* Navbar — animates in on first homepage load */}
       <SiteHeader animateEntrance />
 
-      {/* RAEC logo block (decorative, page content) */}
-      <div className="hero-logo absolute inset-x-0 top-[clamp(15rem,27vh,20rem)] z-10 flex flex-col items-center">
-        {/* <Image src="/images/logo-round.png" alt="" width={58} height={58} priority /> */}
-        <div className="-mt-0 h-18 w-[min(50vw,13.75rem)] overflow-hidden">
+      {/*
+        RAEC wordmark.
+        The inner box is a CROP WINDOW: it shows a 4.5rem-tall slice of a
+        13.75rem logo image pushed up by 4.3125rem. The window width must stay
+        the FULL 13.75rem — it used to be `min(50vw,13.75rem)`, which on any
+        phone (50vw = 195px < 220px) sliced the right-hand edge off the
+        wordmark. To make it smaller on phones, scale the whole crop instead,
+        which keeps the slice geometry intact.
+      */}
+      <div className="hero-logo absolute inset-x-0 top-[24vh] z-10 flex flex-col items-center md:top-[clamp(15rem,27vh,20rem)]">
+        {/* The phone down-scale lives in globals.css (@media max-width:767px)
+            so DESKTOP emits no `transform` at all — a `md:scale-100` here
+            still writes `transform: scale(1)`, which is visually identity but
+            makes this div an offsetParent and changes measured geometry. */}
+        <div className="hero-wordmark-crop h-18 w-[13.75rem] overflow-hidden">
           <Image
             src="/images/logo.png"
             alt="Raj Aangan Events and Caterers"
@@ -81,17 +101,28 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
         </div>
       </div>
 
-      {/* Center content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-[calc(16.25rem+0.75rem)] sm:pt-[calc(16.25rem+1rem)] text-center">
+      {/*
+        Center content.
+        Phone: the desktop `pt-[16.25rem]` existed only to clear the absolutely
+        positioned wordmark above, and at a fixed 16px mobile root it pushed the
+        whole block off a 844px-tall screen. Phones get a much smaller clearance
+        and a capped content width so the layout still reads as "phone" at 767px
+        (200% zoom) rather than sprawling.
+      */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-40 text-center md:pt-[calc(16.25rem+1rem)]">
         <div className="overflow-hidden">
-          <h1 className="hero-title max-w-275 font-medium leading-[1.03] text-white text-[clamp(2.75rem,6.25vw,5.625rem)]">
+          <h1 className="hero-title mx-auto max-w-[19rem] font-medium leading-[1.12] text-white text-[1.9rem] md:max-w-275 md:leading-[1.03] md:text-[clamp(2.75rem,6.25vw,5.625rem)]">
             The Crown of Heritage Hospitality
           </h1>
         </div>
 
-        <p className="hero-sub mt-10 max-w-4xl text-center font-medium leading-relaxed text-white text-[clamp(1.125rem,1.56vw,1.375rem)]">
+        {/*
+          The <br/> is a desktop line-break; on phones it would strand a single
+          word, so it is hidden and the paragraph wraps naturally.
+        */}
+        <p className="hero-sub mx-auto mt-5 max-w-[20rem] text-center font-medium leading-relaxed text-white text-[0.9375rem] md:mt-10 md:max-w-4xl md:text-[clamp(1.125rem,1.56vw,1.375rem)]">
           Where ancient architecture
-          <br />
+          <br className="hidden md:inline" />{" "}
           meets modern comfort to create unforgettable royal experience
         </p>
 
@@ -101,7 +132,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           arrowColor="#ffffff"
           circleSize="9.375rem"
           magnet={0.6}
-          className="hero-cta mt-12 rounded-full border border-white px-8 py-3.75 text-[0.75rem] font-medium uppercase tracking-[0.18em] text-white"
+          className="hero-cta mt-7 rounded-full border border-white px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-white md:mt-12 md:px-8 md:py-3.75 md:text-[0.75rem]"
         >
           Plan Your Event
         </CircleButton>

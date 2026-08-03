@@ -117,3 +117,58 @@ h3 {
   Section components set the serif headings via inline
   `style={{ fontFamily: "var(--font-cormorant-garamond)" }}` as before.
 */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PHONE-ONLY OVERRIDES  (max-width: 767px)
+   ═══════════════════════════════════════════════════════════════════════════
+
+   WHY THESE LIVE HERE AND NOT AS `md:` CLASSES IN THE COMPONENT.
+
+   ServicesSection sets `font-size`, `gap` and `min-height` as INLINE styles
+   (they are driven by the TUNE-THESE-KNOBS constants at the top of that file).
+   Inline styles beat every class, so the phone layout cannot be expressed with
+   Tailwind variants without first moving those values out of `style={{}}` —
+   and doing that is exactly what broke the desktop design once already:
+   `md:text-[var(--x)]` is ambiguous in Tailwind (font-size vs colour), it
+   resolved to `color`, and the desktop words silently lost their size.
+
+   A `@media (max-width: 767px)` block is provably unreachable above 767px, so
+   the desktop design CANNOT be affected by anything in here. `!important` is
+   required only to win against those inline styles. This block is deliberately
+   OUTSIDE `@layer`, so it also outranks Tailwind's utility layer.
+
+   ⚠️ Do not move these rules into the components as `md:` variants. The
+   desktop layout is signed off — this file is the safe place to diverge.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* ── ServicesSection: vertical stack of plain links, no hover imagery ── */
+  .services-row {
+    flex-direction: column;
+    gap: 2.5rem !important;      /* beats the inline WORD_GAP */
+  }
+  .services-zone {
+    flex: none;                  /* beats `flex-1` */
+    width: 100%;
+    min-height: 0 !important;    /* beats the inline 70vh IMAGE_HEIGHT */
+    cursor: default;
+  }
+  .services-img {
+    display: none !important;    /* the hover photo has no role on touch */
+  }
+  .services-word {
+    font-size: 2.75rem !important;  /* beats the inline WORD_FONT_SIZE clamp */
+    color: #4a4a4a !important;      /* the desktop idle grey only reads
+                                       correctly because hover lifts it to
+                                       white, and there is no hover on touch */
+  }
+
+  /* ── Hero: shrink the RAEC wordmark ──
+     Scaling the CROP WINDOW (rather than narrowing it) keeps the slice
+     geometry intact — the window must stay 13.75rem wide or it clips the
+     right-hand edge off the wordmark. Kept here, not as `md:scale-100` in the
+     component, so desktop emits no transform and its geometry is unchanged. */
+  .hero-wordmark-crop {
+    transform: scale(0.62);
+    transform-origin: center;
+  }
+}

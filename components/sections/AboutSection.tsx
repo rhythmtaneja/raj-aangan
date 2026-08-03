@@ -97,9 +97,28 @@ export default function AboutSection() {
         </h2>
       </Reveal>
 
+      {/*
+        PHONE ORDER FIX.
+        The two rows below are separate grids, so on phones they stacked as
+        image-1 → paragraph → image-2 → image-3 → stats, dropping the paragraph
+        in the MIDDLE of the photos. The wrapper turns into a flex column on
+        phones and both rows become `display: contents`, which dissolves them
+        so their four blocks become direct flex children of this wrapper — only
+        then can `order` sequence them across the original row boundary:
+
+            1 image-1   2 image-stack   3 paragraph   4 stats
+
+        At md+ the wrapper itself becomes `display: contents` too, so it
+        DISSOLVES — the two rows become direct children of the <section> again,
+        exactly as they were before. That matters: the rows are centred by the
+        section's own `items-center`, so a wrapper that stayed a real block box
+        would left-align them (`max-w-300` + block = no centring).
+      */}
+      <div className="flex w-full flex-col items-center gap-12 md:contents">
+
       {/* Row 1: image (parallax + hover zoom) + paragraph */}
-      <div className="mt-16 grid w-full max-w-300 grid-cols-1 items-center gap-12 md:grid-cols-2">
-        <div className="group relative aspect-square w-full overflow-hidden">
+      <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-1 md:items-center md:gap-12 md:grid-cols-2">
+        <div className="group relative order-1 aspect-square w-full max-w-[26rem] overflow-hidden md:order-none md:max-w-none">
           <Parallax distance={30} className="absolute -inset-y-12 inset-x-0">
             <div className="relative h-full w-full">
               <Image
@@ -113,16 +132,16 @@ export default function AboutSection() {
           </Parallax>
           <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
         </div>
-        <Reveal>
-          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[clamp(1.1rem,1.45vw,1.3125rem)] md:px-6">
+        <Reveal className="order-3 w-full max-w-[26rem] md:order-none md:max-w-none">
+          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[1.0625rem] md:px-6 md:text-[clamp(1.1rem,1.45vw,1.3125rem)]">
             What started as a passion for bringing people together has grown into one of Jaipur&rsquo;s trusted names in luxury events, destination weddings, and premium catering experiences. Inspired by Rajasthan&rsquo;s royal culture and timeless traditions, Raj Aangan blends heritage hospitality with modern event craftsmanship.
           </p>
         </Reveal>
       </div>
 
       {/* Row 2: SCROLLING image stack (left, each with hover zoom) + STICKY stats (right) */}
-      <div className="mt-16 grid w-full max-w-300 grid-cols-1 gap-12 md:grid-cols-2 md:items-start">
-        <div className="flex flex-col gap-12">
+      <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-2 md:gap-12 md:items-start">
+        <div className="order-2 flex w-full max-w-[26rem] flex-col gap-12 md:order-none md:max-w-none">
           {ABOUT_IMAGES.map((src, i) => (
             <div key={src} className="group relative aspect-square w-full overflow-hidden">
               <Image
@@ -138,13 +157,15 @@ export default function AboutSection() {
         </div>
 
         {/* Sticky: stays pinned while the images on the left scroll past */}
-        <div className="md:sticky md:top-28 md:self-start">
-          <Reveal stagger staggerEach={0.15} className="flex flex-col items-center gap-12 py-8">
+        <div className="order-4 w-full md:order-none md:sticky md:top-28 md:self-start">
+          <Reveal stagger staggerEach={0.15} className="flex flex-col items-center gap-8 py-2 md:gap-12 md:py-8">
             <Stat icon={<CalendarIcon />} end={200} suffix="+" label="Events" />
             <Stat icon={<UsersIcon />} end={10000} suffix="+" label="Guests" />
             <Stat icon={<CalendarIcon />} end={15} suffix="+" label="Years of Experience" />
           </Reveal>
         </div>
+      </div>
+
       </div>
 
       <Reveal>

@@ -173,10 +173,10 @@ export default function IntroSection({
     <section
       ref={sectionRef}
       style={{ backgroundColor: `var(--page-bg, ${BG_FALLBACK})` }}
-      className="relative flex min-h-screen w-full flex-col items-center justify-center px-6 py-32 text-center"
+      className="relative flex min-h-screen w-full flex-col items-center justify-center px-7 py-24 text-center md:px-6 md:py-32"
     >
       {/* Numeral + optional label, e.g. "II  ABOUT US" */}
-      <div className="mb-20 flex items-center gap-5">
+      <div className="mb-10 flex items-center gap-4 md:mb-20 md:gap-5">
         <NumeralMarker numeral={numeral} />
         {label && (
           <span
@@ -195,7 +195,7 @@ export default function IntroSection({
       >
         <h2
           style={serif}
-          className="max-w-[100rem] font-semibold leading-[1.05] text-[#191919] text-[clamp(2rem,3.9vw,3.5rem)]"
+          className="max-w-[19rem] font-semibold leading-[1.35] text-[#191919] text-[1.5rem] md:max-w-[100rem] md:leading-[1.05] md:text-[clamp(2rem,3.9vw,3.5rem)]"
         >
           <Words text={title} italicTail={italicTail} />
         </h2>

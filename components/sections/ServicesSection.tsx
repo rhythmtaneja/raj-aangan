@@ -128,7 +128,15 @@ export default function ServicesSection() {
     { scope: sectionRef }
   );
 
+  // The hover-reveal (image + word tint + page-background shift) is a DESKTOP
+  // affordance. On phones the section is a plain vertical link list, and a
+  // stray touch firing these would tint the page background with no way to
+  // clear it — there is no mouseleave on touch.
+  const isDesktopPointer = () =>
+    typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+
   const handleWordEnter = (e: React.MouseEvent<HTMLDivElement>, i: number) => {
+    if (!isDesktopPointer()) return;
     const prevIdx = activeIdx.current;
     if (prevIdx === i) return;
     activeIdx.current = i;
@@ -215,6 +223,7 @@ export default function ServicesSection() {
   };
 
   const handleRowLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDesktopPointer()) return;
     const idx = activeIdx.current;
     if (idx === null) return;
 
@@ -274,6 +283,7 @@ export default function ServicesSection() {
   };
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>, i: number) => {
+    if (!isDesktopPointer()) return;
     const zone = zoneRefs.current[i];
     const parallax = imgParallaxRefs.current[i];
     if (!zone || !parallax) return;
@@ -305,7 +315,7 @@ export default function ServicesSection() {
 
       <div
         ref={rowRef}
-        className="relative flex w-full items-center justify-between"
+        className="services-row relative flex w-full items-center justify-between"
         style={{ gap: WORD_GAP }}
         onMouseLeave={handleRowLeave}
       >
@@ -313,14 +323,14 @@ export default function ServicesSection() {
           <div
             key={s.label}
             ref={(el) => { zoneRefs.current[i] = el; }}
-            className="relative flex-1 flex items-center justify-center cursor-pointer"
+            className="services-zone relative flex-1 flex items-center justify-center cursor-pointer"
             style={{ minHeight: IMAGE_HEIGHT, zIndex: 1 }}
             onMouseEnter={(e) => handleWordEnter(e, i)}
             onMouseMove={(e) => handleMove(e, i)}
           >
             <div
               ref={(el) => { imgWrapRefs.current[i] = el; }}
-              className="absolute pointer-events-none"
+              className="services-img absolute pointer-events-none"
               style={{
                 width: IMAGE_WIDTH,
                 height: IMAGE_HEIGHT,
@@ -347,7 +357,7 @@ export default function ServicesSection() {
             <a href={s.href} className="relative block" style={{ zIndex: 10 }}>
               <span
                 ref={(el) => { wordRefs.current[i] = el; }}
-                className="font-semibold inline-block"
+                className="services-word font-semibold inline-block"
                 style={{
                   ...serif,
                   fontSize: WORD_FONT_SIZE,
