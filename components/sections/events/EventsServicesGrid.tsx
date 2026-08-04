@@ -162,13 +162,17 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
       </div>
 
       {/* "See our services" button below the card */}
-      <div className="mt-6 flex justify-center">
+      <div className="mt-10 flex justify-center">
         <CircleButton
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          circleSize="7.5rem"
-          magnet={0.3}
+          // The card image sits directly above, so the whole reach of the ball
+          // — radius x (1 + magnet) — has to fit in the gap. mt-10 (40px) plus
+          // half the pill (~21px) gives 61px; 50 x 1.2 = 60px fits. Was
+          // 7.5rem/0.3, a 78px reach against a 45px gap: it ate the card.
+          circleSize="6.25rem"
+          magnet={0.2}
           className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,0.875rem)]"
         >
           See our services

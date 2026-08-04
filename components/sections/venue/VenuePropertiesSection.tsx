@@ -19,8 +19,13 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
 const SECTION_PAD = "pt-24 pb-12 md:pt-32 md:pb-16";
 const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
+// Split layout ← → glass chrome, same as VenueHero: the chrome goes on
+// CircleButton's `pillClassName` layer so the whole pill fades on hover
+// instead of the ball opening on top of it.
 const GLASS_EXPLORE_BUTTON_CLASS =
-  "min-h-[3.125rem] min-w-[8.125rem] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,0.875rem)] shadow-[inset_0_1px_0_rgba(255,255,255,0.76),inset_0_-1px_0_rgba(255,255,255,0.10),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)]";
+  "min-h-[3.125rem] min-w-[8.125rem] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,0.875rem)]";
+const GLASS_EXPLORE_PILL_CLASS =
+  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.76),inset_0_-1px_0_rgba(255,255,255,0.10),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller
@@ -118,14 +123,19 @@ function PropertyCard({ name, image, href }: Property) {
           >
             {name}
           </h3>
-          <div className="mt-8">
+          <div className="mt-12">
             <CircleButton
               asStatic
               circleColor="#ffffff"
               arrowColor="#191919"
-              circleSize="9.25rem"
-              magnet={0.3}
+              // Same clearance budget as VenueHero: mt-12 (48px) + half the
+              // pill (25px) = 73px from the card title to the ball's centre,
+              // against a reach of 50 x 1.22 = 61px. Was 9.25rem/0.3 — a reach
+              // of 96px, which swallowed the property name.
+              circleSize="6.25rem"
+              magnet={0.22}
               className={GLASS_EXPLORE_BUTTON_CLASS}
+              pillClassName={GLASS_EXPLORE_PILL_CLASS}
             >
               Explore
             </CircleButton>

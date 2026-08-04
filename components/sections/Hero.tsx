@@ -134,7 +134,10 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           circleColor="#6c7c7b"
           arrowColor="#ffffff"
           circleSize="9.375rem"
-          magnet={0.6}
+          // 0.6 was an outlier (every other CTA is 0.3–0.4) and let the ball
+          // drift ~45px off centre, which is what made it look like it was
+          // "popping over" the label rather than growing behind it.
+          magnet={0.4}
           className="hero-cta mt-7 rounded-full border border-white px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-white md:mt-12 md:px-8 md:py-3.75 md:text-[0.75rem]"
         >
           Plan Your Event

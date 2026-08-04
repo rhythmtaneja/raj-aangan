@@ -82,8 +82,12 @@ export default function WeddingPackagesSection() {
             href="#plan-wedding"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize="9.375rem"
-            magnet={0.35}
+            // The white CTA strip is only py-12 tall, so a 9.375rem ball
+            // (reach 101px from the pill's centre, against 73px of room)
+            // punched through the navy band above and was clipped below.
+            // 50 x 1.25 = 63px fits with ~10px to spare on both sides.
+            circleSize="6.25rem"
+            magnet={0.25}
             arrowDirection="right"
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,0.9375rem)]"
           >
@@ -94,8 +98,8 @@ export default function WeddingPackagesSection() {
             href="/brochure.pdf"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize="9.375rem"
-            magnet={0.35}
+            circleSize="6.25rem"   // matched to "Plan Your wedding" above
+            magnet={0.25}
             arrowDirection="down"
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,0.9375rem)]"
           >

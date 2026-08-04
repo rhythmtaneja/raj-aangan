@@ -26,7 +26,14 @@ const TITLE_COLOR = "#191919";
 // ─ Padding per band ──
 const TOP_PAD = "py-14";
 const MIDDLE_PAD = "py-16";
-const BOTTOM_PAD = "py-10";
+// The bottom band has to be tall enough to CONTAIN the CTA's hover ball, not
+// just its resting pill. The ball is 9.375rem (150px) across and grows from the
+// pill's centre, so it needs ~75px of clear space above and below that centre;
+// at py-10 (40px) it spilled out of the white band into the navy carousel above
+// and the section below. The ball's full reach is radius x (1 + magnet) = 98px
+// from the pill's centre, so 96px of padding either side of a ~48px pill clears
+// it with ~22px to spare even when the magnet has pulled the ball hard over.
+const BOTTOM_PAD = "py-24";
 
 // ─ Card sizing ──
 // rem, NOT px — the desktop layout scales off the root font-size (see

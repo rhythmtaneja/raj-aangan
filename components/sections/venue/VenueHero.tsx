@@ -45,8 +45,15 @@ const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA ──
 const CTA_DELAY = 1.5;
+// The glass CTA is split in two: sizing/typography stay on the button itself,
+// the glass CHROME goes on CircleButton's `pillClassName` layer so it can fade
+// out whole on hover (the ball used to open on top of a still-visible pill —
+// only the border was being faded). The old `transition-colors ... hover:bg-`
+// is gone with it: the pill no longer has a hover state, it disappears.
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
+  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] px-5 py-2 text-white md:px-7 md:py-2.5";
+const GLASS_DOWN_PILL_CLASS =
+  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md";
 
 // ─ Smooth scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "properties";
@@ -167,10 +174,16 @@ export default function VenueHero({ bgImage }: { bgImage?: string }) {
             onClick={handleDownClick}
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize="clamp(7.25rem,32vw,11.875rem)"
-            magnet={0.35}
+            // Sized so the ball stays clear of the "Venue" title above it.
+            // Budget: mt-14 (56px) + half the pill (~32px) = 88px from the
+            // title's baseline box to the ball's centre; the ball's reach is
+            // radius x (1 + magnet) = 65 x 1.25 = 81px. Was 11.875rem/0.35,
+            // i.e. a reach of 128px, which cut straight through the word.
+            circleSize="clamp(5.5rem,24vw,8.125rem)"
+            magnet={0.25}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}
+            pillClassName={GLASS_DOWN_PILL_CLASS}
           >
             <DownArrowIcon />
           </CircleButton>

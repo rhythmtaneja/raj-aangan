@@ -99,6 +99,23 @@ type CircleButtonProps = {
   href?: string;
   /** Pill styling: border, padding, text colour, font. */
   className?: string;
+  /**
+   * Chrome for a pill that is more than just a border — background, shadow,
+   * backdrop blur (i.e. the "glass" CTAs). Rendered as its own layer behind
+   * the ball and faded out WHOLE on hover.
+   *
+   * Why a separate layer: the plain CTAs vanish on hover because their border
+   * IS their entire chrome, and `enter()` fades that border to transparent.
+   * A glass pill's background/shadow/blur survived that, so the ball opened
+   * on top of a still-visible pill. Tweening those three properties directly
+   * is fragile (box-shadow needs a structurally identical target string,
+   * backdrop-filter needs the -webkit- alias), so the layer gets one
+   * `autoAlpha` tween instead — same timing as the border fade.
+   *
+   * Put ONLY chrome here (rounded-*, border, bg, shadow, backdrop-*); leave
+   * sizing, padding and typography on `className` so layout is unaffected.
+   */
+  pillClassName?: string;
   /** The ball colour (reference sage = #6c7c7b; for light bgs use #191919). */
   circleColor?: string;
   /** Arrow + (optional) hovered-label colour. */
@@ -128,6 +145,7 @@ export default function CircleButton({
   children,
   href = "#",
   className,
+  pillClassName,
   circleColor = "#6c7c7b",
   arrowColor = "#ffffff",
   circleSize = DEFAULT_CIRCLE_SIZE,
@@ -144,6 +162,7 @@ export default function CircleButton({
   const circle = useRef<HTMLSpanElement>(null);
   const arrow = useRef<HTMLSpanElement>(null);
   const label = useRef<HTMLSpanElement>(null);
+  const pill = useRef<HTMLSpanElement>(null);          // glass chrome layer (optional)
   const hit = useRef<HTMLSpanElement>(null);           // hover area matching the ball
 
   const originalBorderColor = useRef<string>("rgba(0,0,0,0)");
@@ -194,8 +213,41 @@ export default function CircleButton({
     { scope: root, dependencies: [arrowDirection] }
   );
 
+  /**
+   * Kill every tween this component owns, INCLUDING ones still sitting in
+   * their `delay` phase.
+   *
+   * This is the fix for the "ghost arrow" bug (Aug 2026): `overwrite: "auto"`
+   * only kills tweens that have already started rendering, so a tween that is
+   * still counting down its delay survives and fires later, out of sequence.
+   * Two visible symptoms, both reported from the homepage hero:
+   *
+   *   • Leave the button within 0.14s of entering → the arrow's enter tween
+   *     (delay DELAY_ARROW_AFTER_BALL) had not started yet, so `leave()` could
+   *     not overwrite it. It fired afterwards and left the chevron sitting at
+   *     autoAlpha 1 on top of the resting label, with no ball behind it —
+   *     an arrow on a button nobody is hovering.
+   *   • Re-enter within 0.26s of leaving → the border/label fade-IN tweens
+   *     (delay DELAY_BORDER_LABEL_ON_LEAVE) fired mid-open and printed the
+   *     label back over the growing ball, which reads as a lag/flicker.
+   *
+   * Killing outright at the top of each handler makes enter/leave mutually
+   * exclusive no matter how fast the cursor is.
+   */
+  const killPending = () => {
+    gsap.killTweensOf([
+      root.current,
+      label.current,
+      circle.current,
+      arrow.current,
+      pill.current,
+    ]);
+  };
+
   const enter = () => {
     if (prefersReducedMotion()) return;
+
+    killPending();
 
     // Grow the hit area to the ball's own footprint. The ball is much bigger
     // than the pill (150px vs a ~56px-tall pill), so without this, sliding the
@@ -211,6 +263,16 @@ export default function CircleButton({
       ease: EASE_SOFT,
       overwrite: "auto",
     });
+    // Glass chrome leaves with the border — same duration, so a bordered pill
+    // and a glass pill disappear as one gesture.
+    if (pill.current) {
+      gsap.to(pill.current, {
+        autoAlpha: 0,
+        duration: DUR_BORDER_FADE_OUT,
+        ease: EASE_SOFT,
+        overwrite: "auto",
+      });
+    }
     gsap.to(label.current, {
       autoAlpha: 0,
       duration: DUR_LABEL_FADE_OUT,
@@ -239,6 +301,8 @@ export default function CircleButton({
   const leave = () => {
     if (prefersReducedMotion()) return;
 
+    killPending();
+
     if (hit.current) hit.current.style.pointerEvents = "none";
 
     gsap.to(root.current, {
@@ -248,6 +312,15 @@ export default function CircleButton({
       delay: DELAY_BORDER_LABEL_ON_LEAVE,
       overwrite: "auto",
     });
+    if (pill.current) {
+      gsap.to(pill.current, {
+        autoAlpha: 1,
+        duration: DUR_BORDER_FADE_IN,
+        ease: EASE_SOFT,
+        delay: DELAY_BORDER_LABEL_ON_LEAVE,
+        overwrite: "auto",
+      });
+    }
     gsap.to(label.current, {
       autoAlpha: 1,
       duration: DUR_LABEL_FADE_IN,
@@ -299,10 +372,19 @@ export default function CircleButton({
   // Shared visual content — no root element wrapper.
   const content = (
     <>
+      {/* Glass chrome, if any — behind the ball (z-0 vs the wrap's z-1). */}
+      {pillClassName ? (
+        <span
+          ref={pill}
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 z-0 ${pillClassName}`}
+        />
+      ) : null}
+
       <span
         ref={wrap}
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+        className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center"
       >
         <span
           ref={circle}

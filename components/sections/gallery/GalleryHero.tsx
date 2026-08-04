@@ -45,8 +45,13 @@ const LETTER_START_DELAY = 0.4;
 
 // ─ Down-arrow CTA (appears after the title finishes) ──
 const CTA_DELAY = 1;
+// Kept deliberately identical to VenueHero's down CTA — same pill size, same
+// split between layout and glass chrome, same ball size/magnet below. The two
+// heroes read as one component to a visitor, so they should behave as one.
 const GLASS_DOWN_BUTTON_CLASS =
-  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.75rem,30vw,10.625rem)] rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] px-5 py-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-[rgba(255,255,255,0.14)] md:px-7 md:py-2.5";
+  "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] px-5 py-2 text-white md:px-7 md:py-2.5";
+const GLASS_DOWN_PILL_CLASS =
+  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -159,10 +164,11 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
             href="#gallery"
             circleColor="#ffffff"
             arrowColor="#191919"
-            circleSize="clamp(7.25rem,32vw,10.625rem)"
-            magnet={0.35}
+            circleSize="clamp(5.5rem,24vw,8.125rem)"
+            magnet={0.25}
             arrowDirection="down"
             className={GLASS_DOWN_BUTTON_CLASS}
+            pillClassName={GLASS_DOWN_PILL_CLASS}
           >
             <DownArrowIcon />
           </CircleButton>
