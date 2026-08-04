@@ -72,8 +72,11 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
 
       <div className="absolute inset-0 bg-[rgba(25,25,25,0.5)]" />
 
-      {/* Navbar — animates in on first homepage load */}
-      <SiteHeader animateEntrance />
+      {/* Navbar — animates in on first homepage load.
+          `revealPillsOnReturn`: the Menu Builder / Booking pills start as bare
+          white text and only gain their dark fill once the visitor has been
+          down the page and come back to the top. */}
+      <SiteHeader animateEntrance revealPillsOnReturn />
 
       {/*
         RAEC wordmark.

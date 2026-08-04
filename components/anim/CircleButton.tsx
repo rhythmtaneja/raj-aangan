@@ -49,20 +49,41 @@ const DEFAULT_MAGNET = 0.4;
 // `arrowMagnet`.
 const DEFAULT_ARROW_MAGNET = 0.35;
 
-// Pill→circle open timing. Increase for slower, more cinematic feel.
-// The circle scale ease is the star of the show — `circ.inOut` gives that
-// premium, decelerating expansion. `power3.inOut` is a slightly punchier
-// alternative if you ever want more snap.
-const DUR_CIRCLE_OPEN = 0.6;       // ball grows from 0 → 1
+// ─── Enter / leave choreography ──────────────────────────────────────
+// RETIMED (Aug 2026) to remove three overlaps the client saw as "lag" —
+// in every case two states were legitimately on screen at once:
+//
+//   1. ENTER: the label faded out over 0.45s while the ball grew over
+//      0.6s. The label sits at z-10, ABOVE the ball, so for ~0.3s you
+//      read the old text printed on top of the new circle. The label now
+//      clears in 0.16s, well before the ball covers its area.
+//   2. LEAVE: the arrow faded over 0.3s on `power1.in` — an ease that
+//      barely moves early — while the ball collapsed over the same 0.3s
+//      on `circ.inOut`, which is fastest in the middle. Halfway through,
+//      the ball was at 50% scale with the arrow still at ~75% opacity:
+//      a chevron floating over/outside a shrunken ball. The arrow now
+//      leaves FIRST and fast, and the ball waits a beat for it.
+//   3. LEAVE: the label faded back in starting at 0.1s, i.e. while the
+//      ball was still clearly visible — the two "mixed up" again. It now
+//      waits until the ball is essentially closed.
+//
+// Read the two sequences as timelines (t = seconds from the event):
+//   ENTER   label out 0→0.16 | border out 0→0.25 | ball 0→0.55 | arrow 0.14→0.49
+//   LEAVE   arrow out 0→0.16 | ball 0.05→0.35    | border+label 0.26→0.56
+const DUR_CIRCLE_OPEN = 0.55;       // ball grows from 0 → 1
 const DUR_CIRCLE_CLOSE = 0.3;       // ball shrinks 1 → 0
-const DUR_BORDER_FADE = 0.45;       // pill outline fade
-const DUR_LABEL_FADE = 0.45;        // resting label fade
-const DUR_ARROW_ENTER = 0.5;        // arrow slide-in after ball opens
-const DUR_ARROW_EXIT = 0.3;         // arrow slide-out on leave
-const DELAY_ARROW_AFTER_BALL = 0.12;// arrow waits this long after ball starts opening
-const DELAY_BORDER_LABEL_ON_LEAVE = 0.1; // border/label wait this long before restoring
+const DUR_BORDER_FADE_OUT = 0.25;   // pill outline fading away on enter
+const DUR_BORDER_FADE_IN = 0.3;     // pill outline coming back on leave
+const DUR_LABEL_FADE_OUT = 0.16;    // resting label clearing out of the ball's way
+const DUR_LABEL_FADE_IN = 0.3;      // resting label returning
+const DUR_ARROW_ENTER = 0.35;       // arrow fade-in after ball opens
+const DUR_ARROW_EXIT = 0.16;        // arrow fade-out — must beat the ball out
+const DELAY_ARROW_AFTER_BALL = 0.14;// arrow waits this long after ball starts opening
+const DELAY_CIRCLE_CLOSE = 0.05;    // ball lets the arrow clear before collapsing
+const DELAY_BORDER_LABEL_ON_LEAVE = 0.26; // ...and the label waits for the ball
 
-const EASE_CIRCLE = "circ.inOut";
+const EASE_CIRCLE_OPEN = "circ.out"; // fast, premium expansion that settles
+const EASE_CIRCLE_CLOSE = "power2.inOut";
 const EASE_SOFT = "power2.out";
 
 // How quickly the magnetic drift catches up to the cursor. Lower = snappier,
@@ -123,6 +144,7 @@ export default function CircleButton({
   const circle = useRef<HTMLSpanElement>(null);
   const arrow = useRef<HTMLSpanElement>(null);
   const label = useRef<HTMLSpanElement>(null);
+  const hit = useRef<HTMLSpanElement>(null);           // hover area matching the ball
 
   const originalBorderColor = useRef<string>("rgba(0,0,0,0)");
 
@@ -175,23 +197,32 @@ export default function CircleButton({
   const enter = () => {
     if (prefersReducedMotion()) return;
 
+    // Grow the hit area to the ball's own footprint. The ball is much bigger
+    // than the pill (150px vs a ~56px-tall pill), so without this, sliding the
+    // cursor onto the circle you can plainly see leaves the <a> and fires
+    // mouseleave → the ball collapses and immediately reopens. That flicker
+    // was the single worst part of the "lag". It is only enabled while
+    // hovered, so the button's resting hit area is unchanged.
+    if (hit.current) hit.current.style.pointerEvents = "auto";
+
     gsap.to(root.current, {
       borderColor: "rgba(0,0,0,0)",
-      duration: DUR_BORDER_FADE,
+      duration: DUR_BORDER_FADE_OUT,
       ease: EASE_SOFT,
       overwrite: "auto",
     });
     gsap.to(label.current, {
       autoAlpha: 0,
-      duration: DUR_LABEL_FADE,
-      ease: "power1.out",
+      duration: DUR_LABEL_FADE_OUT,
+      ease: EASE_SOFT,
       overwrite: "auto",
     });
 
     gsap.to(circle.current, {
       scale: 1,
       duration: DUR_CIRCLE_OPEN,
-      ease: EASE_CIRCLE,
+      ease: EASE_CIRCLE_OPEN,
+      force3D: true,
       overwrite: "auto",
     });
     gsap.to(arrow.current, {
@@ -208,33 +239,38 @@ export default function CircleButton({
   const leave = () => {
     if (prefersReducedMotion()) return;
 
+    if (hit.current) hit.current.style.pointerEvents = "none";
+
     gsap.to(root.current, {
       borderColor: originalBorderColor.current,
-      duration: DUR_BORDER_FADE,
+      duration: DUR_BORDER_FADE_IN,
       ease: EASE_SOFT,
       delay: DELAY_BORDER_LABEL_ON_LEAVE,
       overwrite: "auto",
     });
     gsap.to(label.current, {
       autoAlpha: 1,
-      duration: DUR_LABEL_FADE,
-      ease: "power1.out",
+      duration: DUR_LABEL_FADE_IN,
+      ease: EASE_SOFT,
       delay: DELAY_BORDER_LABEL_ON_LEAVE,
       overwrite: "auto",
     });
 
-    gsap.to(circle.current, {
-      scale: 0,
-      duration: DUR_CIRCLE_CLOSE,
-      ease: EASE_CIRCLE,
-      overwrite: "auto",
-    });
+    // Arrow out FIRST (fast, front-loaded ease), ball a beat behind it.
     gsap.to(arrow.current, {
       autoAlpha: 0,
       x: rest.x,
       y: rest.y,
       duration: DUR_ARROW_EXIT,
-      ease: "power1.in",
+      ease: EASE_SOFT,
+      overwrite: "auto",
+    });
+    gsap.to(circle.current, {
+      scale: 0,
+      duration: DUR_CIRCLE_CLOSE,
+      ease: EASE_CIRCLE_CLOSE,
+      delay: DELAY_CIRCLE_CLOSE,
+      force3D: true,
       overwrite: "auto",
     });
 
@@ -271,7 +307,26 @@ export default function CircleButton({
         <span
           ref={circle}
           className="absolute rounded-full"
-          style={{ width: circleSize, height: circleSize, background: circleColor }}
+          style={{
+            width: circleSize,
+            height: circleSize,
+            background: circleColor,
+            willChange: "transform",
+          }}
+        />
+        {/*
+          Invisible hover area the size of the ball, switched on only while
+          hovered (see `enter`). mouseenter/mouseleave are subtree-based, so a
+          child that extends past the root's own box still counts as "inside"
+          — which is what stops the ball from collapsing the moment you move
+          onto it. It lives inside `wrap` so it drifts WITH the magnetised
+          ball rather than staying pinned to the pill.
+        */}
+        <span
+          ref={hit}
+          aria-hidden
+          className="absolute rounded-full"
+          style={{ width: circleSize, height: circleSize, pointerEvents: "none" }}
         />
         {/* Extra wrapper so the arrow's magnetic drift is independent of its
             enter/leave x/y offset animation. */}

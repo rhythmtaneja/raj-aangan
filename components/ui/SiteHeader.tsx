@@ -66,23 +66,50 @@ const INDICATOR_FOLLOW_DURATION = 0.35;
 // Fade in/out duration.
 const INDICATOR_FADE_DURATION = 0.35;
 
+// ─── Pill fill reveal (opt in with `revealPillsOnReturn`) ────────────────
+// First impression: "Menu Builder" / "Booking" are white text with NO pill
+// behind them. The dark fill appears the first time the visitor scrolls back
+// up to the top, and stays for the rest of the session.
+//
+// This is exactly how the reference site does it — it keeps a separate
+// `.menu-fill` layer inside each button and tweens its opacity. Verified
+// live: 0 on load, still 0 at scrollY 2000, then caught mid-tween at 0.488
+// on the way back to the top. Note the trigger is the RETURN, not the
+// scroll-down.
+//
+// ARM_VH: how far down (in viewports) counts as "went down". TOP_PX: how
+// close to the top counts as "came back".
+const PILL_REVEAL_ARM_VH = 0.6;
+const PILL_REVEAL_TOP_PX = 4;
+const PILL_REVEAL_DURATION = 0.6;
+const PILL_REVEAL_EASE = "power2.out";
+
 // ═══════════════════════════════════════════════════════════════════════════
 
 type SiteHeaderProps = {
   animateEntrance?: boolean;
   variant?: "full" | "minimal";
   colorScheme?: "light" | "dark";
+  /**
+   * Start the pills as bare text and fade their fill in once the visitor
+   * scrolls down and returns to the top. Landing page only by default —
+   * `colorScheme="dark"` pages must NOT enable it, since their pill text is
+   * white and would be invisible without the fill behind it.
+   */
+  revealPillsOnReturn?: boolean;
 };
 
 export default function SiteHeader({
   animateEntrance = false,
   variant = "full",
   colorScheme = "light",
+  revealPillsOnReturn = false,
 }: SiteHeaderProps) {
   const root = useRef<HTMLElement>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const indicatorRef = useRef<HTMLSpanElement>(null);
+  const pillFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const hoveredLinkIdx = useRef<number>(-1);
 
@@ -146,6 +173,59 @@ export default function SiteHeader({
     { scope: root, dependencies: [variant] }
   );
 
+  // ─── Pill fill reveal ────────────────────────────────────────────────
+  useGSAP(
+    () => {
+      if (!revealPillsOnReturn) return;
+      const fills = pillFillRefs.current.filter(Boolean) as HTMLSpanElement[];
+      if (fills.length === 0) return;
+
+      let armed = false;
+
+      const stop = () => {
+        gsap.ticker.remove(check);
+        window.removeEventListener("scroll", check);
+      };
+
+      const reveal = () => {
+        stop();
+        if (prefersReducedMotion()) {
+          gsap.set(fills, { opacity: 1 });
+          return;
+        }
+        gsap.to(fills, {
+          opacity: 1,
+          duration: PILL_REVEAL_DURATION,
+          ease: PILL_REVEAL_EASE,
+        });
+      };
+
+      // Wired to BOTH the `scroll` event and gsap.ticker, deliberately.
+      // Neither alone is dependable here: the site runs Lenis (see
+      // SmoothScroll.tsx) which drives scrolling from a rAF loop, so a
+      // programmatic `lenis.scrollTo(0, {immediate:true})` can land without a
+      // useful scroll event — while the ticker itself stalls whenever the tab
+      // is backgrounded and rAF is throttled. Together they cover both.
+      // `scrollY` is a cheap read and this unsubscribes from both the instant
+      // it fires, so it costs nothing after the reveal.
+      const check = () => {
+        const y = window.scrollY;
+        if (y > window.innerHeight * PILL_REVEAL_ARM_VH) armed = true;
+        else if (armed && y <= PILL_REVEAL_TOP_PX) reveal();
+      };
+
+      // Deep links and refreshes can restore a mid-page scroll position; that
+      // still counts as "went down", so arm immediately rather than requiring
+      // a further scroll down first.
+      check();
+
+      gsap.ticker.add(check);
+      window.addEventListener("scroll", check, { passive: true });
+      return stop;
+    },
+    { scope: root, dependencies: [revealPillsOnReturn] }
+  );
+
   // ─── Indicator handlers ──────────────────────────────────────────────
   const handleNavContainerMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (hoveredLinkIdx.current !== -1) return;
@@ -184,8 +264,28 @@ export default function SiteHeader({
   };
 
   const isDark = colorScheme === "dark";
-  const pillBg = isDark ? "bg-[#191919] text-white" : "bg-[#2d2d2d] text-white";
+  // The fill is now its OWN layer rather than a background on the pill, so it
+  // can be faded independently of the label (see `revealPillsOnReturn`).
+  const pillFillColor = isDark ? "bg-[#191919]" : "bg-[#2d2d2d]";
+  const pillBg = "text-white";
   const textColor = isDark ? "text-[#191919]" : "text-white";
+
+  /**
+   * Transparent-until-revealed fill behind a header pill. A plain render
+   * helper, NOT a component — a component declared in render is a fresh type
+   * every pass, so React would unmount/remount the span and drop the ref that
+   * the reveal tween holds.
+   */
+  const pillFill = (index: number) => (
+    <span
+      aria-hidden
+      ref={(el) => { pillFillRefs.current[index] = el; }}
+      className={`absolute inset-0 z-0 rounded-full ${pillFillColor}`}
+      // Inline (not a class) so the very first server-rendered paint is
+      // already transparent — a class would flash the filled pill first.
+      style={{ opacity: revealPillsOnReturn ? 0 : 1 }}
+    />
+  );
   const dividerColor = isDark ? "bg-black/25" : "bg-white/30";
   const indicatorColor = isDark ? "bg-[#191919]" : "bg-white";
 
@@ -203,10 +303,11 @@ export default function SiteHeader({
         {/* MENU */}
         <Link
           href={MENU_BUTTON_HREF}
-          className={`site-header-item flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
+          className={`site-header-item relative isolate flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
         >
-          <DehazeIcon className="h-4 w-4 md:h-6 md:w-6" />
-          <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
+          {pillFill(0)}
+          <DehazeIcon className="relative z-10 h-4 w-4 md:h-6 md:w-6" />
+          <span className="relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
             <span className="md:hidden">Menu</span>
             <span className="hidden md:inline">Menu Builder</span>
           </span>
@@ -232,9 +333,10 @@ export default function SiteHeader({
         )}
 
         {/* BOOKING */}
-        <button className={`site-header-item flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}>
-          <TripIcon className="h-4 w-4 md:h-6 md:w-6" />
-          <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
+        <button className={`site-header-item relative isolate flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}>
+          {pillFill(1)}
+          <TripIcon className="relative z-10 h-4 w-4 md:h-6 md:w-6" />
+          <span className="relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
         </button>
       </div>
 

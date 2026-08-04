@@ -56,6 +56,17 @@ const BOX_MAX_W = "27rem";
 const BOX_GAP = "1.75rem";
 const LIST_LETTER_SPC = "0.2em";
 
+// Every item must sit on ONE line. The card's content box is 272px wide
+// (27rem card − 2×5rem padding); at the previous 0.875rem/14px the two long
+// entries measured 276.8px and 290.4px, so both wrapped.
+//
+// 0.78125rem (12.5px) scales the longest to 290.4 × 12.5/14 ≈ 259px, leaving
+// ~13px of slack. Letter-spacing is in `em` so it shrinks proportionally and
+// the wide tracking is preserved. Phones are already fine — 0.6875rem inside
+// a 240px content box works out to ~228px — so only the md+ size changes.
+// If you re-word an item, keep it under ~26 characters or drop this a step.
+const LIST_FONT_SIZE_DESKTOP = "0.78125rem";
+
 // ─ Inner outline frame (sits INSIDE the white card, hugging the text) ──
 // Positive value = how far the line is inset from the card's edge.
 const BOX_INNER_FRAME_INSET = "1rem";
@@ -277,11 +288,22 @@ export default function FeaturedSection() {
           {SERVICES.map((s) => (
             <li
               key={s}
-              className="text-[0.6875rem] text-[#191919] uppercase md:text-sm"
-              style={{
-                fontFamily: "var(--font-raleway), sans-serif",
-                letterSpacing: LIST_LETTER_SPC,
-              }}
+              // `whitespace-nowrap` is the guarantee, not the sizing: if copy
+              // ever outgrows the box it now overflows visibly instead of
+              // silently reflowing to two lines again.
+              // NOTE the `length:` hint. Plain `md:text-[var(--fs-list-size)]`
+              // is ambiguous in Tailwind — it resolves to `color`, not
+              // font-size, and silently leaves the phone size in place at
+              // desktop. globals.css documents the same trap biting the
+              // ServicesSection words once already.
+              className="whitespace-nowrap text-[0.6875rem] text-[#191919] uppercase md:text-[length:var(--fs-list-size)]"
+              style={
+                {
+                  fontFamily: "var(--font-raleway), sans-serif",
+                  letterSpacing: LIST_LETTER_SPC,
+                  "--fs-list-size": LIST_FONT_SIZE_DESKTOP,
+                } as React.CSSProperties
+              }
             >
               {s}
             </li>
