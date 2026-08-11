@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Reveal from "@/components/anim/Reveal";
+import { SITE_EMAIL, SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site-info";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -48,9 +49,9 @@ const ITEMS: AccordionItem[] = [
     description: "Contact for booking Banquet or garden",
     hours:       { day: "Monday - Friday", range: "8:00 — 16:30" },
     rows: [
-      { icon: "phone",  label: "Phone",          value: "+91 98290 12815",       actionLabel: "Call",   href: "tel:+919829012815" },
-      { icon: "mobile", label: "Mobile",         value: "+91 98290 12815",       actionLabel: "Call",   href: "tel:+919829012815" },
-      { icon: "email",  label: "Email",          value: "info@rajaangan.com",    actionLabel: "Write",  href: "mailto:info@rajaangan.com" },
+      { icon: "phone",  label: "Phone",          value: SITE_PHONE,              actionLabel: "Call",   href: SITE_PHONE_HREF },
+      { icon: "mobile", label: "Mobile",         value: SITE_PHONE,              actionLabel: "Call",   href: SITE_PHONE_HREF },
+      { icon: "email",  label: "Email",          value: SITE_EMAIL,              actionLabel: "Write",  href: `mailto:${SITE_EMAIL}` },
       { icon: "online", label: "Online booking", value: "",                       actionLabel: "Online", href: "#" },
     ],
   },
@@ -59,7 +60,7 @@ const ITEMS: AccordionItem[] = [
     description: "Contact for booking Event & Caterers",
     hours:       { day: "Monday - Sunday", range: "9:00 — 20:00" },
     rows: [
-      { icon: "phone", label: "Phone", value: "+91 98290 12815",       actionLabel: "Call",  href: "tel:+919829012815" },
+      { icon: "phone", label: "Phone", value: SITE_PHONE,       actionLabel: "Call",  href: SITE_PHONE_HREF },
       { icon: "email", label: "Email", value: "events@rajaangan.com",  actionLabel: "Write", href: "mailto:events@rajaangan.com" },
     ],
   },
@@ -67,7 +68,7 @@ const ITEMS: AccordionItem[] = [
     title:       "Planning & Event Services",
     description: "Contact for Services",
     rows: [
-      { icon: "phone", label: "Phone", value: "+91 98290 12815",         actionLabel: "Call",  href: "tel:+919829012815" },
+      { icon: "phone", label: "Phone", value: SITE_PHONE,         actionLabel: "Call",  href: SITE_PHONE_HREF },
       { icon: "email", label: "Email", value: "planning@rajaangan.com",  actionLabel: "Write", href: "mailto:planning@rajaangan.com" },
     ],
   },

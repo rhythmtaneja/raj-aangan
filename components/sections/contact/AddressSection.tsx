@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
+import { SITE_ADDRESS_LINES, SITE_MAP_HREF } from "@/lib/site-info";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -19,12 +20,10 @@ const TEXT_COLOR = "#191919";
 const SMALL_LABEL_TEXT = "Address";
 const TITLE_LINE_1 = "For Luxury";
 const TITLE_LINE_2 = "Wedding & Event";
-const ADDRESS_LINES = [
-  "Raj Aangan Resort, The Haveli Ralawata,",
-  "Near SBI Bank, Patrakar colony, Mansarover,",
-  "Jaipur, Rajasthan",
-];
-const MAP_HREF = "https://maps.google.com/?q=Raj+Aangan+Resort+Jaipur"; // ← replace with real link
+// Address comes from lib/site-info.ts — the single source of truth shared with
+// the footer. Do NOT hardcode it here again.
+const ADDRESS_LINES = SITE_ADDRESS_LINES;
+const MAP_HREF = SITE_MAP_HREF;
 
 // ─ Typography ──
 const SMALL_LABEL_SIZE = "clamp(1.25rem, 1.6vw, 1.4375rem)";

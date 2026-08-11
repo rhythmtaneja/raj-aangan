@@ -29,6 +29,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import WaveTop from "@/components/ui/WaveTop";
+import { SITE_ADDRESS_LINES, SITE_EMAIL, SITE_PHONE } from "@/lib/site-info";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -66,13 +67,11 @@ const MORE_LINKS = [
 
 const BRAND_LINE_1 = "Raj Aangan Events";
 const BRAND_LINE_2 = "and Caterers";
-const ADDRESS_LINES = [
-  "Maharaja Kishan Singh Nahar,",
-  "Patrakar Colony, Mansarovar,",
-  "Jaipur, Rajasthan 302020",
-];
-const PHONE = "+91 98290 12815";
-const EMAIL = "info@rajaanganevents.com";
+// Address / phone / email come from lib/site-info.ts — the single source of
+// truth shared with the contact page. Do NOT hardcode them here again.
+const ADDRESS_LINES = SITE_ADDRESS_LINES;
+const PHONE = SITE_PHONE;
+const EMAIL = SITE_EMAIL;
 const CONTACTS_HREF = "/contact";
 
 const COPYRIGHT = "© Raj Aangan Events and Caterers";
