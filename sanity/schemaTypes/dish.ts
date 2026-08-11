@@ -1,8 +1,8 @@
 import { defineField, defineType } from "sanity";
 
+// "Non Veg" is deliberately absent — it must not be selectable in the Studio.
 export const DIETARY_TAGS = [
   { title: "Veg", value: "veg" },
-  { title: "Non Veg", value: "non-veg" },
   { title: "Jain", value: "jain" },
   { title: "Satvik", value: "satvik" },
   { title: "Vegan", value: "vegan" },

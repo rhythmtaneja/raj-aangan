@@ -22,9 +22,9 @@ const BG_IMAGES = [
 ];
 
 const CARDS = [
-  { title: "Conference", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt." },
-  { title: "Event", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt." },
-  { title: "Catering", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt." },
+  { title: "Weddings", body: "Timeless celebrations, thoughtfully curated. From the first detail to the final guest, we make every moment unforgettable." },
+  { title: "Corporate", body: "Refined events, flawlessly executed. Bespoke experiences designed to bring people together and make an impression." },
+  { title: "Catering", body: "Exceptional cuisine, elegant presentation, impeccable service. A complete culinary experience for every occasion." },
 ];
 
 // ─── TUNE THESE KNOBS ────────────────────────────────────────────────────

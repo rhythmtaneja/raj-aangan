@@ -12,17 +12,13 @@
 
 export type MealType = "Breakfast" | "Lunch" | "High Tea" | "Brunch" | "Dinner" | "Cocktail";
 
-export type DietaryPreference =
-  | "Pure Veg"
-  | "Non Veg"
-  | "Jain"
-  | "Satvik"
-  | "Alcohol"
-  | "Non Alcohol";
+// Derived from DIETARY_PREFERENCES below so the union and the pill list can
+// never drift apart — "Non Veg" is not offered and is not a valid value.
+export type DietaryPreference = (typeof DIETARY_PREFERENCES)[number];
 
 export type BudgetTierId = "Standard" | "Premium" | "Delux" | "Luxury";
 
-export type DishTag = "Veg" | "Non Veg" | "Jain" | "Satvik" | "Starter" | "Main" | "Dessert" | "Beverage";
+export type DishTag = "Veg" | "Jain" | "Satvik" | "Starter" | "Main" | "Dessert" | "Beverage";
 
 /** Which sub-flow the wizard is in — chosen on Step 1. */
 export type CateringType = "venue-event" | "outdoor" | null;
@@ -415,11 +411,13 @@ export const MB_COLORS = {
 
 export const MEAL_TYPES: MealType[] = ["Breakfast", "Lunch", "High Tea", "Brunch", "Dinner", "Cocktail"];
 
-// "Non Veg" intentionally removed from the selectable list (per brief); the
-// literal remains in the DietaryPreference union for stored/legacy data.
-export const DIETARY_PREFERENCES: DietaryPreference[] = [
+// SINGLE SOURCE OF TRUTH for dietary preference. "Non Veg" is removed entirely
+// (per brief) — the DietaryPreference type is derived from this array, so it is
+// not a valid value anywhere, and context.tsx strips it out of any older
+// localStorage blob that still carries it.
+export const DIETARY_PREFERENCES = [
   "Pure Veg", "Jain", "Satvik", "Alcohol", "Non Alcohol",
-];
+] as const;
 
 export const DISH_FILTER_TAGS: DishTag[] = [
   "Veg", "Jain", "Satvik", "Starter", "Main", "Dessert", "Beverage",

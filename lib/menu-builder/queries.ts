@@ -63,9 +63,10 @@ type RawDish = {
   categories?: { label: string; parentSection: string; sortOrder?: number }[];
 };
 
+// No "non-veg" entry — the tag is retired, so a legacy dish still carrying it
+// simply gets no dietary tag rather than surfacing "Non Veg" in the UI.
 const DIET_TO_TAG: Record<string, DishTag> = {
   veg: "Veg",
-  "non-veg": "Non Veg",
   jain: "Jain",
   satvik: "Satvik",
 };

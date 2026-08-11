@@ -9,7 +9,27 @@
 "use client";
 
 import { createContext, useContext, useEffect, useReducer, useState, type ReactNode } from "react";
-import { INITIAL_STATE, type BookingState, type MealType } from "./types";
+import {
+  DIETARY_PREFERENCES,
+  INITIAL_STATE,
+  type BookingState,
+  type DietaryPreference,
+  type MealType,
+} from "./types";
+
+// Stored state can predate an option being retired — most notably "Non Veg",
+// which used to be a Dietary Preference pill. A visitor who picked it before it
+// was removed keeps it in localStorage forever, so it re-appears in the Booking
+// Summary / Quote "Diet" row even though the pill is long gone. Drop anything
+// no longer in DIETARY_PREFERENCES, and fall back to the default if that empties
+// the list.
+function sanitizeDietaryPreferences(stored: unknown): DietaryPreference[] {
+  if (!Array.isArray(stored)) return INITIAL_STATE.dietaryPreferences;
+  const valid = stored.filter((d): d is DietaryPreference =>
+    (DIETARY_PREFERENCES as readonly string[]).includes(d as string),
+  );
+  return valid.length > 0 ? valid : INITIAL_STATE.dietaryPreferences;
+}
 
 // ─── Actions ───────────────────────────────────────────────────────────────
 
@@ -147,6 +167,8 @@ function reducer(state: BookingState, action: Action): BookingState {
         },
         setMenuSelections: action.state.setMenuSelections ?? {},
         catalogSelections: action.state.catalogSelections ?? {},
+        // Strip retired options (e.g. "Non Veg") out of older stored blobs.
+        dietaryPreferences: sanitizeDietaryPreferences(action.state.dietaryPreferences),
       };
 
     case "RESET":
