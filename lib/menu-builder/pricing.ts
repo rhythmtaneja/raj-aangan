@@ -16,6 +16,7 @@
 // in catalog-hooks.ts.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import type { CatalogSelection } from "./menu-utils";
 import type {
   BookingState,
   CatalogItem,
@@ -32,6 +33,7 @@ export type PricingData = {
   getSetMenu: (id: string | null) => SetMenu | undefined;
   getCustomItem: (id: string) => CustomMenuItem | undefined;
   getCatalogItem: (id: string) => CatalogItem | undefined;
+  getCatalogSelection: (id: string) => CatalogSelection | undefined;
   venues: Venue[];
 };
 
@@ -130,12 +132,28 @@ export function getVenueEventEstimatedTotal(
 
 // ─── Sub-flow C — outdoor catalog pricing ──────────────────────────────────
 
-/** Sum of quantity × unit price across all selected catalog items (pre-GST). */
+/**
+ * The order as priced lines. Cart keys are box/packet ids (a bare section id
+ * still resolves — see catalogSelectionMap). An "on request" line has a null
+ * unit price and a lineTotal of 0: it stays on the quote, it just carries no
+ * rupee value until the client prices it.
+ */
+export type OutdoorLine = CatalogSelection & { qty: number; lineTotal: number };
+
+export function getOutdoorLines(state: BookingState, data: PricingData): OutdoorLine[] {
+  return Object.entries(state.catalogSelections)
+    .filter(([, qty]) => qty > 0)
+    .map(([id, qty]) => {
+      const selection = data.getCatalogSelection(id);
+      if (!selection) return null;
+      return { ...selection, qty, lineTotal: (selection.unitPrice ?? 0) * qty };
+    })
+    .filter((line): line is OutdoorLine => line !== null);
+}
+
+/** Sum of quantity × unit price across all selected boxes (pre-GST). */
 export function getOutdoorSubtotal(state: BookingState, data: PricingData): number {
-  return Object.entries(state.catalogSelections).reduce((sum, [itemId, qty]) => {
-    const item = data.getCatalogItem(itemId);
-    return sum + (item ? item.price * qty : 0);
-  }, 0);
+  return getOutdoorLines(state, data).reduce((sum, line) => sum + line.lineTotal, 0);
 }
 
 /** GST-inclusive estimated total for the outdoor flow (used by the sidebar). */

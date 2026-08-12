@@ -7,6 +7,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type {
+  CatalogItem,
+  CatalogVariant,
   CuisineCard,
   CustomMenuItem,
   CustomMenuSection,
@@ -30,6 +32,45 @@ export const customItemMap = (
       s.subsections.flatMap((sub) => sub.items.map((it) => [it.id, it] as const)),
     ),
   );
+
+// ─── Outdoor catalog ───────────────────────────────────────────────────────
+
+/**
+ * One line of an outdoor order: the section plus, when the guest picked a box
+ * from inside it, that variant. `unitPrice` is the variant's own price when it
+ * has one, else the section's — null means "quoted on request" (Premium
+ * Add-ons), which contributes nothing to the total.
+ */
+export type CatalogSelection = {
+  item: CatalogItem;
+  variant?: CatalogVariant;
+  /** What the line is called on the quote, e.g. "Festive Snack Packets — Holi Snack Packet". */
+  label: string;
+  unitPrice: number | null;
+};
+
+/**
+ * Resolve a `catalogSelections` key. Keys are variant ids today; a plain
+ * section id still resolves (older stored carts, and sections with no variants),
+ * so a returning visitor's saved order never silently vanishes.
+ */
+export const catalogSelectionMap = (
+  items: CatalogItem[],
+): Map<string, CatalogSelection> => {
+  const map = new Map<string, CatalogSelection>();
+  for (const item of items) {
+    map.set(item.id, { item, label: item.name, unitPrice: item.price });
+    for (const variant of item.variants ?? []) {
+      map.set(variant.id, {
+        item,
+        variant,
+        label: `${item.name} — ${variant.name}`,
+        unitPrice: variant.price ?? item.price,
+      });
+    }
+  }
+  return map;
+};
 
 /**
  * Fill in a cuisine card's derived counts from the sections it points at, and

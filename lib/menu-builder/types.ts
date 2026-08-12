@@ -43,7 +43,8 @@ export type CatalogCategory =
   | "meal-box"
   | "snack-packet"
   | "bulk-mithai"
-  | "live-counter-van";
+  | "live-counter-van"
+  | "premium-addon";
 
 // ─── Catalog types (what the site OFFERS) ──────────────────────────────────
 
@@ -204,14 +205,41 @@ export type CuisineCard = {
 
 // ─── Sub-flow C — Outdoor catalog shapes ───────────────────────────────────
 
+/**
+ * One box / packet / collection / van inside a catalog section — a row of the
+ * client's outdoor-catering workbook. `contents` is what's inside the box, shown
+ * under the name so the guest knows what they're ordering.
+ */
+export type CatalogVariant = {
+  id: string;
+  name: string;                 // "Classic Wedding Box"
+  contents: string[];           // ["Kaju Katli", "Motichoor Ladoo", …]
+  /**
+   * Per-variant price override in ₹. null = inherit the section's price, which
+   * is the case for everything today (the client prices per section for now).
+   */
+  price?: number | null;
+};
+
+/**
+ * A section of the outdoor catalog (one worksheet of the client's workbook) —
+ * e.g. "Festive Snack Packets". Rendered as an accordion heading; opening it
+ * lists its `variants`.
+ */
 export type CatalogItem = {
   id: string;
-  name: string;                 // "Wedding Favour Sweet Box"
-  description: string;          // "Assorted mithai, festive packaging"
-  price: number;                // 220
+  name: string;                 // "Festive Snack Packets"
+  description: string;          // "Sealed namkeen, kachori and mithai packets"
+  /** ₹ per unit, applied to every variant. null = quoted on request. */
+  price: number | null;         // 220
   unit: string;                 // "per box" | "per kg" | "per packet" | "per day"
   image: string;
   category: CatalogCategory;
+  /** The variants inside this section. Empty = a plain, directly-orderable item. */
+  variants: CatalogVariant[];
+  /** The workbook's own column headings, e.g. "Box Category" / "Contents". */
+  variantLabel?: string;
+  contentsLabel?: string;
 };
 
 export type PackagingStyle = {

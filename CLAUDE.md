@@ -26,6 +26,13 @@ Last commit is `5086f31`. Push before anything else. See "Remaining work" below.
     sections shown next; de-selecting a cuisine prunes its picked dishes.
   - `menuMode` ("set" | "custom") drives quote/summary display + pricing.
 - **outdoor**: Client → Catalog → Packaging → Quote (`STEPS_OUTDOOR`).
+  - `/menu-builder/catalog` is the SAME accordion as the menu steps: the 8
+    catalog sections are collapsed headings, opening one lists the boxes inside
+    it with their **contents** underneath and a `+ Add` that becomes a quantity
+    stepper (bulk orders are still priced per box). Cart keys in
+    `state.catalogSelections` are now **variant ids**; a bare section id still
+    resolves, so older saved carts survive (`catalogSelectionMap` in
+    menu-utils.ts).
 
 **Menu DATA (all real, generated).**
 - **7 set menus** → `lib/menu-builder/generated/set-menus.ts` (`SET_MENUS`), from
@@ -41,12 +48,21 @@ Last commit is `5086f31`. Push before anything else. See "Remaining work" below.
   per item. Item `price` is **null for now** (client fills later); custom
   per-head = sum of selected item prices (`getCustomMenuPerHead`). Grouped by
   section → subsection (blank subsection = flat).
-- Outdoor catalog + packaging = still placeholder in `lib/menu-builder/data.ts`.
+- **Outdoor catalog** (8 sections, 77 boxes/packets/vans) →
+  `generated/outdoor-catalog.ts` (`OUTDOOR_CATALOG_ITEMS`, re-exported as
+  `CATALOG_ITEMS`), from `scripts/gen_outdoor_catalog.py` +
+  `docs/menu-source/raw/RAEC Outdoor Catering.xlsx` (one worksheet per section;
+  stdlib-only xlsx reader, no openpyxl). **Prices are NOT in the workbook** —
+  they're the old placeholders, one per section (`SECTION_META` in the script),
+  inherited by every box (`variant.price === null`). Premium Add-ons is priced
+  `null` / "on request": it stays on the quote and contributes ₹0.
+- Outdoor packaging = still placeholder in `lib/menu-builder/data.ts`.
 - Selections reuse `state.selectedDishes` (ADD_DISH/REMOVE_DISH), keyed by the
   master item id; set-menu picks use `state.setMenuSelections`.
 
 **Regenerate data:** `python3 scripts/gen_set_menus.py` /
-`python3 scripts/gen_custom_menu.py` (self-contained; read the CSVs directly).
+`python3 scripts/gen_custom_menu.py` / `python3 scripts/gen_outdoor_catalog.py`
+(self-contained; read the CSVs / xlsx directly).
 
 # 🗄️ Phase 8 — CMS (DONE + LIVE + SEEDED)
 
@@ -174,8 +190,17 @@ windows. Raise the clamp MIN in `globals.css` if that ever matters more.
    cutlery / presentation / stall options). Selecting any counter currently
    reveals ALL options — TODO in `app/menu-builder/presentation/page.tsx`.
    Not in the CMS at all yet; needs schema work.
-6. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
-7. ~~Responsiveness calibration~~ — DONE 2026-08-03, see "ZOOM-PROOF LAYOUT"
+6. **Outdoor catalog → CMS (agreed next step, 2026-08-12).** The catalog step
+   now runs off `generated/outdoor-catalog.ts`; the `outdoorCatalogItem` schema
+   has no `variants` / `variantLabel` / `contentsLabel` fields yet, so
+   `getOutdoorCatalogItems()` deliberately **ignores Sanity until at least one
+   doc carries variants** (the 6 seeded docs are stale placeholders). To finish:
+   add the fields to the schema, extend `outdoorDocs()` in the seed script
+   (also make `price` nullable there — Premium Add-ons is "on request"), then
+   `npm run seed-menu-builder -- --only=outdoorCatalogItem`. Sanity then wins
+   automatically, no app change.
+7. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
+- ~~Responsiveness calibration~~ — DONE 2026-08-03, see "ZOOM-PROOF LAYOUT"
    above. Reference width 1440 confirmed; the fluid-root floor was moved from
    12px (which bit at 1080px, mid-zoom-range) down to 768/90, all lg:/xl:
    desktop variants moved to md:, and every fixed-px element (header + footer

@@ -467,6 +467,16 @@ export async function getPresentationCatalog(): Promise<PresentationCatalog> {
 
 // ─── Outdoor catalog + packaging ───────────────────────────────────────────
 
+/**
+ * The outdoor catalog — sections, each holding the boxes/packets/vans inside it.
+ *
+ * ⚠️ The `outdoorCatalogItem` schema has NO variants field yet (that's the next
+ * CMS pass), while the catalog step is built around them. So the usual
+ * per-collection fallback is tightened one notch: Sanity wins only once its
+ * documents actually carry variants. Until then the generated catalog — the 8
+ * sections and 77 boxes from the client's workbook — is what ships. Add the
+ * field to the schema, re-seed, and this starts reading Sanity on its own.
+ */
 export async function getOutdoorCatalogItems(): Promise<CatalogItem[]> {
   if (!isSanityConfigured) return CATALOG_ITEMS;
   try {
@@ -474,24 +484,39 @@ export async function getOutdoorCatalogItems(): Promise<CatalogItem[]> {
       {
         id: string; name: string; description?: string; price?: number | null;
         unit?: string; image?: unknown; category: CatalogItem["category"];
+        variantLabel?: string; contentsLabel?: string;
+        variants?: { id?: string; name?: string; contents?: string[]; price?: number | null }[];
       }[]
     >(
       `*[_type=="outdoorCatalogItem" && isActive != false && defined(slug.current)]
         |order(sortOrder asc, name asc){
-        "id": slug.current, name, description, price, unit, image, category
+        "id": slug.current, name, description, price, unit, image, category,
+        variantLabel, contentsLabel,
+        "variants": variants[]{ "id": _key, name, contents, price }
       }`,
       "outdoorCatalogItem",
     );
     if (!rows.length) return CATALOG_ITEMS;
-    return rows.map((r) => ({
+    const items = rows.map((r) => ({
       id: r.id,
       name: r.name,
       description: r.description ?? "",
-      price: r.price ?? 0,
+      price: r.price ?? null,
       unit: r.unit ?? "",
       image: imageUrl(r.image, PLACEHOLDER, 600),
       category: r.category,
+      variantLabel: r.variantLabel || undefined,
+      contentsLabel: r.contentsLabel || undefined,
+      variants: (r.variants ?? [])
+        .filter((v) => v.id && v.name)
+        .map((v) => ({
+          id: String(v.id),
+          name: String(v.name),
+          contents: v.contents ?? [],
+          price: v.price ?? null,
+        })),
     }));
+    return items.some((i) => i.variants.length > 0) ? items : CATALOG_ITEMS;
   } catch {
     return CATALOG_ITEMS;
   }

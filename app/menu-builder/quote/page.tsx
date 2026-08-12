@@ -23,6 +23,7 @@ import {
   getAddOnPricePerItem,
   getDiscountAmount,
   getGstAmount,
+  getOutdoorLines,
   getOutdoorSubtotal,
   getSetMenuAddOnCount,
   getSetMenuAddOnPerHead,
@@ -33,7 +34,6 @@ import {
   MB_COLORS,
   STEPS_OUTDOOR,
   type BookingState,
-  type CatalogItem,
   type DiscountCode as DiscountCodeType,
   type PricingSettings,
 } from "@/lib/menu-builder/types";
@@ -193,20 +193,14 @@ function VenueEventQuote() {
 
 function OutdoorQuote() {
   const { state, dispatch } = useBooking();
-  const { getCatalogItem, getPackaging, pricing } = useCatalog();
+  const { getPackaging, pricing } = useCatalog();
   const pricingData = usePricingData();
   const router = useRouter();
   const { toast, showToast } = useToast();
   const discount = useDiscount(state, pricing, showToast);
 
   const packaging = getPackaging(state.packagingStyleId);
-  const lineItems = Object.entries(state.catalogSelections)
-    .filter(([, qty]) => qty > 0)
-    .map(([itemId, qty]) => {
-      const item = getCatalogItem(itemId);
-      return item ? { item, qty, lineTotal: item.price * qty } : null;
-    })
-    .filter(Boolean) as { item: CatalogItem; qty: number; lineTotal: number }[];
+  const lineItems = getOutdoorLines(state, pricingData);
 
   const gross = getOutdoorSubtotal(state, pricingData);
   const discountAmount = discount.applied
@@ -240,15 +234,27 @@ function OutdoorQuote() {
           </p>
         ) : (
           <ul className="divide-y" style={{ borderColor: MB_COLORS.borderLight }}>
-            {lineItems.map(({ item, qty, lineTotal }) => (
-              <li key={item.id} className="flex items-center justify-between gap-4 py-2 text-sm">
+            {lineItems.map(({ item, variant, label, unitPrice, qty, lineTotal }) => (
+              <li
+                key={variant?.id ?? item.id}
+                className="flex items-start justify-between gap-4 py-2 text-sm"
+              >
                 <div className="min-w-0">
-                  <p style={{ color: INK }} className="font-medium">{item.name}</p>
+                  <p style={{ color: INK }} className="font-medium">{label}</p>
                   <p style={{ color: INK_MUTED }} className="text-xs">
-                    {qty} × {formatINR(item.price)} {item.unit}
+                    {unitPrice == null
+                      ? `${qty} × on request`
+                      : `${qty} × ${formatINR(unitPrice)} ${item.unit}`}
                   </p>
+                  {variant && variant.contents.length > 0 && (
+                    <p style={{ color: INK_MUTED }} className="mt-0.5 text-xs">
+                      {variant.contents.join(", ")}
+                    </p>
+                  )}
                 </div>
-                <span style={{ color: GOLD }} className="font-medium">{formatINR(lineTotal)}</span>
+                <span style={{ color: GOLD }} className="shrink-0 font-medium">
+                  {unitPrice == null ? "On request" : formatINR(lineTotal)}
+                </span>
               </li>
             ))}
           </ul>

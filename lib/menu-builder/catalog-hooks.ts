@@ -16,9 +16,17 @@ import type { PricingData } from "./pricing";
  * which is stable for the whole wizard session.
  */
 export function usePricingData(): PricingData {
-  const { pricing, getSetMenu, getCustomItem, getCatalogItem, venues } = useCatalog();
+  const { pricing, getSetMenu, getCustomItem, getCatalogItem, getCatalogSelection, venues } =
+    useCatalog();
   return useMemo(
-    () => ({ settings: pricing, getSetMenu, getCustomItem, getCatalogItem, venues }),
-    [pricing, getSetMenu, getCustomItem, getCatalogItem, venues],
+    () => ({
+      settings: pricing,
+      getSetMenu,
+      getCustomItem,
+      getCatalogItem,
+      getCatalogSelection,
+      venues,
+    }),
+    [pricing, getSetMenu, getCustomItem, getCatalogItem, getCatalogSelection, venues],
   );
 }

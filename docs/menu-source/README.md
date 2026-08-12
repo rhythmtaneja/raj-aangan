@@ -70,6 +70,32 @@ Malai Paneer Tikka Royale,Paneer Starter,Tandoor,Welcome Snacks,499,Veg|Starter
 
 ---
 
+## File 3 — `raw/RAEC Outdoor Catering.xlsx` (the outdoor / bulk catalog)
+
+The client's own workbook, read as-is — **one worksheet per catalog section**
+(Wedding Favour Boxes, Mix Sweet Boxes, Ladoo & Mithai, Corporate Meal Boxes,
+Festive Snack Packets, Packed Breakfast Boxes, Live Food Vans, Premium Add-ons)
+plus a `Catalogue Index` sheet that is skipped.
+
+Each sheet is two columns, and the header row supplies the wording shown in the
+UI:
+
+| column A                                  | column B                              |
+|-------------------------------------------|---------------------------------------|
+| `Box Category` / `Packet Category` / `Collection` / `Van Category` | `Contents` / `Items` / `Menu / Offerings` / `Offerings` |
+| `Classic Snack Packet`                    | `Aloo Bhujia, Salted Peanuts, Mini Mathri, Soan Papdi` |
+
+Generated to `lib/menu-builder/generated/outdoor-catalog.ts` via
+`python3 scripts/gen_outdoor_catalog.py` (8 sections, 77 boxes).
+
+**The workbook carries no prices.** Price, unit, category and the one-line
+description live in `SECTION_META` at the top of the generator — one placeholder
+price per section, inherited by every box in it. To add a sheet, add its
+`SECTION_META` entry first; the generator refuses to run on an unknown sheet
+rather than silently dropping it.
+
+---
+
 ## Notes
 
 - Keep the column headers exactly as above (lowercase, underscores).

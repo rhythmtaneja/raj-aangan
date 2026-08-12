@@ -13,8 +13,6 @@
 
 import type { CatalogItem, CustomMenuItem, PackagingStyle, SetMenu } from "./types";
 
-const img = (n: number) => `/images/mb/placeholder-${n}.jpg`;
-
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // Per-person prices, section chooseCounts and dish names below are all
 // placeholders — replace via Sanity in Phase 8.
@@ -42,63 +40,15 @@ export const getCustomMenuItemById = (id: string): CustomMenuItem | undefined =>
   CUSTOM_ITEM_BY_ID.get(id);
 
 // ─── Sub-flow C — Outdoor catalog (image 9) ────────────────────────────────
+// The 8 sections and their 77 boxes/packets/vans live in the GENERATED file
+// below — see scripts/gen_outdoor_catalog.py, which reads the client's
+// "RAEC Outdoor Catering.xlsx" (one worksheet per section). Prices there are
+// still the placeholders that used to be hardcoded here: one per section,
+// inherited by every variant in it.
+import { OUTDOOR_CATALOG_ITEMS } from "./generated/outdoor-catalog";
+export { OUTDOOR_CATALOG_ITEMS };
 
-export const CATALOG_ITEMS: CatalogItem[] = [
-  {
-    id: "cat-sweet-box",
-    name: "Wedding Favour Sweet Box",
-    description: "Assorted mithai, festive packaging",
-    price: 220,
-    unit: "per box",
-    image: img(5),
-    category: "sweet-box",
-  },
-  {
-    id: "cat-bulk-mithai",
-    name: "Bulk Ladoo / Mithai Order",
-    description: "Besan / boondi / motichoor, bulk pricing",
-    price: 380,
-    unit: "per kg",
-    image: img(6),
-    category: "bulk-mithai",
-  },
-  {
-    id: "cat-meal-box",
-    name: "Corporate Meal Box",
-    description: "3-course boxed meal for office events",
-    price: 260,
-    unit: "per box",
-    image: img(7),
-    category: "meal-box",
-  },
-  {
-    id: "cat-snack-packet",
-    name: "Festive Snack Packets",
-    description: "Namkeen, kachori, sweet — sealed packet",
-    price: 120,
-    unit: "per packet",
-    image: img(8),
-    category: "snack-packet",
-  },
-  {
-    id: "cat-breakfast-box",
-    name: "Packed Breakfast Box",
-    description: "Poha/paratha + beverage, sealed box",
-    price: 180,
-    unit: "per box",
-    image: img(9),
-    category: "meal-box",
-  },
-  {
-    id: "cat-live-counter-van",
-    name: "Live Counter Van (on-site)",
-    description: "Chaat / Chinese counter on wheels",
-    price: 15000,
-    unit: "per day",
-    image: img(10),
-    category: "live-counter-van",
-  },
-];
+export const CATALOG_ITEMS: CatalogItem[] = OUTDOOR_CATALOG_ITEMS;
 
 // ─── Sub-flow C — Packaging styles ─────────────────────────────────────────
 

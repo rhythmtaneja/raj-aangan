@@ -13,7 +13,13 @@
 "use client";
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { customItemMap, sectionsForCuisines as filterSections, itemIdsForCuisine as itemIdsIn } from "./menu-utils";
+import {
+  catalogSelectionMap,
+  customItemMap,
+  sectionsForCuisines as filterSections,
+  itemIdsForCuisine as itemIdsIn,
+  type CatalogSelection,
+} from "./menu-utils";
 import type { Catalog } from "./queries";
 import type {
   CatalogItem,
@@ -29,6 +35,11 @@ export type CatalogValue = Catalog & {
   getSetMenu: (id: string | null) => SetMenu | undefined;
   getCustomItem: (id: string) => CustomMenuItem | undefined;
   getCatalogItem: (id: string) => CatalogItem | undefined;
+  /**
+   * Resolve an outdoor-cart key (a variant id, or a bare section id from an
+   * older stored cart) to its section, variant, label and unit price.
+   */
+  getCatalogSelection: (id: string) => CatalogSelection | undefined;
   getPackaging: (id: string | null) => PackagingStyle | undefined;
   getCuisineCard: (id: string) => CuisineCard | undefined;
   /** À-la-carte sections unlocked by the given cuisine cards (all if empty). */
@@ -48,11 +59,13 @@ export function CatalogProvider({
 }) {
   const value = useMemo<CatalogValue>(() => {
     const itemById = customItemMap(catalog.customMenuSections);
+    const selectionById = catalogSelectionMap(catalog.catalogItems);
     return {
       ...catalog,
       getSetMenu: (id) => (id ? catalog.setMenus.find((m) => m.id === id) : undefined),
       getCustomItem: (id) => itemById.get(id),
       getCatalogItem: (id) => catalog.catalogItems.find((c) => c.id === id),
+      getCatalogSelection: (id) => selectionById.get(id),
       getPackaging: (id) =>
         id ? catalog.packagingStyles.find((p) => p.id === id) : undefined,
       getCuisineCard: (id) => catalog.cuisineCards.find((c) => c.id === id),
