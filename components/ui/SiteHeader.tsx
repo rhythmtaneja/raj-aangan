@@ -316,7 +316,7 @@ export default function SiteHeader({
         {variant === "full" && (
           <Link
             href="/"
-            className="site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-[1.7rem] md:translate-y-0"
+            className="site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-[1.5rem] md:translate-y-0"
           >
             <Image
               src="/images/logo-round.png"
