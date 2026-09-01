@@ -324,10 +324,12 @@ export default function SiteHeader({
               width={110}
               height={110}
               priority
-              /* MUST be a rem class, not the intrinsic 110px: the header's
-                 padding is rem-based, so a fixed-px logo grows relative to
-                 the bar as the root shrinks and collides with the divider. */
-              className="h-[2.5rem] w-[2.5rem] md:h-[6.875rem] md:w-[6.875rem]"
+              /* The white replacement has virtually no transparent padding,
+                 unlike the approved gold mark. Scale its image box to retain
+                 the same visible-logo footprint at every breakpoint. Keeping
+                 both values in rem preserves the established responsive
+                 relationship with the header. */
+              className="h-[2.05rem] w-[2.05rem] md:h-[5.625rem] md:w-[5.625rem]"
             />
           </Link>
         )}
