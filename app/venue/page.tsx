@@ -1,5 +1,6 @@
 import VenueHero from "@/components/sections/venue/VenueHero";
 import VenuePropertiesSection from "@/components/sections/venue/VenuePropertiesSection";
+import CollaborationSection from "@/components/sections/venue/CollaborationSection";
 import VenueDetailsCollage from "@/components/sections/venue/VenueDetailsCollage";
 import VenuePackagesSection from "@/components/sections/venue/VenuePackagesSection";
 import FooterSection from "@/components/sections/FooterSection";
@@ -15,13 +16,16 @@ export default async function VenuePage() {
       {/* 2. Two property cards + Our Venue Partners CTA */}
       <VenuePropertiesSection />
 
-      {/* 3. Pinned scroll collage — 10 detail cards (same pattern as Events) */}
+      {/* 3. RAEC x Aurette collaboration slide */}
+      <CollaborationSection />
+
+      {/* 4. Pinned scroll collage — 10 detail cards (same pattern as Events) */}
       <VenueDetailsCollage />
 
-      {/* 4. Venue packages — 2 property cards on navy */}
+      {/* 5. Venue packages — 2 property cards on navy */}
       <VenuePackagesSection />
 
-      {/* 5. Shared footer */}
+      {/* 6. Shared footer */}
       <FooterSection />
     </main>
   );
