@@ -172,3 +172,49 @@ h3 {
     transform-origin: center;
   }
 }
+
+/* ─── Quote → PDF ──────────────────────────────────────────────────────────
+   "Generate PDF" on /menu-builder/quote just calls window.print(); the guest
+   picks "Save as PDF" as the destination. #quote-print is the print-only copy
+   of the quote (QuotePrintable in app/menu-builder/quote/page.tsx), portalled
+   to <body> so the whole rest of the app can be `display: none` on paper.
+   Hiding with `display` and not `visibility` matters: a visibility-hidden node
+   still occupies its full height, which pushed blank pages onto the PDF. */
+#quote-print {
+  display: none;
+}
+
+@media print {
+  /* margin: 0 is what removes Chrome's own page header/footer — the
+     "localhost:3001/menu-builder/quote" line and the date. The page's own
+     breathing room comes from #quote-print's padding below. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body > *:not(#quote-print) {
+    display: none !important;
+  }
+
+  #quote-print {
+    display: block !important;
+    width: 100%;
+    padding: 14mm;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Keep a section's heading with its rows rather than splitting mid-block. */
+  #quote-print > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

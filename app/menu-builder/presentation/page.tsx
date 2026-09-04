@@ -2,12 +2,12 @@
 // PATH IN REPO: app/menu-builder/presentation/page.tsx
 // ══════════════════════════════════════════════════════════════════
 // Sub-flow B — Live Counters & Presentation. Inserted between Menu and Quote
-// in the cuisine flow. Sections:
+// in the venue-event flow.
 //   • Choose Your Live Counters (multi-select image grid)
-//   • Cutlery (single-select image grid)
-//   • Presentation Style (single-select image grid)
-//   • Stall Theme (single-select image grid)
-//   • Live Counter Design (multi-select pill list)
+//   • Then ONE configurator block PER selected counter, in the order they were
+//     picked ("1. Chaat Counter", "2. Pasta Counter", …). Each block carries
+//     its own Cutlery / Presentation Style / Stall Theme / Counter Design, so
+//     two counters never share a choice.
 // All optional — nothing here blocks Continue.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -20,7 +20,7 @@ import BuilderLayout from "@/components/menu-builder/BuilderLayout";
 import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, stepIndexOf } from "@/lib/menu-builder/flow";
-import { MB_COLORS } from "@/lib/menu-builder/types";
+import { EMPTY_COUNTER_CONFIG, MB_COLORS, type CounterConfig } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -33,7 +33,7 @@ const INK          = MB_COLORS.ink;
 const INK_MUTED    = MB_COLORS.inkMuted;
 const GOLD         = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
-const TILE_IMG_H   = 130;
+const TILE_IMG_H   = "8.125rem";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -57,13 +57,8 @@ export default function PresentationStepPage() {
   const backHref =
     state.menuMode === "custom" ? "/menu-builder/custom-menu" : "/menu-builder/menu";
 
-  const toggleMulti = (field: "liveCounters" | "liveCounterDesigns", value: string) =>
-    dispatch({ type: "TOGGLE_PRESENTATION_MULTI", field, value });
-
-  const setSingle = (
-    field: "cutlery" | "presentationStyle" | "stallTheme",
-    value: string,
-  ) => dispatch({ type: "SET_PRESENTATION_SINGLE", field, value });
+  const toggleCounter = (counterId: string) =>
+    dispatch({ type: "TOGGLE_LIVE_COUNTER", counterId });
 
   return (
     <BuilderLayout
@@ -82,7 +77,7 @@ export default function PresentationStepPage() {
         </h2>
         <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
           Pick your live counters first — cutlery, presentation style and counter
-          design will show grouped for each stall you choose.
+          design then open separately for each stall you choose.
         </p>
 
         {/* Live Counters — multi-select image grid (always shown) */}
@@ -90,16 +85,9 @@ export default function PresentationStepPage() {
         <PhotoGrid
           items={presentation.liveCounterTiles}
           isSelected={(id) => p.liveCounters.includes(id)}
-          onToggle={(id) => toggleMulti("liveCounters", id)}
+          onToggle={toggleCounter}
         />
 
-        {/*
-          The cutlery / presentation / stall categories belong to the chosen
-          live counters and only appear once at least one counter is selected.
-          TODO: once the client shares which counter maps to which options,
-          filter each category by the selected counters. For now, selecting any
-          counter reveals the full set of options.
-        */}
         {p.liveCounters.length === 0 ? (
           <p
             className="mt-8 rounded-lg border border-dashed px-5 py-6 text-sm"
@@ -109,48 +97,121 @@ export default function PresentationStepPage() {
             style and stall theme.
           </p>
         ) : (
-          <>
-            {/* Cutlery — single-select image grid */}
-            <SectionLabel>Cutlery</SectionLabel>
-            <PhotoGrid
-              items={presentation.cutlery}
-              isSelected={(id) => p.cutlery === id}
-              onToggle={(id) => setSingle("cutlery", id)}
-            />
-
-            {/* Presentation Style — single-select image grid */}
-            <SectionLabel>Presentation Style</SectionLabel>
-            <PhotoGrid
-              items={presentation.presentationStyles}
-              isSelected={(id) => p.presentationStyle === id}
-              onToggle={(id) => setSingle("presentationStyle", id)}
-            />
-
-            {/* Stall Theme — single-select image grid */}
-            <SectionLabel>Stall Theme</SectionLabel>
-            <PhotoGrid
-              items={presentation.stallThemes}
-              isSelected={(id) => p.stallTheme === id}
-              onToggle={(id) => setSingle("stallTheme", id)}
-            />
-
-            {/* Live Counter Design — multi-select pills */}
-            <SectionLabel>Live Counter Design</SectionLabel>
-            <div className="flex flex-wrap gap-3">
-              {presentation.liveCounters.map((lc) => (
-                <Pill
-                  key={lc.id}
-                  selected={p.liveCounterDesigns.includes(lc.id)}
-                  onClick={() => toggleMulti("liveCounterDesigns", lc.id)}
-                >
-                  {lc.name}
-                </Pill>
-              ))}
-            </div>
-          </>
+          p.liveCounters.map((counterId, index) => {
+            const tile = presentation.liveCounterTiles.find((t) => t.id === counterId);
+            const config: CounterConfig =
+              p.counterConfigs[counterId] ?? EMPTY_COUNTER_CONFIG;
+            return (
+              <CounterBlock
+                key={counterId}
+                index={index + 1}
+                name={tile?.name ?? counterId}
+                config={config}
+                cutlery={presentation.cutlery}
+                presentationStyles={presentation.presentationStyles}
+                stallThemes={presentation.stallThemes}
+                designs={presentation.liveCounters}
+                onSingle={(field, value) =>
+                  dispatch({ type: "SET_COUNTER_SINGLE", counterId, field, value })
+                }
+                onDesign={(value) =>
+                  dispatch({ type: "TOGGLE_COUNTER_DESIGN", counterId, value })
+                }
+                onRemove={() => toggleCounter(counterId)}
+              />
+            );
+          })
         )}
       </div>
     </BuilderLayout>
+  );
+}
+
+// ─── One selected counter's full option set ────────────────────────────────
+
+type Tile = { id: string; name: string; image: string };
+
+function CounterBlock({
+  index,
+  name,
+  config,
+  cutlery,
+  presentationStyles,
+  stallThemes,
+  designs,
+  onSingle,
+  onDesign,
+  onRemove,
+}: {
+  index: number;
+  name: string;
+  config: CounterConfig;
+  cutlery: Tile[];
+  presentationStyles: Tile[];
+  stallThemes: Tile[];
+  designs: { id: string; name: string }[];
+  onSingle: (field: "cutlery" | "presentationStyle" | "stallTheme", value: string) => void;
+  onDesign: (value: string) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <section
+      className="mt-10 rounded-lg border p-5 md:p-8"
+      style={{ borderColor: `${GOLD}66`, backgroundColor: `${GOLD}08` }}
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <h3
+          style={{ ...serif, color: INK }}
+          className="text-[clamp(1.3rem,1.9vw,1.625rem)] font-semibold"
+        >
+          <span style={{ color: GOLD }}>{index}.</span> {name}
+        </h3>
+        <button
+          onClick={onRemove}
+          className="shrink-0 text-xs underline transition-opacity hover:opacity-70"
+          style={{ color: INK_MUTED }}
+        >
+          Remove
+        </button>
+      </div>
+      <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
+        Choose the cutlery, styling and stall look for this counter.
+      </p>
+
+      <SectionLabel>Cutlery</SectionLabel>
+      <PhotoGrid
+        items={cutlery}
+        isSelected={(id) => config.cutlery === id}
+        onToggle={(id) => onSingle("cutlery", id)}
+      />
+
+      <SectionLabel>Presentation Style</SectionLabel>
+      <PhotoGrid
+        items={presentationStyles}
+        isSelected={(id) => config.presentationStyle === id}
+        onToggle={(id) => onSingle("presentationStyle", id)}
+      />
+
+      <SectionLabel>Stall Theme</SectionLabel>
+      <PhotoGrid
+        items={stallThemes}
+        isSelected={(id) => config.stallTheme === id}
+        onToggle={(id) => onSingle("stallTheme", id)}
+      />
+
+      <SectionLabel>Live Counter Design</SectionLabel>
+      <div className="flex flex-wrap gap-3">
+        {designs.map((lc) => (
+          <Pill
+            key={lc.id}
+            selected={config.designs.includes(lc.id)}
+            onClick={() => onDesign(lc.id)}
+          >
+            {lc.name}
+          </Pill>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -175,7 +236,7 @@ function PhotoGrid({
   isSelected,
   onToggle,
 }: {
-  items: { id: string; name: string; image: string }[];
+  items: Tile[];
   isSelected: (id: string) => boolean;
   onToggle: (id: string) => void;
 }) {
@@ -190,7 +251,7 @@ function PhotoGrid({
             className="group relative overflow-hidden text-left"
             style={{
               height: TILE_IMG_H,
-              borderRadius: 6,
+              borderRadius: "0.375rem",
               outline: selected ? `2px solid ${GOLD}` : "none",
             }}
           >
@@ -211,7 +272,7 @@ function PhotoGrid({
                 className="absolute right-2 top-2 z-20 flex h-6 w-6 items-center justify-center rounded-full"
                 style={{ backgroundColor: GOLD }}
               >
-                <svg className="w-[0.875rem] h-[0.875rem]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-[0.875rem] h-[0.875rem]" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>

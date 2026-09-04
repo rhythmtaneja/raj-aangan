@@ -289,6 +289,25 @@ export type PricingSettings = {
   contactEmail?: string;
 };
 
+// ─── Per-live-counter presentation config ──────────────────────────────────
+// One of these per SELECTED live counter (keyed by the counter tile's id), so
+// "Chaat Counter" and "Pasta Counter" each carry their own cutlery, style,
+// stall theme and counter-design picks.
+
+export type CounterConfig = {
+  cutlery: string | null;
+  presentationStyle: string | null;
+  stallTheme: string | null;
+  designs: string[];
+};
+
+export const EMPTY_COUNTER_CONFIG: CounterConfig = {
+  cutlery: null,
+  presentationStyle: null,
+  stallTheme: null,
+  designs: [],
+};
+
 // ─── BookingState — what the user has selected across the wizard ───────────
 
 export type BookingState = {
@@ -326,12 +345,11 @@ export type BookingState = {
   setMenuSelections: Record<string, string[]>;
 
   // Sub-flow B — Presentation / Live Counters step
+  // Every chosen live counter gets its OWN cutlery / presentation / stall /
+  // design picks, keyed by the counter's id in `counterConfigs`.
   presentationChoices: {
     liveCounters: string[];
-    cutlery: string | null;
-    presentationStyle: string | null;
-    stallTheme: string | null;
-    liveCounterDesigns: string[];
+    counterConfigs: Record<string, CounterConfig>;
   };
 
   // Sub-flow C — Outdoor catalog
@@ -369,10 +387,7 @@ export const INITIAL_STATE: BookingState = {
 
   presentationChoices: {
     liveCounters: [],
-    cutlery: null,
-    presentationStyle: null,
-    stallTheme: null,
-    liveCounterDesigns: [],
+    counterConfigs: {},
   },
 
   catalogSelections: {},

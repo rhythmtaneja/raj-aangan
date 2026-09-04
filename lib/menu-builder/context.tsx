@@ -11,8 +11,10 @@
 import { createContext, useContext, useEffect, useReducer, useState, type ReactNode } from "react";
 import {
   DIETARY_PREFERENCES,
+  EMPTY_COUNTER_CONFIG,
   INITIAL_STATE,
   type BookingState,
+  type CounterConfig,
   type DietaryPreference,
   type MealType,
 } from "./types";
@@ -33,8 +35,7 @@ function sanitizeDietaryPreferences(stored: unknown): DietaryPreference[] {
 
 // ─── Actions ───────────────────────────────────────────────────────────────
 
-type PresentationSingleField = "cutlery" | "presentationStyle" | "stallTheme";
-type PresentationMultiField = "liveCounters" | "liveCounterDesigns";
+type CounterSingleField = "cutlery" | "presentationStyle" | "stallTheme";
 
 export type Action =
   | { type: "SET_FIELD"; field: keyof BookingState; value: BookingState[keyof BookingState] }
@@ -45,9 +46,10 @@ export type Action =
   | { type: "SET_SET_MENU"; setMenuId: string }
   | { type: "TOGGLE_SET_MENU_DISH"; sectionId: string; optionId: string; chooseCount: number }
   | { type: "CLEAR_SET_MENU_SELECTIONS" }
-  // Sub-flow B — presentation / live counters
-  | { type: "SET_PRESENTATION_SINGLE"; field: PresentationSingleField; value: string | null }
-  | { type: "TOGGLE_PRESENTATION_MULTI"; field: PresentationMultiField; value: string }
+  // Sub-flow B — presentation / live counters (per-counter)
+  | { type: "TOGGLE_LIVE_COUNTER"; counterId: string }
+  | { type: "SET_COUNTER_SINGLE"; counterId: string; field: CounterSingleField; value: string }
+  | { type: "TOGGLE_COUNTER_DESIGN"; counterId: string; value: string }
   // Sub-flow C — outdoor catalog
   | { type: "SET_CATALOG_QUANTITY"; itemId: string; quantity: number }
   | { type: "SET_PACKAGING_STYLE"; styleId: string }
@@ -55,6 +57,25 @@ export type Action =
   | { type: "REPLACE_STATE"; state: BookingState }
   | { type: "RESET" }
   | { type: "RESET_WIZARD" };
+
+/** The stored config for one live counter, or a blank one if it has none yet. */
+function counterConfigOf(state: BookingState, counterId: string): CounterConfig {
+  return state.presentationChoices.counterConfigs[counterId] ?? { ...EMPTY_COUNTER_CONFIG };
+}
+
+function withCounterConfig(
+  state: BookingState,
+  counterId: string,
+  config: CounterConfig,
+): BookingState {
+  return {
+    ...state,
+    presentationChoices: {
+      ...state.presentationChoices,
+      counterConfigs: { ...state.presentationChoices.counterConfigs, [counterId]: config },
+    },
+  };
+}
 
 function reducer(state: BookingState, action: Action): BookingState {
   switch (action.type) {
@@ -115,27 +136,38 @@ function reducer(state: BookingState, action: Action): BookingState {
     case "CLEAR_SET_MENU_SELECTIONS":
       return { ...state, setMenuSelections: {} };
 
-    // ─── Sub-flow B — presentation ─────────────────────────────────────────
-    case "SET_PRESENTATION_SINGLE":
+    // ─── Sub-flow B — presentation (one config per live counter) ───────────
+    case "TOGGLE_LIVE_COUNTER": {
+      const { liveCounters, counterConfigs } = state.presentationChoices;
+      const selected = liveCounters.includes(action.counterId);
+      const nextCounters = selected
+        ? liveCounters.filter((id) => id !== action.counterId)
+        : [...liveCounters, action.counterId];
+      // De-selecting a counter drops its picks — they belong to that counter.
+      const nextConfigs = { ...counterConfigs };
+      if (selected) delete nextConfigs[action.counterId];
+      else nextConfigs[action.counterId] = { ...EMPTY_COUNTER_CONFIG };
       return {
         ...state,
-        presentationChoices: {
-          ...state.presentationChoices,
-          // Toggle off when re-selecting the same value.
-          [action.field]:
-            state.presentationChoices[action.field] === action.value ? null : action.value,
-        },
+        presentationChoices: { liveCounters: nextCounters, counterConfigs: nextConfigs },
       };
+    }
 
-    case "TOGGLE_PRESENTATION_MULTI": {
-      const current = state.presentationChoices[action.field];
-      const next = current.includes(action.value)
-        ? current.filter((v) => v !== action.value)
-        : [...current, action.value];
-      return {
-        ...state,
-        presentationChoices: { ...state.presentationChoices, [action.field]: next },
-      };
+    case "SET_COUNTER_SINGLE": {
+      const current = counterConfigOf(state, action.counterId);
+      return withCounterConfig(state, action.counterId, {
+        ...current,
+        // Toggle off when re-selecting the same value.
+        [action.field]: current[action.field] === action.value ? null : action.value,
+      });
+    }
+
+    case "TOGGLE_COUNTER_DESIGN": {
+      const current = counterConfigOf(state, action.counterId);
+      const designs = current.designs.includes(action.value)
+        ? current.designs.filter((v) => v !== action.value)
+        : [...current.designs, action.value];
+      return withCounterConfig(state, action.counterId, { ...current, designs });
     }
 
     // ─── Sub-flow C — outdoor catalog ──────────────────────────────────────
@@ -164,6 +196,8 @@ function reducer(state: BookingState, action: Action): BookingState {
         presentationChoices: {
           ...INITIAL_STATE.presentationChoices,
           ...(action.state.presentationChoices ?? {}),
+          // Pre-per-counter blobs have no counterConfigs; start them empty.
+          counterConfigs: action.state.presentationChoices?.counterConfigs ?? {},
         },
         setMenuSelections: action.state.setMenuSelections ?? {},
         catalogSelections: action.state.catalogSelections ?? {},
