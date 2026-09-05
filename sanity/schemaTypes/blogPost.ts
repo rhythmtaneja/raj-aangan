@@ -1,11 +1,16 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+// The label is what appears above the post title on the page, so these are
+// stored Title Case rather than as slugs.
 export const BLOG_CATEGORIES = [
-  { title: "Weddings", value: "weddings" },
-  { title: "Events", value: "events" },
-  { title: "Cuisine", value: "cuisine" },
-  { title: "Venues", value: "venues" },
-  { title: "Stories", value: "stories" },
+  { title: "Weddings", value: "Weddings" },
+  { title: "Destinations", value: "Destinations" },
+  { title: "Venues", value: "Venues" },
+  { title: "Planning", value: "Planning" },
+  { title: "Trends", value: "Trends" },
+  { title: "Events", value: "Events" },
+  { title: "Cuisine", value: "Cuisine" },
+  { title: "Stories", value: "Stories" },
 ] as const;
 
 export default defineType({
@@ -51,9 +56,11 @@ export default defineType({
     }),
     defineField({
       name: "publishedAt",
-      title: "Published At",
+      title: "Published Date",
       type: "datetime",
       group: "content",
+      description:
+        "Shown on the card and the post header as DD.MM.YYYY. Also sets the order of the blog grid — newest first.",
       initialValue: () => new Date().toISOString(),
       validation: (r) => r.required(),
     }),
@@ -70,6 +77,7 @@ export default defineType({
       type: "string",
       group: "content",
       options: { list: [...BLOG_CATEGORIES] },
+      description: "Small label shown above the title on the post page.",
     }),
     defineField({
       name: "tags",

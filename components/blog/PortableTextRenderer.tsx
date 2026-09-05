@@ -31,9 +31,11 @@ type ImageValue = {
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
+      // whitespace-pre-line so a soft line break (Shift+Enter in Studio) is
+      // kept — Sanity stores it as a "\n" inside the span.
       <p
         style={{ color: INK }}
-        className="mx-auto mb-6 max-w-2xl text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.85]"
+        className="mx-auto mb-6 max-w-2xl whitespace-pre-line text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.85]"
       >
         {children}
       </p>

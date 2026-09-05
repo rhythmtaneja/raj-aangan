@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import SiteHeader from "@/components/ui/SiteHeader";
 import FooterSection from "@/components/sections/FooterSection";
 import PortableTextRenderer from "@/components/blog/PortableTextRenderer";
+import LocalBlogBody from "@/components/blog/LocalBlogBody";
 import { getBlogPostBySlug, getBlogSlugs } from "@/lib/blog/queries";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
@@ -104,7 +105,14 @@ export default async function BlogPostPage(props: PageParams) {
 
         {/* ── Body card ── */}
         <article className="mx-auto -mb-px w-full max-w-4xl bg-[#f5efe6] px-6 py-16 md:px-16 md:py-24">
-          <PortableTextRenderer value={post.body} />
+          {/* Two sources, one look: posts written in lib/blog/posts.ts render
+              through LocalBlogBody, posts written in Studio through
+              PortableTextRenderer. Both use identical typography. */}
+          {post.localBody ? (
+            <LocalBlogBody blocks={post.localBody} />
+          ) : (
+            <PortableTextRenderer value={post.body} />
+          )}
 
           {post.tags && (
             <div className="mx-auto mt-14 flex max-w-2xl flex-wrap gap-2 border-t border-black/10 pt-8">

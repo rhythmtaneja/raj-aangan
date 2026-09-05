@@ -10,6 +10,7 @@ import "server-only";
 import { client } from "@/sanity/client";
 import { imageUrl } from "@/sanity/image";
 import { isSanityConfigured } from "@/sanity/env";
+import { LOCAL_BLOG_POSTS, getLocalBlogPost } from "./posts";
 import type { BlogPostCard, BlogPostFull } from "./types";
 
 const REVALIDATE = 30;
@@ -29,14 +30,18 @@ function formatDate(iso?: string): string {
   return `${dd}.${mm}.${d.getFullYear()}`;
 }
 
-// Original placeholder posts — used only when Sanity isn't connected.
-const FALLBACK_CARDS: BlogPostCard[] = [
-  { slug: "#", title: "How to Plan a Luxury Wedding in Jaipur: Complete Guide", date: "06.03.2026", image: "/images/blog/blog-1.jpg", href: "#" },
-  { slug: "#", title: "Why Jaipur is India's Favorite Destination Wedding City", date: "06.03.2026", image: "/images/blog/blog-2.jpg", href: "#" },
-  { slug: "#", title: "Wedding Venues in Jaipur Every Couple Should Consider", date: "06.03.2026", image: "/images/blog/blog-3.jpg", href: "#" },
-  { slug: "#", title: "The Ultimate Luxury Wedding Checklist", date: "06.03.2026", image: "/images/blog/blog-4.jpg", href: "#" },
-  { slug: "#", title: "Wedding Trends for 2026: Decor, Fashion & Experiences", date: "06.03.2026", image: "/images/blog/blog-5.jpg", href: "#" },
-];
+// Cards for the posts written by hand in ./posts.ts. Used whenever Sanity has
+// no blogPost documents (which is the case today) — each one links to a real
+// /blog/<slug> page, so the grid is clickable with or without the CMS.
+const FALLBACK_CARDS: BlogPostCard[] = LOCAL_BLOG_POSTS.map((post) => ({
+  slug: post.slug,
+  title: post.title,
+  date: post.date,
+  image: post.image,
+  href: `/blog/${post.slug}`,
+  excerpt: post.excerpt || undefined,
+  category: post.category || undefined,
+}));
 
 const CARD_PROJECTION = `{
   "slug": slug.current,
@@ -84,20 +89,47 @@ export async function getAllBlogPosts(): Promise<BlogPostCard[]> {
   }
 }
 
-/** All slugs — for generateStaticParams. Empty when Sanity isn't configured. */
+/**
+ * All slugs — for generateStaticParams. Always includes the hand-written posts
+ * so they get prebuilt; a Sanity post sharing a slug simply overrides it at
+ * render time.
+ */
 export async function getBlogSlugs(): Promise<string[]> {
-  if (!isSanityConfigured) return [];
+  const local = LOCAL_BLOG_POSTS.map((p) => p.slug);
+  if (!isSanityConfigured) return local;
   try {
-    return await sanityFetch<string[]>(
+    const remote = await sanityFetch<string[]>(
       `*[_type=="blogPost" && defined(slug.current)].slug.current`,
     );
+    return Array.from(new Set([...remote, ...local]));
   } catch {
-    return [];
+    return local;
   }
 }
 
+/** Shape a hand-written post from ./posts.ts as a full post page. */
+function localPostToFull(slug: string): BlogPostFull | null {
+  const post = getLocalBlogPost(slug);
+  if (!post) return null;
+  return {
+    slug: post.slug,
+    title: post.title,
+    coverImage: post.image,
+    excerpt: post.excerpt || undefined,
+    publishedAt: "",
+    displayDate: post.date,
+    category: post.category || undefined,
+    tags: post.tags && post.tags.length ? post.tags : undefined,
+    body: [],
+    localBody: post.body,
+    seoTitle: post.title,
+    seoDescription: post.excerpt || undefined,
+    seoImage: post.image,
+  };
+}
+
 export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | null> {
-  if (!isSanityConfigured) return null;
+  if (!isSanityConfigured) return localPostToFull(slug);
   try {
     const r = await sanityFetch<{
       slug: string;
@@ -129,7 +161,8 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | nu
       }`,
       { slug },
     );
-    if (!r) return null;
+    // Nothing in Studio under this slug — it's one of the hand-written posts.
+    if (!r) return localPostToFull(slug);
     return {
       slug: r.slug,
       title: r.title,
@@ -154,6 +187,6 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | nu
         : imageUrl(r.coverImage, PLACEHOLDER, 1200),
     };
   } catch {
-    return null;
+    return localPostToFull(slug);
   }
 }
