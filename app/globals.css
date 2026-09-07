@@ -162,15 +162,6 @@ h3 {
                                        white, and there is no hover on touch */
   }
 
-  /* ── Hero: shrink the RAEC wordmark ──
-     Scaling the CROP WINDOW (rather than narrowing it) keeps the slice
-     geometry intact — the window must stay 13.75rem wide or it clips the
-     right-hand edge off the wordmark. Kept here, not as `md:scale-100` in the
-     component, so desktop emits no transform and its geometry is unchanged. */
-  .hero-wordmark-crop {
-    transform: scale(0.62);
-    transform-origin: center;
-  }
 }
 
 /* ─── Quote → PDF ──────────────────────────────────────────────────────────

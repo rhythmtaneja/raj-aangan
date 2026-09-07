@@ -79,29 +79,21 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
       <SiteHeader animateEntrance revealPillsOnReturn />
 
       {/*
-        RAEC wordmark.
-        The inner box is a CROP WINDOW: it shows a 4.5rem-tall slice of a
-        13.75rem logo image pushed up by 4.3125rem. The window width must stay
-        the FULL 13.75rem — it used to be `min(50vw,13.75rem)`, which on any
-        phone (50vw = 195px < 220px) sliced the right-hand edge off the
-        wordmark. To make it smaller on phones, scale the whole crop instead,
-        which keeps the slice geometry intact.
+        RAEC wordmark. The replacement artwork is a wide logo (rather than
+        the previous square asset), so render the complete image at the old
+        mark's visible width. `h-auto` preserves its native proportions and
+        prevents the strapline from being stretched or cropped.
       */}
       <div className="hero-logo absolute inset-x-0 top-[24vh] z-10 flex flex-col items-center md:top-[clamp(15rem,27vh,20rem)]">
-        {/* The phone down-scale lives in globals.css (@media max-width:767px)
-            so DESKTOP emits no `transform` at all — a `md:scale-100` here
-            still writes `transform: scale(1)`, which is visually identity but
-            makes this div an offsetParent and changes measured geometry. */}
-        <div className="hero-wordmark-crop h-18 w-[13.75rem] overflow-hidden">
-          <Image
-            src="/images/logo.png"
-            alt="Raj Aangan Events and Caterers"
-            width={220}
-            height={220}
-            priority
-            className="h-[13.75rem] w-[13.75rem] max-w-none -translate-y-[4.3125rem]"
-          />
-        </div>
+        <Image
+          src="/images/logo.png"
+          alt="Raj Aangan Events and Caterers"
+          width={1716}
+          height={916}
+          priority
+          sizes="183px"
+          className="h-auto w-[11.4375rem]"
+        />
       </div>
 
       {/*
