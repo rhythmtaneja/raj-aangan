@@ -37,13 +37,23 @@ const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
-const CARD_PADDING = "p-8 md:p-10";
+// PHONE PADDING (Sep 2026). Was `p-8 md:p-10`, i.e. 32px of panel padding on
+// each side of a 390px screen. Every other builder step already used
+// `p-5 md:p-10`; this page and the quote page were the two stragglers, and
+// with the two-column card grid inside them the result was ~127px-wide cards
+// (phone-changes/padding-menu-builder.jpeg). Desktop keeps p-10.
+const CARD_PADDING = "p-5 md:p-10";
 const SECTION_GAP = "mt-8";
 // Card sizing and spacing knobs. The desktop measurements match the Figma cards.
 // Tailwind gap steps: gap-4 = 16px, gap-6 = 24px, gap-8 = 32px.
 const CARD_DESKTOP_WIDTH = "15.25rem";
-const CATERING_CARD_GAP = "gap-10";
-const OCCASION_CARD_GAP = "gap-12";
+// The desktop gaps are generous because the cards are a fixed 15.25rem wide
+// there. On a phone the same two columns share whatever is left of the screen,
+// so every px of gap is taken straight out of the cards — hence the much
+// tighter phone value. Vertical gap stays a little larger than horizontal so
+// the rows still read as rows.
+const CATERING_CARD_GAP = "gap-x-3 gap-y-5 md:gap-10";
+const OCCASION_CARD_GAP = "gap-x-3 gap-y-5 md:gap-12";
 const CATERING_IMAGE_ASPECT = "aspect-[1.43/1]"; // 244px card x 223px total height
 const OCCASION_IMAGE_ASPECT = "aspect-[1.58/1]"; // 244px card x 206px total height
 const MIN_GUESTS = 100;

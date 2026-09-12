@@ -149,6 +149,50 @@ phone-only unless noted:
 `components/anim/anim.config.ts` now exports `PHONE_MAX_WIDTH` /
 `isPhoneViewport()` — the ONE JS phone boundary. Do not introduce a second one.
 
+## Phone pass, round 2 (2026-09-13)
+
+6. **Hero typography now matches the reference's phone measure.** New
+   phone-only classes in the globals.css override block: `.hero-display`
+   (20rem cap), `.hero-tagline` (1.375rem + 19rem cap) and `.hero-stack`
+   (pt-65 → 8rem). Both text classes set `text-wrap: balance`, which is what
+   actually produces the reference look — the heroes were always
+   `items-center text-center`, the problem was the SHAPE of the wrapped lines.
+   Applied to About / Catering / Contact / Blog / Venue / Gallery heroes.
+   ⚠️ **Never hide a hero `<br>` with `display: none`.** The copy is rendered
+   as per-word spans with no whitespace between the two halves, so the words
+   either side fuse ("resort forweddings"). Author it as
+   `{" "}<br className="hidden md:inline" />` — Hero.tsx's existing pattern.
+7. **Round logo, homepage only.** `SiteHeader` takes `hideCenterLogoOnPhone`;
+   Hero.tsx renders its own copy above the RAEC wordmark on phones and shifts
+   the lockup's `top` up by 4.25rem so the wordmark stays put and still clears
+   the headline. `md:hidden` and the header's `hidden md:block` are exact
+   complements — exactly one round logo exists at any width. Other pages keep
+   it in the header (no wordmark to sit above, and it is the "go home" target).
+8. **Homepage AboutSection.** Gold heading is one line on phones via
+   `text-[min(6.6vw,2rem)] whitespace-nowrap` — the coefficient is tuned to
+   that exact string (fits down to a 299px viewport); re-measure if the copy
+   changes. Heading→photo gap was 0px against 48px between the photos; a
+   `mt-12` on the phone wrapper makes all three equal.
+9. **The "white line above photos" was real.** A ~1px light hairline on each
+   photo's top AND bottom edge, appearing only at certain fractional scroll
+   offsets — an `overflow-hidden` clip antialiasing against what is behind it.
+   Proven by sampling the client's screenshot: background rows 234, photo 80,
+   the row between them 240 (brighter than either, so not a blend). Fixed with
+   a 1px image bleed (`PHOTO_BLEED`), verified gone by re-sampling a local
+   screenshot at the same fractional offset.
+10. **Menu-builder padding.** `client` and `quote` were the last two steps
+    still on `p-8 md:p-10`; everything else already used `p-5 md:p-10`. Also
+    the Step-1 card grids: `gap-10`/`gap-12` are desktop values (the cards are
+    a fixed 15.25rem there), but on a phone the gap comes straight out of the
+    card width — now `gap-x-3 gap-y-5 md:gap-*`.
+
+⚠️ **Known, not addressed:** `sm:` (640px) appears in ~13 places — menu-builder
+grids, PackagesOverviewSection, WeddingPackagesSection, EventsHero,
+ExpertiseSection, SetMenuStep. That breakpoint fires INSIDE the browser-zoom
+range and violates the md:-only rule. None of it affects phone rendering (a
+phone is below 640 either way), so it was left alone rather than risk the
+signed-off desktop — but it should be cleaned up before the next zoom audit.
+
 **Responsiveness (done this cycle):** all `clamp(min,Xvw,max)` font ceilings
 were **capped to their 1440px value** (`scripts/*` one-off; the vw coeff stays,
 only the ceiling dropped) so laptops ≥1440px render identically and the client's

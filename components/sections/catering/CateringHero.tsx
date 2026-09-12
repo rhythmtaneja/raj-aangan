@@ -161,17 +161,17 @@ export default function CateringHero({ bgImage }: { bgImage?: string }) {
 
 
       {/* Centered flex column — same pt-65 as AboutHero pushes title below logo block */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
+      <div className="hero-stack relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
           style={{ ...serif, fontSize: SECTION_TITLE_FONT_SIZE }}
-          className="font-medium leading-none"
+          className="hero-display font-medium leading-none"
         >
           <Letters text={SECTION_TITLE_TEXT} />
         </h1>
 
         <h2
           style={{ ...serif, fontSize: TAGLINE_FONT_SIZE, maxWidth: TAGLINE_MAX_W, marginTop: TITLE_HEADER_TO_TAGLINE_GAP }}
-          className="font-medium leading-[1.15]"
+          className="hero-tagline font-medium leading-[1.15]"
         >
           <Letters text={TAGLINE_TEXT} />
         </h2>

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -76,7 +77,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           `revealPillsOnReturn`: the Menu Builder / Booking pills start as bare
           white text and only gain their dark fill once the visitor has been
           down the page and come back to the top. */}
-      <SiteHeader animateEntrance revealPillsOnReturn />
+      <SiteHeader animateEntrance revealPillsOnReturn hideCenterLogoOnPhone />
 
       {/*
         RAEC wordmark. The replacement artwork is a wide logo (rather than
@@ -84,7 +85,36 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
         mark's visible width. `h-auto` preserves its native proportions and
         prevents the strapline from being stretched or cropped.
       */}
-      <div className="hero-logo absolute inset-x-0 top-[24vh] z-10 flex flex-col items-center md:top-[clamp(15rem,27vh,20rem)]">
+      {/*
+        The phone `top` is the desktop 24vh MINUS the height the round mark
+        adds above the wordmark (3.25rem logo + 0.75rem margin = 4rem, plus a
+        0.25rem breath). Anchoring on the lockup's BOTTOM rather than its top
+        keeps the wordmark exactly where it already sat, so it still clears the
+        headline below instead of being pushed down onto it. Desktop is
+        untouched — `md:top-...` overrides this entirely.
+      */}
+      <div className="hero-logo absolute inset-x-0 top-[calc(24vh-4.25rem)] z-10 flex flex-col items-center md:top-[clamp(15rem,27vh,20rem)]">
+        {/*
+          PHONE ONLY — the round mark, stacked directly above the wordmark.
+          It normally lives in the header bar between the two pills; on a
+          phone the client wants the two marks read as one centred lockup
+          here instead, so SiteHeader is told to drop its copy
+          (`hideCenterLogoOnPhone`) and this one takes over below 768px.
+          `md:hidden` + the header's `hidden md:block` are exact complements,
+          so exactly one round logo exists at every width and the desktop
+          composition is untouched.
+        */}
+        <Link href="/" aria-label="Home" className="mb-3 md:hidden">
+          <Image
+            src="/images/logo-round.png"
+            alt="Raj Aangan Events and Caterers"
+            width={110}
+            height={110}
+            priority
+            className="h-[3.25rem] w-[3.25rem]"
+          />
+        </Link>
+
         <Image
           src="/images/logo.png"
           alt="Raj Aangan Events and Caterers"

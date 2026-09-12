@@ -162,6 +162,62 @@ h3 {
                                        white, and there is no hover on touch */
   }
 
+  /* ── Hero typography: the reference site's phone measure (Sep 2026) ──────
+     Every hero is already `items-center text-center`, so the problem was
+     never the alignment property — it was the SHAPE of the wrapped text.
+     Three things were off against resortkaskady.com on a phone:
+
+       1. Hard <br> line breaks authored for the 1440px design. On a 390px
+          screen the first half re-wrapped on its own and the <br> then
+          stranded the rest, giving lines like
+              "One of the most premium"
+              "resort for"
+              "weddings & events"
+          — centred, but ragged. Dropping the break lets the browser wrap
+          the sentence as one unit.
+       2. No measure. TITLE_MAX_W values like 75rem are ~1200px, i.e. no cap
+          at all at a 16px phone root, so copy ran the full width.
+       3. Sub-headings sized off the clamp MIN, which was tuned as a desktop
+          floor (2rem) rather than a phone size. The reference runs its hero
+          sub-copy at roughly a third of the display size, not two thirds.
+
+     `text-wrap: balance` is what actually produces the reference's look —
+     it evens the line lengths instead of filling greedily. Unsupported
+     browsers just ignore it and fall back to normal wrapping.
+
+     !important throughout: these beat the inline `style={{ fontSize }}` /
+     `maxWidth` the hero components set from their own knob constants. Same
+     reasoning as the ServicesSection rules above — see the block header. */
+  .hero-display {
+    text-wrap: balance;
+    max-width: 20rem !important;
+    margin-inline: auto;
+  }
+
+  .hero-tagline {
+    font-size: 1.375rem !important;
+    line-height: 1.3 !important;
+    text-wrap: balance;
+    max-width: 19rem !important;
+    margin-inline: auto;
+  }
+
+  /* NOTE — desktop-only line breaks are NOT handled here.
+     Hiding a <br> with `display: none` silently deletes the word space around
+     it: the hero copy is rendered as per-word <span>s with no whitespace
+     between the two halves, so `…resort for` + `weddings…` re-flowed as
+     "resort forweddings". Author the break in the component instead, as
+     `{" "}<br className="hidden md:inline" />` — the literal space survives on
+     phones and collapses at the line end on desktop. Hero.tsx has used that
+     pattern since the first mobile pass; AboutHero now matches it. */
+
+  /* The heroes clear their absolutely-positioned wordmark with a large top
+     padding (pt-65 == 16.25rem == 260px at the phone's fixed 16px root).
+     That is a desktop clearance; on an 844px-tall phone it shoved the whole
+     block into the bottom third of the screen. */
+  .hero-stack {
+    padding-top: 8rem !important;
+  }
 }
 
 /* ─── Quote → PDF ──────────────────────────────────────────────────────────

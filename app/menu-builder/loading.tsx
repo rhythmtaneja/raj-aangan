@@ -7,7 +7,7 @@ export default function MenuBuilderLoading() {
         <div className="mb-6 h-2 w-full overflow-hidden rounded-full bg-white/10">
           <div className="h-full w-1/3 animate-pulse rounded-full bg-[#d4a574]" />
         </div>
-        <div className="rounded-sm bg-white p-8 md:p-10">
+        <div className="rounded-sm bg-white p-5 md:p-10">
           <div className="h-8 w-1/3 animate-pulse rounded bg-gray-200" />
           <div className="mt-2 h-3 w-1/4 animate-pulse rounded bg-gray-100" />
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">

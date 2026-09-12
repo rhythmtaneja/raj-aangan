@@ -116,13 +116,13 @@ export default function BlogHero() {
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
         <h1
           style={{ ...serif, fontSize: TITLE_FONT_SIZE }}
-          className="font-medium leading-[1.1]"
+          className="hero-display font-medium leading-[1.1]"
         >
           <Letters text={TITLE_TEXT} />
         </h1>
 
         <p
-          className="blog-hero-subtitle mt-6"
+          className="blog-hero-subtitle hero-tagline mt-6"
           style={{
             ...serif,
             fontSize: SUBTITLE_FONT_SIZE,

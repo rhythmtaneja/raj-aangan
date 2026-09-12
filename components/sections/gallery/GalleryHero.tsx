@@ -154,7 +154,7 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
         <h1
           style={{ ...serif, fontSize: TITLE_FONT_SIZE }}
-          className="font-medium leading-[1.1]"
+          className="hero-display font-medium leading-[1.1]"
         >
           <Letters text={TITLE_TEXT} />
         </h1>

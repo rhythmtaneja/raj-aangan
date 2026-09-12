@@ -38,6 +38,22 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 const HOVER_TRANSITION = "transition-transform duration-[1200ms] ease-out";
 const HOVER_SCALE = "group-hover:scale-105";
 
+// ─── PHONE PHOTO EDGE SEAM (Sep 2026) ──────────────────────────────────────
+// Each photo is an `overflow-hidden` box holding an absolutely-positioned
+// `<Image fill>`. When the box's top lands on a fractional device pixel — which
+// depends on the scroll position, so it comes and goes — the clip edge is
+// antialiased against whatever is painted behind it and a ~1px light hairline
+// appears along the photo's top AND bottom edge. Measured off the client's
+// screenshot: background rows read 234 brightness, the photo 80, and the single
+// row between them 240 — brighter than either, i.e. genuinely a light line
+// rather than a blend of the two.
+//
+// The fix is to give the image a 1px bleed on every side so a half-pixel of
+// clip rounding still has image behind it. 1px is the ONE fixed-px value the
+// zoom-proof layout rule allows (see CLAUDE.md), and it is hidden under the
+// clip at every width, so this changes nothing visible on desktop.
+const PHOTO_BLEED = "-inset-px";
+
 // Continues Cuisine's final colour, then arrives at Events' base colour.
 const BG_START_COLOR = "#ebe5dbff";
 const BG_END_COLOR = "#f1ece3";
@@ -92,7 +108,24 @@ export default function AboutSection() {
           <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,0.875rem)]">Our Story</p>
           <span className="mx-auto mt-2 block h-px w-16 bg-[#bf9a3f]" />
         </div>
-        <h2 style={serif} className="mt-8 font-semibold text-[#bf9a3f] text-[clamp(2rem,3.4vw,3.0625rem)]">
+        {/*
+          ONE LINE ON PHONES (client request).
+          "Raj Aangan Events and Caterers" needs ~1.19x its own width at the
+          2rem clamp floor, so it wrapped to two lines on a 390px screen. The
+          phone size is therefore expressed in `vw`, which scales with the
+          measure itself: 6.6vw keeps the string inside the section's `px-6`
+          content box at every phone width, so `whitespace-nowrap` is safe
+          rather than an overflow risk. Capped at 2rem so a wide phone never
+          renders it larger than the desktop clamp floor.
+
+          ⚠️ The 6.6vw coefficient is tuned to THIS string. If the wording
+          changes, re-measure — or drop the nowrap and let it wrap again.
+          Desktop is untouched: the md: clamp is the original value.
+        */}
+        <h2
+          style={serif}
+          className="mt-8 whitespace-nowrap font-semibold text-[#bf9a3f] text-[min(6.6vw,2rem)] md:whitespace-normal md:text-[clamp(2rem,3.4vw,3.0625rem)]"
+        >
           Raj Aangan Events and Caterers
         </h2>
       </Reveal>
@@ -114,12 +147,19 @@ export default function AboutSection() {
         section's own `items-center`, so a wrapper that stayed a real block box
         would left-align them (`max-w-300` + block = no centring).
       */}
-      <div className="flex w-full flex-col items-center gap-12 md:contents">
+      {/*
+        `mt-12` matches the `gap-12` between the photos below it. Without it
+        the heading sat flush on the first photo (measured: 0px, against 48px
+        between every other pair), which is the uneven spacing in
+        phone-changes/alignment.jpeg. At md+ the wrapper becomes
+        `display: contents` and dissolves, taking the margin with it.
+      */}
+      <div className="mt-12 flex w-full flex-col items-center gap-12 md:mt-0 md:contents">
 
       {/* Row 1: image (parallax + hover zoom) + paragraph */}
       <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-1 md:items-center md:gap-12 md:grid-cols-2">
         <div className="group relative order-1 aspect-square w-full max-w-[26rem] overflow-hidden md:order-none md:max-w-none">
-          <Parallax distance={30} className="absolute -inset-y-12 inset-x-0">
+          <Parallax distance={30} className="absolute -inset-y-12 -inset-x-px">
             <div className="relative h-full w-full">
               <Image
                 src="/images/about-1.jpg"
@@ -144,13 +184,15 @@ export default function AboutSection() {
         <div className="order-2 flex w-full max-w-[26rem] flex-col gap-12 md:order-none md:max-w-none">
           {ABOUT_IMAGES.map((src, i) => (
             <div key={src} className="group relative aspect-square w-full overflow-hidden">
-              <Image
-                src={src}
-                alt={`Raj Aangan catering ${i + 1}`}
-                fill
-                className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
-                sizes="(max-width: 768px) 100vw, 600px"
-              />
+              <div className={`absolute ${PHOTO_BLEED}`}>
+                <Image
+                  src={src}
+                  alt={`Raj Aangan catering ${i + 1}`}
+                  fill
+                  className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
+                  sizes="(max-width: 768px) 100vw, 600px"
+                />
+              </div>
               <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
             </div>
           ))}

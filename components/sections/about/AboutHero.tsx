@@ -187,20 +187,24 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
       <SiteHeader />
 
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
+      {/* `hero-stack` / `hero-display` / `hero-tagline` are phone-only hooks —
+          see the PHONE-ONLY OVERRIDES block in globals.css. They cap the
+          measure, balance the wrapping and drop the desktop <br> below 768px;
+          above it they have no rules at all, so desktop is untouched. */}
+      <div className="hero-stack relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
           style={{ ...serif, fontSize: SECTION_TITLE_FONT_SIZE }}
-          className="font-medium leading-none"
+          className="hero-display font-medium leading-none"
         >
           <Letters text={SECTION_TITLE_TEXT} />
         </h1>
 
         <h2
           style={{ ...serif, fontSize: TITLE_FONT_SIZE, maxWidth: TITLE_MAX_W, marginTop: TITLE_HEADER_TO_TAGLINE_GAP }}
-          className="font-medium leading-[1.1]"
+          className="hero-tagline font-medium leading-[1.1]"
         >
-          <Letters text={TITLE_FIRST_LINE} />
-          <br />
+          <Letters text={TITLE_FIRST_LINE} />{" "}
+          <br className="hidden md:inline" />
           <Letters text={TITLE_SECOND_LINE} />
         </h2>
 

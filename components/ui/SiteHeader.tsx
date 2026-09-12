@@ -115,6 +115,19 @@ type SiteHeaderProps = {
    * white and would be invisible without the fill behind it.
    */
   revealPillsOnReturn?: boolean;
+  /**
+   * Drop the centre round logo from the header on PHONES ONLY.
+   *
+   * The homepage re-renders it inside the hero, stacked directly above the
+   * RAEC wordmark (client request, Sep 2026) — the round mark and the
+   * wordmark read as one lockup there, which they cannot do while the round
+   * mark is pinned to the header bar. Every other page keeps it in the
+   * header, since no other page has a wordmark to sit above and the header
+   * logo is also the tap-target for "go home".
+   *
+   * Desktop is unaffected at every call site.
+   */
+  hideCenterLogoOnPhone?: boolean;
 };
 
 export default function SiteHeader({
@@ -122,6 +135,7 @@ export default function SiteHeader({
   variant = "full",
   colorScheme = "light",
   revealPillsOnReturn = false,
+  hideCenterLogoOnPhone = false,
 }: SiteHeaderProps) {
   const root = useRef<HTMLElement>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
@@ -358,7 +372,9 @@ export default function SiteHeader({
         {variant === "full" && (
           <Link
             href="/"
-            className="site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-[1.5rem] md:translate-y-0"
+            className={`site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-[1.5rem] md:translate-y-0 ${
+              hideCenterLogoOnPhone ? "hidden md:block" : ""
+            }`}
           >
             <Image
               src="/images/logo-round.png"
