@@ -86,7 +86,7 @@ const CARD_OVERLAY_OPACITY = 0.34;          // ImageOverlay (plain black) layer
 const GLASS_BUTTON_CLASS =
   "min-h-[3.4375rem] min-w-[10.125rem] px-6 py-2.5 text-white text-[clamp(0.9rem,1.11vw,1rem)]";
 const GLASS_PILL_CLASS =
-  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.76),inset_0_-1px_0_rgba(255,255,255,0.10),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
+  "rounded-full border-[0.5px] border-white/55 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-1px_0_rgba(255,255,255,0.06),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
 
 // ─ Text tilt-zoom (mirrors IntroSection) ──
 const TILT_DEG = -35;

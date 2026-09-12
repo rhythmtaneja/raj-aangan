@@ -13,12 +13,13 @@
 
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
+import MobileNavDrawer from "./MobileNavDrawer";
 
 gsap.registerPlugin(useGSAP);
 
@@ -37,12 +38,29 @@ const NAV_LINKS = [
 
 const MENU_BUTTON_HREF = "/menu-builder";
 
+// ─── PHONE SPLIT (Sep 2026) ────────────────────────────────────────────────
+// The two header pills mean DIFFERENT things on a phone, by request:
+//
+//            desktop (md+, unchanged)        phone (< 768px)
+//   left     "Menu Builder" → /menu-builder  "Menu" → opens MobileNavDrawer
+//   right    "Booking" (inert button)        "Booking" → /menu-builder
+//
+// The inline NAV_LINKS row is desktop-only now; on a phone those seven links
+// live inside the drawer. Each pill is rendered TWICE — once `md:hidden`, once
+// `hidden md:flex` — rather than switching one element's behaviour at runtime,
+// because the two versions are genuinely different elements (a <button> that
+// opens a panel vs. an <a> that navigates). Branching on a `matchMedia` read
+// during render would also desync from the server HTML on first paint.
+// ───────────────────────────────────────────────────────────────────────────
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Space between nav links.
-// Small wrapping gap on phones (7 links won't fit one row); wide single row md+.
+// Space between nav links. Desktop-only now — the row this styles is
+// `hidden md:block`, since the seven links moved into MobileNavDrawer on
+// phones. The phone values are kept only so the row still looks sane if the
+// breakpoint is ever lowered.
 const NAV_LINK_GAP = "gap-x-3.5 gap-y-1 md:gap-14";
 
 // Base opacity of nav links when nothing is hovered.
@@ -110,6 +128,12 @@ export default function SiteHeader({
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const pillFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Phone nav drawer. `useCallback` because MobileNavDrawer takes onClose as an
+  // effect dependency — a fresh closure each render would re-run its scroll
+  // lock on every parent render.
+  const [navOpen, setNavOpen] = useState(false);
+  const closeNav = useCallback(() => setNavOpen(false), []);
 
   const hoveredLinkIdx = useRef<number>(-1);
 
@@ -289,6 +313,13 @@ export default function SiteHeader({
   const dividerColor = isDark ? "bg-black/25" : "bg-white/30";
   const indicatorColor = isDark ? "bg-[#191919]" : "bg-white";
 
+  // Shared pill chrome. Phone and desktop copies of each pill must stay
+  // visually identical — only their element type and destination differ.
+  const PILL_BASE = `site-header-item relative isolate items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`;
+  const PILL_LABEL =
+    "relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]";
+  const PILL_ICON = "relative z-10 h-4 w-4 md:h-6 md:w-6";
+
   return (
     <header ref={root} className={`absolute inset-x-0 top-0 z-30 ${textColor}`}>
       {/*
@@ -300,17 +331,28 @@ export default function SiteHeader({
         three. Desktop (md+) is unchanged.
       */}
       <div className="relative flex items-center justify-between px-4 pt-5 pb-4 md:px-12 md:pt-9 md:pb-8">
-        {/* MENU */}
-        <Link
-          href={MENU_BUTTON_HREF}
-          className={`site-header-item relative isolate flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
+        {/* MENU — phone: hamburger that opens the nav drawer */}
+        <button
+          type="button"
+          onClick={() => setNavOpen(true)}
+          aria-expanded={navOpen}
+          aria-controls="mobile-nav"
+          aria-label="Open menu"
+          className={`${PILL_BASE} flex md:hidden`}
         >
           {pillFill(0)}
-          <DehazeIcon className="relative z-10 h-4 w-4 md:h-6 md:w-6" />
-          <span className="relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
-            <span className="md:hidden">Menu</span>
-            <span className="hidden md:inline">Menu Builder</span>
-          </span>
+          <DehazeIcon className={PILL_ICON} />
+          <span className={PILL_LABEL}>Menu</span>
+        </button>
+
+        {/* MENU — desktop: straight to the menu builder, as before */}
+        <Link
+          href={MENU_BUTTON_HREF}
+          className={`${PILL_BASE} hidden md:flex`}
+        >
+          {pillFill(1)}
+          <DehazeIcon className={PILL_ICON} />
+          <span className={PILL_LABEL}>Menu Builder</span>
         </Link>
 
         {variant === "full" && (
@@ -334,25 +376,45 @@ export default function SiteHeader({
           </Link>
         )}
 
-        {/* BOOKING */}
-        <button className={`site-header-item relative isolate flex items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}>
-          {pillFill(1)}
-          <TripIcon className="relative z-10 h-4 w-4 md:h-6 md:w-6" />
-          <span className="relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">Booking</span>
+        {/* BOOKING — phone: this is the way into the menu builder */}
+        <Link
+          href={MENU_BUTTON_HREF}
+          className={`${PILL_BASE} flex md:hidden`}
+        >
+          {pillFill(2)}
+          <TripIcon className={PILL_ICON} />
+          <span className={PILL_LABEL}>Booking</span>
+        </Link>
+
+        {/* BOOKING — desktop: unchanged (still awaiting the CRM workstream) */}
+        <button className={`${PILL_BASE} hidden md:flex`}>
+          {pillFill(3)}
+          <TripIcon className={PILL_ICON} />
+          <span className={PILL_LABEL}>Booking</span>
         </button>
       </div>
 
+      {/* Phone nav panel. Rendered for every variant — the `minimal` venue
+          pages have no inline nav at all, so the drawer is the only nav they
+          have on a phone. */}
+      <MobileNavDrawer open={navOpen} onClose={closeNav} links={NAV_LINKS} />
+
       {variant === "full" && (
         <>
-          {/* Upper divider */}
-          <div className={`site-header-item h-px w-full ${dividerColor}`} />
+          {/* Upper divider.
+              Phone: hidden along with the nav row below it — with the links
+              gone it would be a stray line floating under the pills. */}
+          <div className={`site-header-item hidden h-px w-full md:block ${dividerColor}`} />
 
           {/*
-            NAV CONTAINER — mousemove-tracked area.
+            NAV CONTAINER — mousemove-tracked area. DESKTOP ONLY: on a phone
+            these seven links live in MobileNavDrawer instead (they wrapped to
+            two overflowing rows here). The whole block is `hidden md:block`,
+            so the cursor-tracking indicator below never runs on touch either.
           */}
           <div
             ref={navContainerRef}
-            className="site-header-item relative"
+            className="site-header-item relative hidden md:block"
             onMouseMove={handleNavContainerMove}
             onMouseLeave={handleNavContainerLeave}
           >

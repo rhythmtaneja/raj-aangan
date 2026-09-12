@@ -16,19 +16,43 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ─ SPEED (Sep 2026) ───────────────────────────────────────────────────────
+// Every duration in this block was roughly a third faster after the client
+// flagged the arrival as sluggish (phone-changes/animation-speed.jpeg — the
+// numeral and the copy have landed, and the CTA below them is still nowhere).
+//
+// The CTA was the real complaint, and it was not its own timing that was slow.
+// It is appended at TILT_DURATION - BUTTON_LEAD, i.e. relative to the END of
+// the whole timeline, and the longest tween in that timeline was the 6-second
+// tilt — so the button did not begin until 5.45s after the section scrolled
+// in, long after every word had finished. Shortening the tilt is what fixes
+// the button; BUTTON_LEAD then decides how much it overlaps the words' tail.
+//
+// Rough budget now, from the moment the section hits TRIGGER_START:
+//   words     0.15s → ~1.5s   (stagger × word count, then the fade)
+//   tilt      0.00s →  2.2s
+//   button    1.30s →  1.9s   (starts under the last few words)
+// ───────────────────────────────────────────────────────────────────────────
+
 // ─ Text tilt-zoom (entire text block enters with rotateY + scale) ──
 const TILT_DEG = -35;
 const INITIAL_SCALE = 0.78;
-const TILT_DURATION = 6;
+const TILT_DURATION = 2.2;
 const TILT_EASE = "power3.out";
 
 // ─ Word-by-word reveal (first scroll-in only) ──
-const WORD_STAGGER = 0.15;
-const WORD_FADE_DURATION = 2;
-const WORD_REVEAL_DELAY = 0.4;
+const WORD_STAGGER = 0.05;
+const WORD_FADE_DURATION = 0.85;
+const WORD_REVEAL_DELAY = 0.15;
 
 // ─ Subsequent en-bloc reveal (on re-enter) ──
-const ENBLOC_FADE_DURATION = 1.2;
+const ENBLOC_FADE_DURATION = 0.6;
+
+// ─ CTA ──
+// How far BEFORE the end of the timeline the button starts. Larger = the
+// button arrives earlier, overlapping more of the word reveal.
+const BUTTON_DURATION = 0.6;
+const BUTTON_LEAD = 0.9;
 
 // ─ When the animation fires ──
 const TRIGGER_START = "top 70%";
@@ -160,7 +184,11 @@ export default function IntroSection({
             }, 0);
           }
           if (btn) {
-            tl.to(btn, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.55");
+            tl.to(
+              btn,
+              { autoAlpha: 1, y: 0, duration: BUTTON_DURATION, ease: "power2.out" },
+              `-=${BUTTON_LEAD}`
+            );
           }
         },
         onLeaveBack: () => setHidden(),

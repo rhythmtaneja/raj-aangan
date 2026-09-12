@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/components/anim/anim.config";
+import useIsPhone from "@/components/anim/useIsPhone";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -27,10 +28,23 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 const BG_IMAGE = "/images/venue-details-bg.jpg"; // wedding venue photo
 const OVERLAY_OPACITY = 0.55;
 
-// ─ Card dimensions ──
+// ─ Card dimensions — DESKTOP ──
 const CARD_WIDTH_VW = 22; // slightly narrower than Events (26) since more cards
 const CARD_HEIGHT_VH = 45; // slightly shorter — content per card is smaller
 const ROW_SPACING_VH = 32;
+
+// ─ Card dimensions — PHONE ────────────────────────────────────────────────
+// 22vw is 86px on a 390px screen: "Accomodation" alone overflowed the card and
+// every description broke to one word per line (phone-changes/cards-length1).
+// Phones drop the 3-column stagger entirely and show ONE centred column, so a
+// card can take most of the screen width and you meet them one at a time as
+// the strip scrolls. The pinned-scroll mechanic itself is unchanged.
+const CARD_WIDTH_VW_PHONE = 78;
+const CARD_HEIGHT_VH_PHONE = 46;
+// With one column there is no stagger to keep neighbours apart, so the spacing
+// must clear a full card plus a gap or consecutive cards would overlap.
+const CARD_GAP_VH_PHONE = 10;
+const ROW_SPACING_VH_PHONE = CARD_HEIGHT_VH_PHONE + CARD_GAP_VH_PHONE;
 
 // ─ Column positions (% across viewport) ──
 const COL_LEFT_PCT = 20;
@@ -52,11 +66,6 @@ const CARD_SHADOW = "0 20px 50px rgba(0,0,0,0.30)";
 const CARD_FRAME_INSET = "0.625rem";
 const CARD_FRAME_BORDER = "1px solid rgba(0, 0, 0, 0.47)";
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Derived — 7 rows for 10 cards (1-2-1-2-1-2-1 pattern).
-const ROW_COUNT = 7;
-const STRIP_HEIGHT_VH = (ROW_COUNT - 1) * ROW_SPACING_VH + CARD_HEIGHT_VH;
-const LAST_ROW_TOP_VH = (ROW_COUNT - 1) * ROW_SPACING_VH;
 // ═══════════════════════════════════════════════════════════════════════════
 
 type Column = "left" | "center" | "right";
@@ -90,9 +99,60 @@ function colPct(col: Column): number {
   return COL_CENTER_PCT;
 }
 
+/**
+ * Everything the strip needs, resolved for one breakpoint.
+ *
+ * The card coordinates are COMPUTED (inline `top` / `left` / `width` in vw and
+ * vh), so there is no class or media query that can reach them — this is one
+ * of the few places on the site where the phone/desktop split genuinely has to
+ * happen in JS. See components/anim/useIsPhone.ts.
+ *
+ * Phone collapses the 3-column stagger to a single centred column and gives
+ * each card its own row, so `row`/`col` from the data are ignored and the
+ * array index becomes the row instead.
+ *
+ * `rowCount` is DERIVED from the data rather than hardcoded. It used to be a
+ * literal, which silently over-counted the rows in EntertainmentCollage (7
+ * declared, 6 actual) and bought that section a blank viewport of scrolling
+ * after its last card.
+ */
+type StripLayout = {
+  widthVw: number;
+  heightVh: number;
+  spacingVh: number;
+  stripHeightVh: number;
+  lastRowTopVh: number;
+  rowOf: (card: Card, index: number) => number;
+  leftPctOf: (card: Card) => number;
+};
+
+function stripLayout(cards: Card[], isPhone: boolean): StripLayout {
+  const widthVw = isPhone ? CARD_WIDTH_VW_PHONE : CARD_WIDTH_VW;
+  const heightVh = isPhone ? CARD_HEIGHT_VH_PHONE : CARD_HEIGHT_VH;
+  const spacingVh = isPhone ? ROW_SPACING_VH_PHONE : ROW_SPACING_VH;
+
+  const rowOf = (card: Card, index: number) => (isPhone ? index : card.row);
+  const leftPctOf = (card: Card) => (isPhone ? COL_CENTER_PCT : colPct(card.col));
+
+  const rowCount = cards.reduce((max, c, i) => Math.max(max, rowOf(c, i)), 0) + 1;
+  const lastRowTopVh = (rowCount - 1) * spacingVh;
+
+  return {
+    widthVw,
+    heightVh,
+    spacingVh,
+    stripHeightVh: lastRowTopVh + heightVh,
+    lastRowTopVh,
+    rowOf,
+    leftPctOf,
+  };
+}
+
 export default function VenueDetailsCollage() {
   const sectionRef = useRef<HTMLElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
+  const isPhone = useIsPhone();
+  const layout = stripLayout(CARDS, isPhone);
 
   useGSAP(
     () => {
@@ -102,7 +162,7 @@ export default function VenueDetailsCollage() {
 
       const vh = window.innerHeight;
       const initialY = vh * (INITIAL_Y_VH / 100);
-      const finalY = vh * ((FINAL_LAST_CARD_TOP_VH - LAST_ROW_TOP_VH) / 100);
+      const finalY = vh * ((FINAL_LAST_CARD_TOP_VH - layout.lastRowTopVh) / 100);
       const scroll = initialY - finalY;
 
       if (prefersReducedMotion()) {
@@ -125,7 +185,10 @@ export default function VenueDetailsCollage() {
         },
       });
     },
-    { scope: sectionRef }
+    // `revertOnUpdate` is REQUIRED, not tidiness: without it, crossing the
+    // breakpoint would re-run this and leave the previous pinned ScrollTrigger
+    // alive, so the section would be pinned twice with two strips fighting.
+    { scope: sectionRef, dependencies: [layout.lastRowTopVh], revertOnUpdate: true }
   );
 
   return (
@@ -147,24 +210,34 @@ export default function VenueDetailsCollage() {
       <div
         ref={stripRef}
         className="absolute inset-x-0 top-0 will-change-transform"
-        style={{ height: `${STRIP_HEIGHT_VH}vh` }}
+        style={{ height: `${layout.stripHeightVh}vh` }}
       >
-        {CARDS.map((c, i) => <CardBlock key={i} card={c} />)}
+        {CARDS.map((c, i) => (
+          <CardBlock key={i} card={c} index={i} layout={layout} />
+        ))}
       </div>
     </section>
   );
 }
 
-function CardBlock({ card }: { card: Card }) {
+function CardBlock({
+  card,
+  index,
+  layout,
+}: {
+  card: Card;
+  index: number;
+  layout: StripLayout;
+}) {
   return (
     <div
       className="absolute px-6 py-8 md:px-8 md:py-10"
       style={{
-        top: `${card.row * ROW_SPACING_VH}vh`,
-        left: `${colPct(card.col)}%`,
+        top: `${layout.rowOf(card, index) * layout.spacingVh}vh`,
+        left: `${layout.leftPctOf(card)}%`,
         transform: "translateX(-50%)",
-        width: `${CARD_WIDTH_VW}vw`,
-        height: `${CARD_HEIGHT_VH}vh`,
+        width: `${layout.widthVw}vw`,
+        height: `${layout.heightVh}vh`,
         backgroundColor: CARD_BG,
         boxShadow: CARD_SHADOW,
       }}

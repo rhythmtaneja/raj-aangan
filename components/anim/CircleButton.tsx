@@ -30,9 +30,25 @@
 import { useRef, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { prefersReducedMotion } from "./anim.config";
+import { isPhoneViewport, prefersReducedMotion } from "./anim.config";
 
 gsap.registerPlugin(useGSAP);
+
+// ─── PHONE: NO BALL AT ALL (Sep 2026) ──────────────────────────────────────
+// There is no hover on a touch screen, but there IS a phantom one: iOS and
+// Android both fire mouseover/mouseenter on the tapped element just before
+// the click, and never fire the matching mouseleave. So tapping "Plan Your
+// Event" opened the ball, the label faded out underneath it, and the circle
+// stayed parked over the CTA — a grey disc with an arrow and no way to
+// dismiss it. That is the bug in phone-changes/round-button.jpeg.
+//
+// `enter` and `move` therefore bail on phones, which leaves the button in its
+// resting state: outlined pill, visible label, ball at scale 0. `leave` is
+// deliberately NOT gated — if the viewport crosses the breakpoint while a
+// ball happens to be open (rotating a tablet, resizing a window), the next
+// pointer-out still restores the resting state rather than stranding it.
+// ───────────────────────────────────────────────────────────────────────────
+const skipHoverAnimation = () => prefersReducedMotion() || isPhoneViewport();
 
 // ─── TUNE THESE KNOBS ────────────────────────────────────────────────
 // Default ball diameter. Reference site is ~140px. Override per-instance
@@ -233,19 +249,30 @@ export default function CircleButton({
    *
    * Killing outright at the top of each handler makes enter/leave mutually
    * exclusive no matter how fast the cursor is.
+   *
+   * SCOPED BY PROPERTY (Sep 2026). This used to kill EVERY tween on each of
+   * these elements, which quietly reached outside the component: the root is
+   * also the element a parent section animates in. On the homepage hero the
+   * root IS `.hero-cta`, whose opacity/y entrance Hero.tsx drives — so moving
+   * the cursor over "Plan Your Event" while it was still fading in killed that
+   * entrance mid-flight and the button stayed at opacity 0, invisible, for the
+   * rest of the visit.
+   *
+   * Each target is now killed only for the properties CircleButton itself
+   * animates, so a parent's tween on the same element is left alone. Keep this
+   * list in step with `enter()` / `leave()` — a property animated there but
+   * missing here brings the original ghost-arrow bug back.
    */
   const killPending = () => {
-    gsap.killTweensOf([
-      root.current,
-      label.current,
-      circle.current,
-      arrow.current,
-      pill.current,
-    ]);
+    gsap.killTweensOf(root.current, "borderColor");
+    gsap.killTweensOf(label.current, "autoAlpha,opacity,visibility");
+    gsap.killTweensOf(circle.current, "scale");
+    gsap.killTweensOf(arrow.current, "autoAlpha,opacity,visibility,x,y");
+    gsap.killTweensOf(pill.current, "autoAlpha,opacity,visibility");
   };
 
   const enter = () => {
-    if (prefersReducedMotion()) return;
+    if (skipHoverAnimation()) return;
 
     killPending();
 
@@ -355,7 +382,7 @@ export default function CircleButton({
   };
 
   const move = (e: React.MouseEvent) => {
-    if (!root.current || prefersReducedMotion()) return;
+    if (!root.current || skipHoverAnimation()) return;
     const r = root.current.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2);
     const dy = e.clientY - (r.top + r.height / 2);

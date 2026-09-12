@@ -53,7 +53,7 @@ const CTA_DELAY = 1.5;
 const GLASS_DOWN_BUTTON_CLASS =
   "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] px-5 py-2 text-white md:px-7 md:py-2.5";
 const GLASS_DOWN_PILL_CLASS =
-  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md";
+  "rounded-full border-[0.5px] border-white/55 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-1px_0_rgba(255,255,255,0.06),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md";
 
 // ─ Smooth scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "properties";

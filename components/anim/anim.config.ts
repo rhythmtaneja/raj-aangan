@@ -27,7 +27,8 @@ export const EASE = {
 export const DUR = {
   heroZoom: 3.0, // bg scale 1 -> 1.3   (Webflow 3000ms inOutCirc)
   heroDrift: 2.0, // bg x 20 -> -20     (Webflow 2000ms inOutCubic)
-  reveal: 0.9, // section fade + move-up on scroll-in
+  reveal: 0.62, // section fade + move-up on scroll-in (was 0.9 — client asked
+  //              for snappier arrivals across the whole template, Sep 2026)
   hover: 0.3, // hover image fade     (Webflow 300ms ease)
   navSlide: 0.45, // sticky nav hide/show
 } as const;
@@ -55,3 +56,21 @@ export const TRIGGER = {
 export const prefersReducedMotion = (): boolean =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * The ONE phone/desktop boundary used by JS.
+ *
+ * It must stay identical to Tailwind's `md:` (768px) and to the
+ * `@media (max-width: 767px)` block in globals.css — the layout rule in
+ * CLAUDE.md is that this site has exactly one breakpoint, and a second one
+ * introduced here would reflow the page mid-browser-zoom.
+ *
+ * Deliberately a WIDTH query rather than `(hover: none)`: it has to be true
+ * in devtools' phone emulation too, since that is how the phone design is
+ * reviewed, and ServicesSection already gates its hover imagery the same way.
+ */
+export const PHONE_MAX_WIDTH = 767;
+
+export const isPhoneViewport = (): boolean =>
+  typeof window !== "undefined" &&
+  window.matchMedia(`(max-width: ${PHONE_MAX_WIDTH}px)`).matches;

@@ -25,7 +25,7 @@ const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
 const GLASS_EXPLORE_BUTTON_CLASS =
   "min-h-[3.125rem] min-w-[8.125rem] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,0.875rem)]";
 const GLASS_EXPLORE_PILL_CLASS =
-  "rounded-full border border-white/90 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.76),inset_0_-1px_0_rgba(255,255,255,0.10),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
+  "rounded-full border-[0.5px] border-white/55 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-1px_0_rgba(255,255,255,0.06),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
 
 // ─ Property card ──
 const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller

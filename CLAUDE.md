@@ -110,6 +110,45 @@ decided in `queries.ts` alone.
   edits. Use `--only=<type>` to refresh one collection, and say so first.
 - **Client docs**: `docs/CMS_GUIDE.md` (field-by-field), `SANITY_SETUP.md` §3.
 
+# 📱 PHONE PASS (2026-09-13)
+
+First round of client phone feedback (`../phone-changes/*.jpeg`). All five are
+phone-only unless noted:
+
+1. **Hamburger drawer** — see item 7 under "Remaining work" below.
+2. **Glass pill borders thinned** (desktop too, as asked): `border` →
+   `border-[0.5px] border-white/55`, and the `inset 0 1px 0` white highlight
+   dropped 0.78 → 0.26. Those two lines together read as one ~2px ring; the
+   border alone was never the problem. Four call sites: VenueHero,
+   VenuePropertiesSection, CollaborationSection, GalleryHero.
+3. **Collage cards** (VenueDetailsCollage + EntertainmentCollage) — the 3-column
+   stagger collapses to ONE centred column at 78vw on phones, one card per row,
+   so they arrive one at a time through the same pinned scroll. Card geometry is
+   computed inline, so this is one of the few splits that CANNOT be a media
+   query: both files gained a `stripLayout(cards, isPhone)` resolver fed by
+   `components/anim/useIsPhone.ts`. `useGSAP` there MUST keep
+   `revertOnUpdate: true` or crossing the breakpoint double-pins the section.
+   `rowCount` is now derived from the data (it was hardcoded to 7 in
+   EntertainmentCollage, which has 6 rows — that bought a blank viewport of
+   scroll after the last card).
+4. **CircleButton does nothing on touch.** `enter()`/`move()` bail when
+   `isPhoneViewport()`. Touch browsers fire a phantom mouseenter before click
+   and never the matching mouseleave, so tapping a CTA used to strand the ball
+   on top of it. `leave()` is deliberately still live so a resize self-heals.
+   ⚠️ While fixing this, `killPending()` was scoped to the properties
+   CircleButton actually animates. It used to `killTweensOf(root)` wholesale —
+   and on the homepage the root IS `.hero-cta`, whose entrance Hero.tsx owns, so
+   hovering during the entrance killed it and left the button invisible forever.
+   Keep that property list in step with enter/leave.
+5. **Arrival animations sped up** (universal, desktop included): `DUR.reveal`
+   0.9 → 0.62, and IntroSection's whole block roughly a third faster. The real
+   complaint was the CTA, which is positioned relative to the END of the
+   timeline — so it was the 6s tilt, not the button's own timing, that made it
+   arrive 5.45s in. Tilt is now 2.2s and the button lands ~1.9s.
+
+`components/anim/anim.config.ts` now exports `PHONE_MAX_WIDTH` /
+`isPhoneViewport()` — the ONE JS phone boundary. Do not introduce a second one.
+
 **Responsiveness (done this cycle):** all `clamp(min,Xvw,max)` font ceilings
 were **capped to their 1440px value** (`scripts/*` one-off; the vw coeff stays,
 only the ceiling dropped) so laptops ≥1440px render identically and the client's
@@ -199,7 +238,14 @@ windows. Raise the clamp MIN in `globals.css` if that ever matters more.
    (also make `price` nullable there — Premium Add-ons is "on request"), then
    `npm run seed-menu-builder -- --only=outdoorCatalogItem`. Sanity then wins
    automatically, no app change.
-7. Mobile: header nav currently WRAPS; decide whether to build a hamburger drawer.
+- ~~Mobile: header nav WRAPS; hamburger drawer?~~ — DONE 2026-09-13. The seven
+   nav links moved into `components/ui/MobileNavDrawer.tsx`, opened by the
+   header's left pill on phones only. **The two header pills now mean
+   different things per breakpoint** (SiteHeader.tsx documents the split):
+   desktop left = "Menu Builder" → `/menu-builder`, right = the inert Booking
+   button, inline nav row unchanged; phone left = "Menu" → drawer, right =
+   "Booking" → `/menu-builder`, inline nav row hidden. Desktop was deliberately
+   left untouched.
 - ~~Responsiveness calibration~~ — DONE 2026-08-03, see "ZOOM-PROOF LAYOUT"
    above. Reference width 1440 confirmed; the fluid-root floor was moved from
    12px (which bit at 1080px, mid-zoom-range) down to 768/90, all lg:/xl:
