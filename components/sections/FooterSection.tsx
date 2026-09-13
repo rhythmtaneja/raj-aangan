@@ -44,10 +44,38 @@
  * against the closing panel, which cannot do that by construction. See that
  * file's header.
  *
- * The second phone problem was layout: the desktop 3-column grid stacked
- * left-aligned at desktop type sizes, so the roman-numeral list alone filled
- * the screen. Phones now centre everything and drop the numerals (they are a
- * wide-layout ornament — at one column they just indent the labels).
+ * The second phone problem was layout, and it needed a second pass (below).
+ *
+ * ---------------------------------------------------------------------------
+ * THE PHONE FOOTER IS A DIFFERENT LAYOUT, NOT A NARROW DESKTOP ONE
+ *
+ * Stacking the desktop footer into one centred column ran it to ~2.5 screens
+ * of almost nothing but a vertical list, so the client asked for the space to
+ * be used. What changed, and why each one is phone-only:
+ *
+ *   • MENU + BOOKING PILLS ARE HIDDEN. Both duplicate SiteHeader, which is
+ *     a thumb-flick away on a phone. They cost a whole row and offered
+ *     nothing the header didn't. (`hidden md:flex`)
+ *   • THE LINK LIST IS TWO COLUMNS at 1.0625rem instead of one column at
+ *     1.5rem. Seven links went from ~7 screens-worth of scrolling to four
+ *     rows. Left-aligned inside the grid so the labels share a common edge —
+ *     centred text in a 2-up grid reads as scattered.
+ *   • THE "MORE ABOUT EVENTS" SUB-LIST IS HIDDEN, and its heading becomes a
+ *     bordered full-width row. ⚠️ This loses no destination: every entry in
+ *     MORE_LINKS points at /events, which the main list already links twice
+ *     (Weddings, Events). If those ever get their own pages, un-hide it.
+ *   • CONTACTS IS A PILL, not a bare text link, so the footer's two phone
+ *     actions (Contacts, Booking) look like the same kind of thing.
+ *   • TAP TARGETS: list links get `py-2.5`, socials get `p-2`, both reverted
+ *     at `md:` so desktop spacing is untouched. Phone/email are full white
+ *     and a step larger — they are the most-tapped things down here.
+ *
+ * Numerals stay desktop-only: they are a wide-layout ornament, and in a
+ * 2-column grid they would eat a third of each cell.
+ *
+ * EVERY ONE of these is a base class with an `md:` restore, so the signed-off
+ * desktop footer renders identically. If you change a base class here, add
+ * the matching `md:` or you will move the desktop layout.
  * ---------------------------------------------------------------------------
  */
 
@@ -202,10 +230,10 @@ export default function FooterSection() {
           contents' positions, so the signed-off desktop layout is untouched. */}
       <div ref={darkRef} className="md:sticky md:z-0" style={{ backgroundColor: FOOTER_BG }}>
         {/* ─── TOP ROW: Menu / logo / Booking ─────────────────────────── */}
-        <div className="relative flex items-center justify-between px-5 pt-10 pb-8 md:px-16 md:pt-10 md:pb-6">
+        <div className="relative flex items-center justify-center px-5 pt-10 pb-6 md:justify-between md:px-16 md:pt-10 md:pb-6">
           <Link
             href={MENU_HREF}
-            className={`flex items-center gap-2 rounded-full ${PILL_BG} px-4 py-2.5 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
+            className={`hidden items-center gap-2 rounded-full ${PILL_BG} px-4 py-2.5 transition-opacity hover:opacity-90 md:flex md:gap-3 md:px-7 md:py-3.5`}
           >
             <DehazeIcon className="h-4 w-4 md:h-6 md:w-6" />
             <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
@@ -225,7 +253,7 @@ export default function FooterSection() {
           */}
           <Link
             href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0"
+            className="shrink-0 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
             aria-label="Home"
           >
             <Image
@@ -234,13 +262,13 @@ export default function FooterSection() {
               width={80}
               height={80}
               /* rem, not the intrinsic 80px — see SiteHeader. */
-              className="h-[2.25rem] w-[2.25rem] md:h-[5rem] md:w-[5rem]"
+              className="h-[3.5rem] w-[3.5rem] md:h-[5rem] md:w-[5rem]"
             />
           </Link>
 
           <Link
             href={BOOKING_HREF}
-            className={`flex items-center gap-2 rounded-full ${PILL_BG} px-4 py-2.5 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`}
+            className={`hidden items-center gap-2 rounded-full ${PILL_BG} px-4 py-2.5 transition-opacity hover:opacity-90 md:flex md:gap-3 md:px-7 md:py-3.5`}
           >
             <TripIcon className="h-4 w-4 md:h-6 md:w-6" />
             <span className="font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]">
@@ -250,19 +278,19 @@ export default function FooterSection() {
         </div>
 
         {/* ─── MAIN COLUMNS ───────────────────────────────────────────────
-            Phone: one centred column, in the reference's reading order —
-            brand identity first, then the link list, then the sub-links.
+            Phone: brand identity first (order-1), then the link list as a
+            2-up grid (order-2), then the "more about" row (order-3).
             Desktop: the original three-column grid, unchanged. */}
-        <div className="grid grid-cols-1 gap-12 px-5 pt-4 pb-12 text-center md:grid-cols-3 md:gap-20 md:px-16 md:pt-12 md:pb-24 md:text-left">
+        <div className="grid grid-cols-1 gap-9 px-5 pt-2 pb-10 text-center md:grid-cols-3 md:gap-20 md:px-16 md:pt-12 md:pb-24 md:text-left">
           {/* LINK LIST */}
-          <ul className="order-2 space-y-3 md:order-none md:space-y-8">
+          <ul className="order-2 grid grid-cols-2 gap-x-5 gap-y-1 text-left md:order-none md:block md:space-y-8">
             {EXPLORE.map(({ num, label, href }) => (
               <li
                 key={label}
-                className="flex items-baseline justify-center gap-6 md:justify-start md:gap-10"
+                className="flex items-baseline md:gap-10"
               >
-                {/* Numerals are a wide-layout ornament: in a centred single
-                    column they only push the labels off-centre. */}
+                {/* Numerals are a wide-layout ornament: in the phone's 2-up
+                    grid they would eat a third of each cell. */}
                 <span
                   style={serif}
                   className="hidden w-8 shrink-0 text-white/45 text-[clamp(0.8rem,0.9vw,0.8125rem)] md:block"
@@ -272,7 +300,7 @@ export default function FooterSection() {
                 <Link
                   href={href}
                   style={serif}
-                  className="transition-opacity duration-300 hover:opacity-70 text-[1.5rem] md:text-[clamp(1.8rem,3vw,2.6875rem)]"
+                  className="block py-2.5 transition-opacity duration-300 hover:opacity-70 text-[1.0625rem] md:py-0 md:text-[clamp(1.8rem,3vw,2.6875rem)]"
                 >
                   {label}
                 </Link>
@@ -282,7 +310,7 @@ export default function FooterSection() {
 
           {/* MORE ABOUT */}
           <div className="order-3 md:order-none md:pt-2">
-            <div className="flex items-center justify-center gap-5 md:justify-start md:gap-6">
+            <div className="flex items-center justify-between gap-5 rounded-full border border-white/20 py-2.5 pl-6 pr-2.5 md:justify-start md:gap-6 md:rounded-none md:border-0 md:p-0">
               <h3 style={serif} className="text-[1.25rem] md:text-[clamp(1.3rem,1.9vw,1.6875rem)]">
                 {MORE_ABOUT_TITLE}
               </h3>
@@ -303,7 +331,7 @@ export default function FooterSection() {
               </Link>
             </div>
 
-            <ul className="mt-6 space-y-2.5 md:mt-10 md:space-y-3">
+            <ul className="hidden md:mt-10 md:block md:space-y-3">
               {MORE_LINKS.map((link) => (
                 <li key={link.label}>
                   <Link
@@ -331,14 +359,14 @@ export default function FooterSection() {
 
             <div
               style={serif}
-              className="mt-5 space-y-1 text-white/80 text-[1rem] md:mt-8 md:text-[clamp(1rem,1.15vw,1.0625rem)]"
+              className="mt-4 space-y-1 text-white/65 text-[0.9375rem] md:mt-8 md:text-white/80 md:text-[clamp(1rem,1.15vw,1.0625rem)]"
             >
               {SITE_ADDRESS_LINES.map((line) => (
                 <p key={line}>{line}</p>
               ))}
             </div>
 
-            <div className="mt-5 space-y-1 text-white/80 text-[1rem] md:mt-8 md:text-[clamp(1rem,1.15vw,1.0625rem)]">
+            <div className="mt-5 space-y-2 text-white text-[1.0625rem] md:mt-8 md:space-y-1 md:text-white/80 md:text-[clamp(1rem,1.15vw,1.0625rem)]">
               <p>
                 <a href={SITE_PHONE_HREF} className="transition-colors hover:text-white">
                   {SITE_PHONE}
@@ -353,7 +381,7 @@ export default function FooterSection() {
 
             <Link
               href={CONTACTS_HREF}
-              className="mt-6 inline-flex items-center gap-3 text-[1rem] transition-opacity duration-300 hover:opacity-70 md:mt-8 md:text-[clamp(1rem,1.15vw,1.0625rem)]"
+              className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/40 px-9 py-3 text-[0.9375rem] transition-opacity duration-300 hover:opacity-70 md:mt-8 md:rounded-none md:border-0 md:px-0 md:py-0 md:text-[clamp(1rem,1.15vw,1.0625rem)]"
             >
               <span>Contacts</span>
               <span aria-hidden>→</span>
@@ -363,12 +391,14 @@ export default function FooterSection() {
 
         {/* ─── SOCIAL ICONS ───────────────────────────────────────────────
             Centred on phones (matching the reference), right-aligned on
-            desktop where they close the three-column block. */}
+            desktop where they close the three-column block. The phone `p-2`
+            on each icon is what makes them a thumb-sized target; the visual
+            gap is cut to `gap-4` to compensate, and both revert at `md:`. */}
         {/* Bottom padding = the wave's upward overlap (14vh, see WaveDivider)
             plus breathing room. The band is `pointer-events-none` so it never
             eats a click, but it is still opaque — without this the icons sit
             under the swell. The reference has the same dead space here. */}
-        <div className="flex items-center justify-center gap-8 px-5 pb-[calc(14vh+3rem)] md:justify-end md:gap-6 md:px-16 md:pb-[calc(14vh+3rem)]">
+        <div className="flex items-center justify-center gap-4 px-5 pb-[calc(14vh+3rem)] md:justify-end md:gap-6 md:px-16 md:pb-[calc(14vh+3rem)]">
           {SITE_SOCIALS.map((s) => (
             <a
               key={s.label}
@@ -376,7 +406,7 @@ export default function FooterSection() {
               aria-label={s.label}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/70 transition-colors duration-300 hover:text-white"
+              className="p-2 text-white/70 transition-colors duration-300 hover:text-white md:p-0"
             >
               <SocialIcon name={s.label} />
             </a>
@@ -413,7 +443,7 @@ export default function FooterSection() {
 
           <Link
             href={OUTRO_CTA_HREF}
-            className="rounded-full border border-white/70 px-10 py-3.5 text-[0.9375rem] font-medium transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#12414E] md:px-12 md:py-4 md:text-[clamp(0.95rem,1.05vw,1rem)]"
+            className="w-full max-w-[17rem] rounded-full border border-white/70 px-10 py-3.5 text-center text-[0.9375rem] font-medium transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#12414E] md:w-auto md:max-w-none md:px-12 md:py-4 md:text-[clamp(0.95rem,1.05vw,1rem)]"
           >
             {OUTRO_CTA_LABEL}
           </Link>
@@ -426,7 +456,10 @@ export default function FooterSection() {
             items onto one line. */}
         <div className="mx-5 border-t border-white/15 md:mx-16">
           <div className="flex flex-col items-center gap-4 py-6 text-[0.6875rem] uppercase tracking-[0.18em] text-white/60 md:flex-row md:justify-between md:gap-8 md:text-[0.75rem]">
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {/* The five items are ~333px of text — they cannot fit one phone line.
+                 Left to wrap freely they break 4+1 and leave TERMS orphaned, so
+                 the phone width is capped to force a balanced 3+2. */}
+            <div className="flex max-w-[17rem] flex-wrap items-center justify-center gap-x-4 gap-y-2.5 md:max-w-none md:gap-x-6 md:gap-y-2">
               {SITE_SOCIALS.map((s) => (
                 <a
                   key={s.label}
