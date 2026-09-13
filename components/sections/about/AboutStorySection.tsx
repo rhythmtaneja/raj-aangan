@@ -148,10 +148,27 @@ export default function AboutStorySection() {
         BOTTOM ROW — 2-col grid.
         LEFT  = stretched bullet box that STICKS in place while user scrolls.
         RIGHT = photo column that scrolls past.
+
+        ─ PHONE ORDER IS REVERSED, AND THAT IS THE POINT ───────────────────
+        At one column the source order runs text → photo → BOX → photo →
+        photo, so the bullet box lands sandwiched between images
+        (phone-changes/about1.PNG, about2.PNG). The `order-*` pair below puts
+        the two scrolling photos ahead of the box on phone, giving:
+
+            text → photo → photo → photo → box
+
+        i.e. the three photos group into one run and the box closes the
+        section. Chosen over "box first" because the top photo still breaks
+        up the paragraph early, the reader is not handed a paragraph and five
+        bullets back-to-back, and a framed box is a better end-cap into
+        VideoSection than a third photo would be.
+
+        `md:order-none` puts both back to source order at the breakpoint, so
+        the desktop sticky-box-beside-scrolling-photos layout is untouched.
       */}
       <div className={`mx-auto ${BOTTOM_ROW_TOP_GAP} grid w-full max-w-6xl grid-cols-1 gap-16 md:grid-cols-2 md:items-start`}>
         <div
-          className="md:sticky md:self-start"
+          className="order-2 md:order-none md:sticky md:self-start"
           style={{ top: STICKY_TOP_OFFSET }}
         >
           <Reveal>
@@ -159,7 +176,7 @@ export default function AboutStorySection() {
           </Reveal>
         </div>
 
-        <div className="flex flex-col gap-12">
+        <div className="order-1 flex flex-col gap-12 md:order-none">
           {PHOTOS.map((src, i) => (
             <Reveal key={src} className="w-full">
               <div className="group relative aspect-square w-full overflow-hidden">
@@ -202,13 +219,22 @@ function renderItalicEmphasis(text: string, italicPortion: string) {
 
 function BulletBox({ bullets }: { bullets: string[] }) {
   return (
+    /* The three BOX_* knobs above are sized for the desktop column, where the
+       box has to stand as tall as two scrolling photos beside it. At one
+       column nothing is racing it, so 5.5rem of padding on a 28rem floor left
+       the box roughly 40% empty air (phone-changes/about1.PNG). Phone gets its
+       own tighter set of literals; the knobs come back at `md:` through these
+       custom properties, so tuning them still only means editing the
+       constants. */
     <div
-      className="relative px-10"
-      style={{
-        paddingTop: BOX_PADDING_Y,
-        paddingBottom: BOX_PADDING_Y,
-        minHeight: BOX_MIN_HEIGHT,
-      }}
+      className="relative min-h-[19rem] px-7 py-14 md:min-h-[var(--box-min-h)] md:px-10 md:py-[var(--box-py)]"
+      style={
+        {
+          "--box-py": BOX_PADDING_Y,
+          "--box-min-h": BOX_MIN_HEIGHT,
+          "--box-gap": BOX_ITEM_GAP,
+        } as React.CSSProperties
+      }
     >
       {/* Outer frame — extends beyond the box */}
       <div
@@ -236,8 +262,7 @@ function BulletBox({ bullets }: { bullets: string[] }) {
         look from reference image 6.
       */}
       <ul
-        className="relative flex h-full flex-col items-center justify-center text-center"
-        style={{ gap: BOX_ITEM_GAP }}
+        className="relative flex h-full flex-col items-center justify-center gap-6 text-center md:gap-[var(--box-gap)]"
       >
         {bullets.map((b) => (
           <li

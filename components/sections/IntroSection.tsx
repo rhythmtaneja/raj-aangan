@@ -201,10 +201,10 @@ export default function IntroSection({
     <section
       ref={sectionRef}
       style={{ backgroundColor: `var(--page-bg, ${BG_FALLBACK})` }}
-      className="relative flex min-h-screen w-full flex-col items-center justify-center px-7 py-24 text-center md:px-6 md:py-32"
+      className="relative flex min-h-screen w-full flex-col items-center justify-center px-6 py-20 text-center md:px-6 md:py-32"
     >
       {/* Numeral + optional label, e.g. "II  ABOUT US" */}
-      <div className="mb-10 flex items-center gap-4 md:mb-20 md:gap-5">
+      <div className="mb-8 flex items-center gap-4 md:mb-20 md:gap-5">
         <NumeralMarker numeral={numeral} />
         {label && (
           <span
@@ -216,14 +216,31 @@ export default function IntroSection({
         )}
       </div>
 
+      {/*
+        ─── PHONE: ONE MEASURE FOR THE WHOLE BLOCK ─────────────────────────
+        This `max-w` is the fix for what the copy looked like on a phone
+        (phone-changes/intosection.PNG). The three text runs used to be sized
+        and capped independently: the h2 was capped at 19rem while the
+        secondary lines had no cap at all and ran the full 100% - padding.
+        Three different measures means three unrelated wrap points, so the
+        block read as three loose fragments rather than one statement.
+
+        Capping the PARENT gives all three the same measure, and the h2's own
+        phone cap is dropped below so it inherits this one. `md:w-auto` +
+        `md:max-w-none` restore the desktop shrink-to-fit box exactly — do not
+        drop them, `w-full` alone would change where the desktop h2 wraps.
+      */}
       <div
         ref={textBlockRef}
-        className="flex flex-col items-center"
+        className="flex w-full max-w-[21rem] flex-col items-center md:w-auto md:max-w-none"
         style={{ willChange: "transform, opacity" }}
       >
         <h2
           style={serif}
-          className="max-w-[19rem] font-semibold leading-[1.35] text-[#191919] text-[1.5rem] md:max-w-[100rem] md:leading-[1.05] md:text-[clamp(2rem,3.9vw,3.5rem)]"
+          /* `text-balance` is what stops the orphans — "…planning,heritage /
+             venues" in the screenshot becomes two even lines. It is reset at
+             `md:` because the desktop wrapping is signed off. */
+          className="max-w-none text-balance font-semibold leading-[1.3] text-[#191919] text-[1.75rem] md:max-w-[100rem] md:[text-wrap:auto] md:leading-[1.05] md:text-[clamp(2rem,3.9vw,3.5rem)]"
         >
           <Words text={title} italicTail={italicTail} />
         </h2>
@@ -231,15 +248,24 @@ export default function IntroSection({
         {secondaryLines && secondaryLines.length > 0 && (
           <div
             style={serif}
-            className="mt-6 font-semibold leading-[1.15] text-[#999999]"
+            className="mt-5 font-semibold leading-[1.3] text-[#999999] md:mt-6 md:leading-[1.15]"
           >
             {secondaryLines.map((line, i) => (
               <p
                 key={i}
+                /*
+                  Both clamps bottom out on a phone — 3.39vw and 2.86vw at
+                  390px are ~13px and ~11px, so each line just sits at its
+                  MIN. That min was 1.5rem for the first line, the exact size
+                  the h2 used to be, so the heading and the line under it were
+                  identically sized and the hierarchy disappeared. The phone
+                  literals below rebuild the ladder (1.75 / 1.25 / 1.0625rem);
+                  the clamps come back untouched at `md:`.
+                */
                 className={
                   i === 0
-                    ? "text-[#5e5e5e] text-[clamp(1.5rem,3.39vw,3.0625rem)]"
-                    : "mt-6 text-[clamp(1.25rem,2.86vw,2.5625rem)]"
+                    ? "text-balance text-[#5e5e5e] text-[1.25rem] md:[text-wrap:auto] md:text-[clamp(1.5rem,3.39vw,3.0625rem)]"
+                    : "mt-3 text-balance text-[1.0625rem] md:mt-6 md:[text-wrap:auto] md:text-[clamp(1.25rem,2.86vw,2.5625rem)]"
                 }
               >
                 <Words text={line} />
@@ -248,7 +274,7 @@ export default function IntroSection({
           </div>
         )}
 
-        <div ref={buttonWrapRef} className="mt-20" style={{ willChange: "transform, opacity" }}>
+        <div ref={buttonWrapRef} className="mt-12 md:mt-20" style={{ willChange: "transform, opacity" }}>
           <CircleButton
             href={buttonHref}
             circleColor="#191919"
