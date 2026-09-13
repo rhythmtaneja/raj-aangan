@@ -27,3 +27,36 @@ export const SITE_PHONE_HREF = "tel:+919829012815";
 
 /** Google Maps link, built from the canonical address so the two can't drift. */
 export const SITE_MAP_HREF = `https://maps.google.com/?q=${encodeURIComponent(SITE_ADDRESS)}`;
+
+/**
+ * Social profiles.
+ *
+ * ⚠️ PLACEHOLDERS — the real handles were never supplied. They render as
+ * normal links, so they must be filled in before launch or they will send
+ * visitors nowhere. Search for "#" in this file to find everything still
+ * outstanding.
+ */
+export const SITE_SOCIALS = [
+  { label: "Instagram", href: "#" },
+  { label: "Facebook", href: "#" },
+  /* WhatsApp deep-link: wa.me/<number, digits only, with country code>.
+     Built from the canonical phone so the two cannot drift. */
+  { label: "WhatsApp", href: `https://wa.me/${SITE_PHONE.replace(/\D/g, "")}` },
+] as const;
+
+/**
+ * Legal pages.
+ *
+ * ⚠️ PLACEHOLDERS — neither route exists yet (`app/privacy/` and `app/terms/`
+ * are not built). Point these at the real pages once they are written.
+ */
+export const SITE_LEGAL = [
+  { label: "Privacy", href: "#" },
+  { label: "Terms", href: "#" },
+] as const;
+
+/** Build credit shown in the footer. */
+export const SITE_CREDIT = {
+  label: "Rhythm Taneja",
+  href: "https://www.linkedin.com/in/rhythm-taneja/",
+} as const;

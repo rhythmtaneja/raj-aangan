@@ -186,6 +186,86 @@ phone-only unless noted:
     a fixed 15.25rem there), but on a phone the gap comes straight out of the
     card width — now `gap-x-3 gap-y-5 md:gap-*`.
 
+## Footer rebuild (2026-09-14)
+
+Rebuilt against the reference footer, which is **two panels with a wave at the
+seam** — not one panel with a wave on top:
+
+    ┌─ DARK PANEL ──────────┐  FOOTER_BG       #12414E
+    │ pills · columns · social
+    ├─ WAVE ────────────────┤  WaveDivider, in flow
+    ├─ CLOSING PANEL ───────┤  FOOTER_OUTRO_BG #1C5D6B
+    │ CTA · legal row · credit
+    └───────────────────────┘
+
+Measured on resortkaskady.com: dark `#194141`, wave, `#296161`. Ours keeps the
+site's own ~196° navy-teal rather than their greener teal, both lifted from the
+old single `#0f2f3b` (client asked for lighter). **What matters is the step
+between the two** — the wave has nothing to divide without it.
+
+- **`WaveTop.tsx` is gone; `WaveDivider.tsx` replaces it.** WaveTop was
+  `position: sticky; top: 0` + a scrubbed reveal. On desktop the footer is
+  ~one viewport so it pinned and released and looked right; on a phone the
+  same content stacks ~3 viewports tall, so it pinned to the top of the SCREEN
+  and hung there across the middle of the copy (the band over "More about
+  events" in phone-changes/footer.jpeg). A sticky element cannot be the
+  boundary between two panels when the panel above it is taller than the
+  viewport. The new one is an ordinary block at the seam and keeps the layered
+  `gsap.ticker` sine paths. `topColor`/`bottomColor` MUST match the adjacent
+  panels or a hairline of the wrong colour shows.
+- **No wave above the footer any more.** The page now meets the dark panel
+  with a hard edge, which is what the reference does. `overflow-hidden` on the
+  footer is safe again (the old warning is obsolete).
+- **Phone layout**: one centred column, brand block first, roman numerals
+  hidden (a wide-layout ornament — in one centred column they just push the
+  labels off-centre), social icons centred instead of right-aligned.
+- **Content**: link list is now Weddings / Events / Catering / Venue / Gallery
+  / About Us / Investor Relations. Socials are Instagram / Facebook / WhatsApp
+  (YouTube dropped). Legal row + copyright match
+  phone-changes/terms-social accounts.jpeg. Credit links to the LinkedIn in
+  `SITE_CREDIT`.
+- **`lib/site-info.ts`** gained `SITE_SOCIALS`, `SITE_LEGAL`, `SITE_CREDIT`.
+
+### Laptop pin restored (2026-09-14)
+
+The in-flow rebuild above dropped the desktop motion the client had signed off:
+the dark panel holds still once it covers the screen while the wave + closing
+panel ride up over it. It is back, as a **computed sticky offset** on the dark
+panel (`darkRef` effect in FooterSection):
+
+    top = -(panelHeight - viewportHeight)     // -155px at 1440x819
+
+so it pins the instant its last row reaches the bottom of the screen. Verified:
+`darkTop` freezes at -155 from 155px into the footer while `riderTop` keeps
+climbing 819 → 382.
+
+⚠️ **`position: sticky; bottom: 0` is NOT the primitive for this** — tried it,
+measured it failing with a probe element on the live page. Sticky-bottom pulls
+an element UP into view *early* and releases once you scroll past; only
+sticky-TOP holds. Don't "simplify" the effect back to a CSS class.
+
+Phone opts out via `md:sticky` (static below 768px) and the effect clears the
+inline `top` there — the panel is ~3 viewports tall on a phone, so a pin would
+park most of it off-screen.
+
+Also: the footer's round logo is now `absolute left-1/2 -translate-x-1/2`.
+`justify-between` equalises GAPS, so unequal pill widths (136 vs 156) pushed it
+~10px off-centre, and since the pill labels are `clamp(…,vw,…)` that offset
+drifted with zoom.
+
+📌 **Worth knowing:** the reference site does NOT pin anything — measured, its
+footer moves exactly −300px per +300px of scroll. The pin is our own flourish,
+kept because the client asked for it specifically. Our panel proportions do
+match the reference closely (dark 974 / wave 100 / outro 437 vs their
+1032 / 123 / 328).
+
+🚨 **Placeholders that must be filled before launch** (all render as live links):
+  - `SITE_SOCIALS` Instagram + Facebook hrefs are `"#"`. WhatsApp is real —
+    derived from `SITE_PHONE`.
+  - `SITE_LEGAL` Privacy + Terms are `"#"`; `app/privacy/` and `app/terms/`
+    do not exist.
+  - "Investor Relations" has no page; it points at `/contact`.
+
 ⚠️ **Known, not addressed:** `sm:` (640px) appears in ~13 places — menu-builder
 grids, PackagesOverviewSection, WeddingPackagesSection, EventsHero,
 ExpertiseSection, SetMenuStep. That breakpoint fires INSIDE the browser-zoom

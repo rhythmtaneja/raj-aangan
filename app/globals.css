@@ -265,3 +265,68 @@ h3 {
     page-break-inside: avoid;
   }
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   FOOTER WAVE — drives components/ui/WaveDivider.tsx
+   ═════════════════════════════════════════════════════════════════════════
+
+   Lives here rather than in the component because Tailwind cannot express a
+   keyframe with per-nth-child durations, and because `<use>` elements can't
+   carry arbitrary utility classes cleanly.
+
+   ─── TUNE THESE KNOBS ──────────────────────────────────────────────────
+   ▸ SPEED       the four `animation-duration`s. Bigger = slower. Keep them
+                 mutually non-divisible (7/10/13/20) or the layers visibly
+                 re-synchronise into a single thick wave every few seconds.
+   ▸ DEPTH       the spread between fastest and slowest. 7→20 is the
+                 reference's. Narrow it and the parallax flattens.
+   ▸ TRAVEL      the -90px → 85px in the keyframe. These are SVG user units
+                 (the viewBox is 150 wide), NOT screen pixels, so they mean
+                 the same thing at every viewport width. 175 units of travel
+                 against a 176-unit wave period is what makes the loop
+                 seamless — see the geometry note in WaveDivider.tsx.
+
+   The negative `animation-delay`s start each layer mid-cycle, so the wave is
+   already in motion and out of phase on the very first painted frame instead
+   of all four layers starting stacked.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@keyframes ra-wave-move {
+  0% {
+    transform: translate3d(-90px, 0, 0);
+  }
+  100% {
+    transform: translate3d(85px, 0, 0);
+  }
+}
+
+.wave-parallax > use {
+  /* The easing is the point: `linear` reads as a conveyor belt. This curve is
+     slow at the ends and quick through the middle, which is what makes the
+     swell look like water rather than a scrolling texture. */
+  animation: ra-wave-move 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+  will-change: transform;
+}
+
+.wave-parallax > use:nth-child(1) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+}
+.wave-parallax > use:nth-child(2) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+}
+.wave-parallax > use:nth-child(3) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+}
+.wave-parallax > use:nth-child(4) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-parallax > use {
+    animation: none;
+  }
+}
