@@ -34,6 +34,13 @@ const NAV_LINKS = [
   { label: "GALLERY", href: "/gallery" },
   { label: "CONTACT", href: "/contact" },
   { label: "BLOG", href: "/blog" },
+  /* Added Sep 2026. The footer's "Investor Relations" already points here;
+     this puts it one tap from every page. Kept last so the seven marketing
+     links stay in their signed-off order, and labelled "INVESTORS" rather
+     than "INVESTOR RELATIONS" — the strategy doc's own recommendation for the
+     main navigation ("cleaner for the main navigation", §1), and the longer
+     label would have forced the desktop row to wrap. */
+  { label: "INVESTORS", href: "/investors" },
 ];
 
 const MENU_BUTTON_HREF = "/menu-builder";
@@ -45,7 +52,7 @@ const MENU_BUTTON_HREF = "/menu-builder";
 //   left     "Menu Builder" → /menu-builder  "Menu" → opens MobileNavDrawer
 //   right    "Booking" (inert button)        "Booking" → /menu-builder
 //
-// The inline NAV_LINKS row is desktop-only now; on a phone those seven links
+// The inline NAV_LINKS row is desktop-only now; on a phone those links
 // live inside the drawer. Each pill is rendered TWICE — once `md:hidden`, once
 // `hidden md:flex` — rather than switching one element's behaviour at runtime,
 // because the two versions are genuinely different elements (a <button> that
@@ -58,7 +65,7 @@ const MENU_BUTTON_HREF = "/menu-builder";
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Space between nav links. Desktop-only now — the row this styles is
-// `hidden md:block`, since the seven links moved into MobileNavDrawer on
+// `hidden md:block`, since the links moved into MobileNavDrawer on
 // phones. The phone values are kept only so the row still looks sane if the
 // breakpoint is ever lowered.
 const NAV_LINK_GAP = "gap-x-3.5 gap-y-1 md:gap-14";
@@ -424,8 +431,8 @@ export default function SiteHeader({
 
           {/*
             NAV CONTAINER — mousemove-tracked area. DESKTOP ONLY: on a phone
-            these seven links live in MobileNavDrawer instead (they wrapped to
-            two overflowing rows here). The whole block is `hidden md:block`,
+            these links live in MobileNavDrawer instead (they wrapped to two
+            overflowing rows here). The whole block is `hidden md:block`,
             so the cursor-tracking indicator below never runs on touch either.
           */}
           <div

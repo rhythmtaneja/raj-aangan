@@ -121,8 +121,8 @@ const BOOKING_HREF = "/menu-builder";
 
 // ─ Column 1: the main link list ────────────────────────────────────────────
 // Numerals are rendered on desktop only — see the phone note in the header.
-// ⚠️ "Investor Relations" has no page of its own; it points at /contact until
-// one exists.
+// "Investor Relations" now has its own page (app/investors/page.tsx), built
+// from pending-work/Investor/. It used to point at /contact as a stopgap.
 const EXPLORE = [
   { num: "I", label: "Weddings", href: "/events" },
   { num: "II", label: "Events", href: "/events" },
@@ -130,7 +130,7 @@ const EXPLORE = [
   { num: "IV", label: "Venue", href: "/venue" },
   { num: "V", label: "Gallery", href: "/gallery" },
   { num: "VI", label: "About Us", href: "/about" },
-  { num: "VII", label: "Investor Relations", href: "/contact" },
+  { num: "VII", label: "Investor Relations", href: "/investors" },
 ];
 
 // ─ Column 2 ────────────────────────────────────────────────────────────────
