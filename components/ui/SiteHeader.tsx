@@ -45,12 +45,39 @@ const NAV_LINKS = [
 
 const MENU_BUTTON_HREF = "/menu-builder";
 
+/* The Booking pill now opens a real page (Sep 2026) — hero + the guest's saved
+   quotations — instead of dropping straight into the wizard. Same destination
+   on phone and desktop, by request. */
+const BOOKING_BUTTON_HREF = "/booking";
+
+/**
+ * The drawer's list = NAV_LINKS with "Menu Builder" spliced in after EVENTS.
+ *
+ * WHY IT ISN'T JUST IN NAV_LINKS: that array also feeds the DESKTOP inline row,
+ * which already has a dedicated "Menu Builder" pill on its left — the link
+ * would be a duplicate there, and a ninth word would push the row to wrap.
+ * On a phone the pill is gone (the left pill is the hamburger), so the builder
+ * needs an entry of its own, and the client asked for it directly under Events.
+ */
+const MOBILE_NAV_LINKS = (() => {
+  const menuBuilder = { label: "MENU BUILDER", href: MENU_BUTTON_HREF };
+  const afterEvents = NAV_LINKS.findIndex((l) => l.label === "EVENTS") + 1;
+  // findIndex === -1 → afterEvents === 0 would put it FIRST, which is wrong;
+  // fall back to appending so a rename degrades to "last" rather than "first".
+  if (afterEvents === 0) return [...NAV_LINKS, menuBuilder];
+  return [...NAV_LINKS.slice(0, afterEvents), menuBuilder, ...NAV_LINKS.slice(afterEvents)];
+})();
+
 // ─── PHONE SPLIT (Sep 2026) ────────────────────────────────────────────────
 // The two header pills mean DIFFERENT things on a phone, by request:
 //
-//            desktop (md+, unchanged)        phone (< 768px)
+//            desktop (md+, ≥ 1024px)        phone + tablet (< 1024px)
 //   left     "Menu Builder" → /menu-builder  "Menu" → opens MobileNavDrawer
-//   right    "Booking" (inert button)        "Booking" → /menu-builder
+//   right    "Booking" → /booking            "Booking" → /booking
+//
+// The Menu Builder is reachable on a phone from INSIDE the drawer (an entry
+// directly under Events), not from the Booking pill any more — see
+// MOBILE_NAV_LINKS above.
 //
 // The inline NAV_LINKS row is desktop-only now; on a phone those links
 // live inside the drawer. Each pill is rendered TWICE — once `md:hidden`, once
@@ -377,10 +404,33 @@ export default function SiteHeader({
         </Link>
 
         {variant === "full" && (
+          /*
+            PHONE: an ordinary flex child, NOT an absolutely-positioned one.
+            ────────────────────────────────────────────────────────────────
+            It used to be `absolute left-1/2 top-1/2 -translate-1/2`, which
+            got both axes slightly wrong on a phone:
+
+              • HORIZONTALLY it centred on the SCREEN, but the two pills are
+                different widths ("Menu" vs "Booking"), so the gap to the left
+                pill was visibly wider than the gap to the right one.
+              • VERTICALLY it centred on the row's PADDING box (pt-5 / pb-4),
+                which is 2px above the pills' own centre line.
+
+            As a normal child of a `justify-between` row with exactly three
+            items, the two gaps around it are equal BY CONSTRUCTION, and
+            `items-center` on the row puts it on the pills' centre line. The
+            three items on a phone are: the hamburger pill, this, and the
+            Booking pill — the two `hidden md:flex` desktop pills contribute
+            nothing to the flex layout below 1024px.
+
+            DESKTOP is unchanged: `md:absolute` lifts it out of flow again and
+            re-pins it to the signed-off `left-1/2 / top-1.5rem` position, so
+            the row is back to two in-flow items exactly as before.
+          */
           <Link
             href="/"
-            className={`site-header-item absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:top-[1.5rem] md:translate-y-0 ${
-              hideCenterLogoOnPhone ? "hidden md:block" : ""
+            className={`site-header-item shrink-0 md:absolute md:left-1/2 md:top-[1.5rem] md:-translate-x-1/2 ${
+              hideCenterLogoOnPhone ? "hidden md:block" : "block"
             }`}
           >
             <Image
@@ -393,15 +443,21 @@ export default function SiteHeader({
                  unlike the approved gold mark. Scale its image box to retain
                  the same visible-logo footprint at every breakpoint. Keeping
                  both values in rem preserves the established responsive
-                 relationship with the header. */
-              className="h-[2.05rem] w-[2.05rem] md:h-[5.625rem] md:w-[5.625rem]"
+                 relationship with the header.
+
+                 PHONE 2.05rem → 2.75rem (Sep 2026): at 2.05rem the mark read
+                 as smaller than either pill and got lost between them. 2.75rem
+                 makes it the tallest thing in the row, which is what makes it
+                 read as the centre of the lockup. Keep MobileNavDrawer's panel
+                 logo in sync or the mark jumps when the drawer opens. */
+              className="h-[2.75rem] w-[2.75rem] md:h-[5.625rem] md:w-[5.625rem]"
             />
           </Link>
         )}
 
-        {/* BOOKING — phone: this is the way into the menu builder */}
+        {/* BOOKING — phone: opens the Booking page (hero + saved quotations) */}
         <Link
-          href={MENU_BUTTON_HREF}
+          href={BOOKING_BUTTON_HREF}
           className={`${PILL_BASE} flex md:hidden`}
         >
           {pillFill(2)}
@@ -409,18 +465,23 @@ export default function SiteHeader({
           <span className={PILL_LABEL}>Booking</span>
         </Link>
 
-        {/* BOOKING — desktop: unchanged (still awaiting the CRM workstream) */}
-        <button className={`${PILL_BASE} hidden md:flex`}>
+        {/* BOOKING — desktop: same destination as the phone pill. The Booking
+            page is explicitly "both phone and laptop", so this is no longer an
+            inert <button>. */}
+        <Link
+          href={BOOKING_BUTTON_HREF}
+          className={`${PILL_BASE} hidden md:flex`}
+        >
           {pillFill(3)}
           <TripIcon className={PILL_ICON} />
           <span className={PILL_LABEL}>Booking</span>
-        </button>
+        </Link>
       </div>
 
       {/* Phone nav panel. Rendered for every variant — the `minimal` venue
           pages have no inline nav at all, so the drawer is the only nav they
           have on a phone. */}
-      <MobileNavDrawer open={navOpen} onClose={closeNav} links={NAV_LINKS} />
+      <MobileNavDrawer open={navOpen} onClose={closeNav} links={MOBILE_NAV_LINKS} />
 
       {variant === "full" && (
         <>

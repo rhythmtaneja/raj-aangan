@@ -69,12 +69,15 @@ export default function BuilderLayout({
           <MenuIcon />
           <span className="font-semibold text-sm md:text-base">Menu</span>
         </Link>
-        <button
+        {/* Was an inert <button>. /booking exists now (hero + the guest's
+            saved quotations), and this pill mirrors SiteHeader's. */}
+        <Link
+          href="/booking"
           className="flex items-center gap-3 rounded-full bg-[#191919] px-6 py-3 text-white transition-opacity hover:opacity-90"
         >
           <BagIcon />
           <span className="font-semibold text-sm md:text-base">Booking</span>
-        </button>
+        </Link>
       </div>
 
       {/* Dynamic progress indicator */}

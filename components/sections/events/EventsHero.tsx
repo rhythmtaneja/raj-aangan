@@ -16,7 +16,7 @@ const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─ Section height ──
-const SECTION_HEIGHT = "min-h-[70vh] sm:h-screen"; // responsive height
+const SECTION_HEIGHT = "min-h-[70vh] md:h-screen"; // responsive height
 
 // ─ Background — replaces the "plain black strip" ──
 // Suggestion: use a bokeh/lights or blurred venue photo. Blur + dark overlay

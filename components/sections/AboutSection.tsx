@@ -166,7 +166,7 @@ export default function AboutSection() {
                 alt="Chef plating a luxury catering spread"
                 fill
                 className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
-                sizes="(max-width: 768px) 100vw, 600px"
+                sizes="(max-width: 1023px) 100vw, 600px"
               />
             </div>
           </Parallax>
@@ -190,7 +190,7 @@ export default function AboutSection() {
                   alt={`Raj Aangan catering ${i + 1}`}
                   fill
                   className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 1023px) 100vw, 600px"
                 />
               </div>
               <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />

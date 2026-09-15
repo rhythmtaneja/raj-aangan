@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import BuilderLayout from "@/components/menu-builder/BuilderLayout";
@@ -45,6 +45,12 @@ import {
   type QuoteLine,
   type QuoteSection,
 } from "@/lib/menu-builder/quote-doc";
+import {
+  activeBookingId,
+  clearActiveBookingId,
+  upsertBooking,
+  type SavedBooking,
+} from "@/lib/menu-builder/booking-history";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
@@ -64,6 +70,9 @@ const WHATSAPP_NUMBER = "9829012815";
 
 const DISCOUNT_PLACEHOLDER = "Enter discount code";
 const START_OVER_CONFIRM   = "Start over? All your selections will be cleared.";
+
+// Shown after the quote has been written into the guest's Booking History.
+const SAVED_TOAST = "Saved to your Booking History.";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -190,6 +199,31 @@ function VenueEventQuote() {
     contact: contactLine(pricing),
   };
 
+  // ─── Booking History ──────────────────────────────────────────────────
+  // Reaching this screen IS "completed all the steps", so the finished
+  // quotation is written to the guest's Booking History without them asking.
+  // The guard is what keeps junk out: a guest who deep-links to /quote with an
+  // empty wizard has no menu, and an entry with no menu is not a booking.
+  const hasMenu = customMenu ? state.selectedDishes.length > 0 : Boolean(state.selectedSetMenuId);
+  const saveBooking = useAutoSaveBooking(
+    hasMenu
+      ? {
+          kind: "venue-event",
+          headline: venue?.name || state.customVenueAddress || "Venue Event",
+          clientName: state.clientName,
+          contactPhone: state.contactPhone,
+          eventDate: state.eventDate,
+          guests: state.guests,
+          eventDays: state.eventDays,
+          summary: customMenu
+            ? `Custom menu · ${state.selectedDishes.length} dish${state.selectedDishes.length === 1 ? "" : "es"}`
+            : setMenu?.name ?? "Set menu",
+          total: formatINR(total),
+          doc,
+        }
+      : null,
+  );
+
   return (
     <BuilderLayout steps={steps} currentStep={stepIndexOf(steps, "quote")} backHref="/menu-builder/presentation">
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
@@ -265,7 +299,7 @@ function VenueEventQuote() {
         <EstimatedTotalRow value={formatINR(total)} />
 
         <QuoteTerms pricing={pricing} />
-        <ActionRow doc={doc} showToast={showToast} />
+        <ActionRow doc={doc} showToast={showToast} onSave={saveBooking} />
         <StartOver onClick={handleStartOver} />
         <Toast toast={toast} />
       </div>
@@ -343,6 +377,29 @@ function OutdoorQuote() {
     contact: contactLine(pricing),
   };
 
+  // See the note in VenueEventQuote — same contract, different guard: an
+  // outdoor order with no boxes in the cart is not a booking.
+  const saveBooking = useAutoSaveBooking(
+    lineItems.length > 0
+      ? {
+          kind: "outdoor",
+          headline: "Outdoor Catering & Bulk Order",
+          clientName: state.clientName,
+          contactPhone: state.contactPhone,
+          eventDate: state.eventDate,
+          // Outdoor is priced per box, not per head — the card hides both rows
+          // rather than printing a meaningless guest count.
+          guests: null,
+          eventDays: null,
+          summary: `${lineItems.length} item${lineItems.length === 1 ? "" : "s"}${
+            packaging ? ` · ${packaging.label}` : ""
+          }`,
+          total: formatINR(total),
+          doc,
+        }
+      : null,
+  );
+
   return (
     <BuilderLayout steps={STEPS_OUTDOOR} currentStep={4} backHref="/menu-builder/packaging">
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
@@ -417,7 +474,7 @@ function OutdoorQuote() {
         <EstimatedTotalRow value={formatINR(total)} />
 
         <QuoteTerms pricing={pricing} />
-        <ActionRow doc={doc} showToast={showToast} />
+        <ActionRow doc={doc} showToast={showToast} onSave={saveBooking} />
         <StartOver onClick={handleStartOver} />
         <Toast toast={toast} />
       </div>
@@ -453,6 +510,48 @@ function useDiscount(
   return { code, setCode, applied, apply };
 }
 
+/**
+ * Writes the finished quotation into the guest's Booking History, and hands
+ * back a `save` the "Save Booking" button can call again by hand.
+ *
+ * Pass `null` while the wizard has nothing worth saving — the hook then does
+ * nothing at all, so a deep-linked empty /quote never creates an entry.
+ *
+ * WHY THE FINGERPRINT. `draft` is a fresh object literal on every render, so
+ * it cannot be an effect dependency directly — the effect would re-run (and
+ * re-write localStorage) on every keystroke anywhere on the page. Serialising
+ * it means the effect fires exactly when the CONTENT of the quote changes,
+ * which is the condition we actually want.
+ *
+ * `id` and `savedAt` are resolved INSIDE the callback, never during render:
+ * `activeBookingId()` touches localStorage, which does not exist during SSR
+ * and must not run as a render side effect.
+ */
+function useAutoSaveBooking(draft: BookingDraft | null) {
+  const fingerprint = draft ? JSON.stringify(draft) : null;
+
+  const save = useCallback(() => {
+    if (!fingerprint) return false;
+    upsertBooking({
+      ...(JSON.parse(fingerprint) as BookingDraft),
+      // Stable for the whole wizard run, so editing guest count on this screen
+      // UPDATES the guest's booking instead of adding a near-duplicate.
+      id: activeBookingId(),
+      savedAt: new Date().toISOString(),
+    });
+    return true;
+  }, [fingerprint]);
+
+  useEffect(() => {
+    save();
+  }, [save]);
+
+  return save;
+}
+
+/** A SavedBooking minus the two fields useAutoSaveBooking fills in itself. */
+type BookingDraft = Omit<SavedBooking, "id" | "savedAt">;
+
 function useToast() {
   const [toast, setToast] = useState<string | null>(null);
   const showToast = (msg: string) => {
@@ -468,6 +567,11 @@ function startOver(
 ) {
   if (typeof window !== "undefined" && !window.confirm(START_OVER_CONFIRM)) return;
   dispatch({ type: "RESET_WIZARD" });
+  // Ends the wizard RUN, not the history: the booking already saved stays in
+  // /booking, and the next run gets an id of its own rather than overwriting
+  // it. Dropping this line is what would make Booking History hold exactly one
+  // entry forever.
+  clearActiveBookingId();
   router.push("/menu-builder/client");
 }
 
@@ -685,7 +789,16 @@ function QuoteTerms({ pricing }: { pricing: PricingSettings }) {
  *   • WhatsApp — opens a wa.me chat with WHATSAPP_NUMBER, pre-filled with the
  *     whole enquiry.
  */
-function ActionRow({ doc, showToast }: { doc: QuoteDoc; showToast: (msg: string) => void }) {
+function ActionRow({
+  doc,
+  showToast,
+  onSave,
+}: {
+  doc: QuoteDoc;
+  showToast: (msg: string) => void;
+  /** Re-saves this quote to Booking History; false when there is nothing to save. */
+  onSave: () => boolean;
+}) {
   const pageUrl = () => (typeof window === "undefined" ? "" : window.location.href);
 
   const generatePdf = () => {
@@ -733,7 +846,16 @@ function ActionRow({ doc, showToast }: { doc: QuoteDoc; showToast: (msg: string)
         <SecondaryButton label="Generate PDF" onClick={generatePdf} />
         <SecondaryButton label="Share" onClick={share} />
         <SecondaryButton label="WhatsApp" onClick={sendWhatsApp} />
-        <PrimaryButton label="Save Booking" onClick={() => showToast("Booking saved locally.")} />
+        <PrimaryButton
+          label="Save Booking"
+          onClick={() =>
+            showToast(
+              onSave()
+                ? SAVED_TOAST
+                : "Pick a menu first — there\u2019s nothing to save yet.",
+            )
+          }
+        />
       </div>
       <QuotePrintable doc={doc} />
     </>

@@ -117,7 +117,9 @@ const FOOTER_OUTRO_BG = "#1C5D6B"; // closing panel, one step lighter
 const PILL_BG = "bg-[#0d323d]";
 
 const MENU_HREF = "/menu-builder";
-const BOOKING_HREF = "/menu-builder";
+/* Mirrors SiteHeader's Booking pill, which opens the Booking page (hero + the
+   guest's saved quotations) rather than dropping straight into the wizard. */
+const BOOKING_HREF = "/booking";
 
 // ─ Column 1: the main link list ────────────────────────────────────────────
 // Numerals are rendered on desktop only — see the phone note in the header.
@@ -190,7 +192,7 @@ export default function FooterSection() {
    *
    * ─ WHY PHONE OPTS OUT ─────────────────────────────────────────────────
    * There the panel is ~3 viewports tall, so a pin would hold a single screenful
-   * and park the rest off-screen. `md:sticky` keeps it static below 768px, and
+   * and park the rest off-screen. `md:sticky` keeps it static below 1024px, and
    * the inline `top` is inert on a static element. Same trap the old sticky
    * WaveTop fell into — see WaveDivider.tsx.
    */
@@ -199,8 +201,10 @@ export default function FooterSection() {
     if (!el) return;
 
     const sync = () => {
-      // Must match Tailwind's `md:` — the one breakpoint this site has.
-      if (window.innerWidth < 768) {
+      // Must match Tailwind's `md:` — the one breakpoint this site has (1024px
+      // since 2026-09-16; the footer is ~3 viewports tall on a tablet too, so
+      // pinning it there would park most of it off-screen exactly as on a phone).
+      if (window.innerWidth < 1024) {
         el.style.top = "";
         return;
       }

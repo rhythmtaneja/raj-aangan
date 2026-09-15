@@ -71,7 +71,7 @@ export default function Step2VenuePage() {
 
         {/* OUR PROPERTIES */}
         <SectionLabel>Our Properties</SectionLabel>
-        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
           {ourProperties.map((v) => (
             <VenueCard
               key={v.id}
@@ -84,7 +84,7 @@ export default function Step2VenuePage() {
 
         {/* VENUE PARTNERS */}
         <SectionLabel>Venue Partner in Jaipur</SectionLabel>
-        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
           {partners.map((v) => (
             <VenueCard
               key={v.id}

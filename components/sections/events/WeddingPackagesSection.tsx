@@ -77,7 +77,7 @@ export default function WeddingPackagesSection() {
 
       {/* BOTTOM — white with two CTA buttons */}
       <div className={`w-full ${BOTTOM_PAD} px-6`} style={{ backgroundColor: BOTTOM_BG }}>
-        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 md:flex-row md:gap-10">
           <CircleButton
             href="#plan-wedding"
             circleColor="#191919"

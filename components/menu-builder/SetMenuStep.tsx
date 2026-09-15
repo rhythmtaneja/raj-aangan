@@ -42,8 +42,8 @@ const CARD_PADDING = "p-5 md:p-10";
 // Set-menu card knobs. Desktop dimensions match the Figma reference.
 const MENU_CARD_WIDTH = "15.25rem";
 const MENU_CARD_GAP = "gap-8";
-const MENU_CARD_HEIGHT = "sm:h-[13.9375rem]";
-const MENU_IMAGE_HEIGHT = "sm:h-[10.3125rem]";
+const MENU_CARD_HEIGHT = "md:h-[13.9375rem]";
+const MENU_IMAGE_HEIGHT = "md:h-[10.3125rem]";
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -131,7 +131,7 @@ export default function SetMenuStep() {
 
         {/* Custom builder CTA */}
         <div
-          className="mt-10 flex flex-col items-start gap-3 rounded-lg border border-dashed p-6 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-10 flex flex-col items-start gap-3 rounded-lg border border-dashed p-6 md:flex-row md:items-center md:justify-between"
           style={{ borderColor: GOLD, backgroundColor: `${GOLD}0d` }}
         >
           <div>

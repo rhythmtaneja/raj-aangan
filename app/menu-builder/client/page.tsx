@@ -115,7 +115,7 @@ export default function Step1ClientPage() {
         {/* ─── Catering Type (first section) ─────────────────────────────── */}
         <Divider label="Catering Type" />
         <div
-          className={`grid grid-cols-2 sm:grid-cols-[repeat(2,minmax(0,var(--card-width)))] ${CATERING_CARD_GAP}`}
+          className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] ${CATERING_CARD_GAP}`}
           style={{ "--card-width": CARD_DESKTOP_WIDTH } as CSSProperties}
         >
           {CATERING_TYPES.map((ct) => (

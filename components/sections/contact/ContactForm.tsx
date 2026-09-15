@@ -137,7 +137,7 @@ export default function ContactForm() {
                 alt="Venue interior"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 40vw"
+                sizes="(max-width: 1023px) 100vw, 40vw"
               />
             </div>
           </div>

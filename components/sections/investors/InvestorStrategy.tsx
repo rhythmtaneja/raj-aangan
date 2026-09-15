@@ -20,7 +20,7 @@
 import Reveal from "@/components/anim/Reveal";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
 import { STRATEGY } from "@/lib/investor-content";
-import { BODY_SM, CREAM_WARM, GOLD, H3, SECTION_PAD, TEXT_BODY, TEXT_MUTED, serif } from "./theme";
+import { BODY_SM, CREAM_WARM, GOLD, H3, NUMERAL_STEP, SECTION_PAD, TEXT_BODY, TEXT_MUTED, serif } from "./theme";
 
 export default function InvestorStrategy({ numeral }: SectionProps) {
   return (
@@ -51,10 +51,9 @@ export default function InvestorStrategy({ numeral }: SectionProps) {
                     style={{ backgroundColor: "rgba(191,154,63,0.35)" }}
                   />
                 )}
-                <span
-                  style={{ ...serif, color: GOLD }}
-                  className="text-[0.8125rem] uppercase tracking-[0.24em]"
-                >
+                {/* The step NUMBER ("01", "02", …) — see NUMERAL_STEP in
+                    theme.ts for why it is sized and set the way it is. */}
+                <span style={{ ...serif, color: GOLD }} className={NUMERAL_STEP}>
                   {s.step}
                 </span>
                 <h3 style={{ ...serif, color: TEXT_MUTED }} className={`mt-3 ${H3}`}>

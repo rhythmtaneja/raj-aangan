@@ -13,7 +13,7 @@
 import Reveal from "@/components/anim/Reveal";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
 import { WHY } from "@/lib/investor-content";
-import { BODY_SM, GOLD, H3, INK, SECTION_PAD, serif } from "./theme";
+import { BODY_SM, GOLD, H3, INK, NUMERAL_STEP, SECTION_PAD, serif } from "./theme";
 
 export default function InvestorWhy({ numeral }: SectionProps) {
   return (
@@ -37,10 +37,9 @@ export default function InvestorWhy({ numeral }: SectionProps) {
       >
         {WHY.map((w, i) => (
           <div key={w.title} className="flex flex-col items-center px-2 text-center">
-            <span
-              style={{ ...serif, color: GOLD }}
-              className="text-[0.8125rem] uppercase tracking-[0.24em]"
-            >
+            {/* "01" … "06". Same treatment as Strategy and Business — see
+                NUMERAL_STEP in theme.ts. */}
+            <span style={{ ...serif, color: GOLD }} className={NUMERAL_STEP}>
               {String(i + 1).padStart(2, "0")}
             </span>
             <span aria-hidden className="mt-3 block h-px w-8" style={{ backgroundColor: GOLD }} />

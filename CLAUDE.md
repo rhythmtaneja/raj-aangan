@@ -266,12 +266,15 @@ match the reference closely (dark 974 / wave 100 / outro 437 vs their
     do not exist.
   - "Investor Relations" has no page; it points at `/contact`.
 
-⚠️ **Known, not addressed:** `sm:` (640px) appears in ~13 places — menu-builder
-grids, PackagesOverviewSection, WeddingPackagesSection, EventsHero,
-ExpertiseSection, SetMenuStep. That breakpoint fires INSIDE the browser-zoom
-range and violates the md:-only rule. None of it affects phone rendering (a
-phone is below 640 either way), so it was left alone rather than risk the
-signed-off desktop — but it should be cleaned up before the next zoom audit.
+✅ **`sm:` is GONE (2026-09-15).** It used to appear in ~13 places —
+menu-builder grids, PackagesOverviewSection, WeddingPackagesSection,
+EventsHero, ExpertiseSection, SetMenuStep — and 640px fires INSIDE the
+browser-zoom range, so the page reflowed at ~175% zoom in violation of the
+md:-only rule. All of it is now `md:`, except PackagesOverviewSection, whose
+`sm:grid-cols-2` was simply DROPPED (it sat alongside an `md:grid-cols-3/4`,
+and two `md:grid-cols-*` on one element is undefined). Net effect: 640-767px
+now renders the phone layout, which is what the rule says it should.
+`grep -rn '\bsm:' app components lib` must stay empty.
 
 **Responsiveness (done this cycle):** all `clamp(min,Xvw,max)` font ceilings
 were **capped to their 1440px value** (`scripts/*` one-off; the vw coeff stays,
@@ -281,12 +284,121 @@ sidebar stacks below content (no inline grid override; two-col only lg+),
 ProgressBar has a compact "Step X of N" bar on mobile, card padding p-5 md:p-10,
 SiteHeader nav wraps on phones.
 
+## Booking page + phone nav pass (2026-09-15)
+
+**`/booking` is new** — the destination of every "Booking" pill on the site
+(SiteHeader phone AND desktop, BuilderLayout, FooterSection). Hero photograph
+→ a CTA → the guest's saved quotations.
+
+- **`lib/menu-builder/booking-history.ts`** is the store: `SavedBooking[]` in
+  `localStorage`, plus `useBookingHistory()`. Each entry holds the whole
+  `QuoteDoc`, so a saved booking renders exactly the quote the guest saw and
+  cannot be rewritten by a later price change.
+- **One entry per WIZARD RUN, not per visit to /quote.** The run's id lives in
+  `raec-active-booking-id` and is cleared only by Start Over, so editing guest
+  count on the Quote screen updates the entry instead of duplicating it.
+  `clearActiveBookingId()` in `startOver()` is load-bearing — drop it and the
+  history holds exactly one booking forever.
+- **The save is automatic.** Reaching /quote IS "completed all the steps", so
+  `useAutoSaveBooking` upserts there, guarded on an actual menu / cart so a
+  deep-linked empty wizard writes nothing. "Save Booking" re-saves by hand.
+- **Empty history renders NOTHING** (the section returns null) and the hero's
+  CTA becomes "Start Your Booking" → the wizard. That is the client's literal
+  requirement and also the only SSR-safe shape: localStorage is unreadable on
+  the server, so the first client render must match "nothing yet".
+- ⚠️ Still localStorage. See §D.14 — this is not lead capture.
+
+**Menu Builder moved into the phone drawer.** `MOBILE_NAV_LINKS` in
+SiteHeader splices a "Menu Builder" entry into NAV_LINKS after EVENTS, for the
+drawer only — NAV_LINKS also feeds the desktop inline row, which already has
+its own Menu Builder pill and cannot take a ninth word without wrapping.
+
+**The header's phone centre logo is an in-flow flex child now**, not
+`absolute left-1/2 top-1/2`. Absolute centring put it on the SCREEN's centre
+while the two pills are different widths ("Menu" vs "Booking"), so the gaps
+either side were visibly unequal, and `top-1/2` of the row's padding box sits
+2px above the pills' own centre line. Three items in a `justify-between` row
+have equal gaps by construction. `md:absolute` restores the signed-off desktop
+pinning exactly. Size 2.05rem → 2.75rem — **keep MobileNavDrawer's panel logo
+in sync** or the mark jumps as the drawer slides over the header.
+
+**Investors page typography.** The hero eyebrow ("INVESTOR RELATIONS") is full
+white / semibold with a text-shadow — at 70% white over a photo it was
+invisible. All the step numbers now share `NUMERAL_STEP` in
+`components/sections/investors/theme.ts` (Strategy, Why, Business); the
+Roadmap's worded "Phase 01" keeps its own size and takes `lining-nums` only.
+🔑 **`lining-nums` is the fix, not the font-size.** Cormorant Garamond ships
+OLD-STYLE figures, so "01" renders at x-height and reads as tiny however large
+you set it. `uppercase` does nothing to digits. Anywhere a numeral looks small
+on this site, check for lining figures first.
+
+## 📱 THE BREAKPOINT MOVED: 768px → 1024px (2026-09-16)
+
+**iPads now get the PHONE design.** The client reported the site "looking
+different" on iPad; measured, iPad portrait was being handed the DESKTOP
+design at a 9px root font:
+
+    viewport   root     nav link   header pill   form field
+    768px      8.53px   6.9px      28px tall     —
+    820px      9.11px   7.4px      30px tall     25px tall, 8px text
+    1024px     11.38px  9.2px      37px tall     —
+    1440px     16px     13px       52px tall     44px tall
+
+Nothing was broken — it was a mathematically perfect 57% scale of a design
+meant for a mouse. But an iPad is a TOUCH device and Apple's minimum tap
+target is 44px, so it was unusable in practice. This is precisely the
+trade-off globals.css always named ("a genuinely narrow DESKTOP window renders
+at a 10px root"); an iPad is that case and cannot resize out of it.
+
+**Three literals moved together** (a media query cannot read a CSS variable,
+so the number is written out three times — keep them in sync):
+
+  1. `--breakpoint-md: 1024px` in the new `@theme` block at the top of
+     globals.css. This moves EVERY `md:` in the app at once.
+  2. The root font-size floor, `clamp(8.5333px, …)` → `clamp(11.3778px, …)`.
+     **The floor MUST equal `breakpoint / 90`** or the layout enters the state
+     where rem freezes while vw/vh keep shrinking — the "design came apart"
+     failure. 1024/90 = 11.3778.
+  3. Both `@media (max-width: 767px)` blocks in globals.css → `1023px`, and
+     `PHONE_MAX_WIDTH` in `components/anim/anim.config.ts` → `1023`.
+
+Also moved, because they are the same boundary expressed in JS:
+ServicesSection's `matchMedia("(min-width: 768px)")` hover gate, and
+FooterSection's `innerWidth < 768` sticky-pin opt-out. `useIsPhone` derives
+from `PHONE_MAX_WIDTH` and needed no edit.
+
+**sm/lg/xl/2xl are now `initial`** — deleted from the theme, not merely
+unused. A stray `lg:` now generates NO CSS instead of silently reflowing the
+page at 125% zoom. The built stylesheet contains exactly one media query:
+`@media (min-width:1024px)`. That is the invariant to check after any Tailwind
+change: `grep -rho "@media (min-width:[^)]*)" .next/static/chunks/*.css | sort -u`.
+
+**COST:** a desktop window 768–1023px wide gets the phone design, and browser
+zoom crosses into the phone design at ~140% instead of ~190%. The desktop
+composition is still pixel-identical from 1024px to 1800px.
+
+**TEXT MEASURES ARE `min(rem, vw)` NOW.** The phone band runs to 1023px, so a
+cap tuned for a 390px phone rendered as a 320px ribbon down the middle of an
+820px iPad. The fix is one continuous expression, NOT a second media query:
+
+    max-width: min(34rem, 82vw)     /* 82vw @390px == 20rem, to the pixel */
+
+The vw term reproduces the signed-off phone value exactly at 390px; the rem
+term is the tablet ceiling. Applied to `.hero-display` / `.hero-tagline` in
+globals.css and to Hero, InvestorHero, SectionHeading and
+BookingHistorySection. Equivalences: 19rem≡78vw, 20rem≡82vw, 21rem≡86vw,
+22rem≡90vw (all at 390px).
+
 # 📐 ZOOM-PROOF LAYOUT — THE ONE RULE (2026-08-03)
 
+> ⚠️ **Numbers updated 2026-09-16** — the breakpoint and floor moved from
+> 768px/8.5333px to 1024px/11.3778px. See the section directly above. The
+> RULE below is unchanged and still governs; only the two constants differ.
+
 The desktop design is a **single-scalar uniform scale**. `globals.css` sets
-`html { font-size: clamp(8.5333px, 100vw/90, 20px) }` — 16px at the 1440px
+`html { font-size: clamp(11.3778px, 100vw/90, 20px) }` — 16px at the 1440px
 reference — and EVERY length in the app is a `rem` multiple of it. Between
-**768px and 1800px the page is a pure proportional scale of itself**: nothing
+**1024px and 1800px the page is a pure proportional scale of itself**: nothing
 can drift, no line-wrap point can flip. Browser zoom divides the CSS viewport
 (a 1440 window reports 1152 @125%, 960 @150%, 823 @175%, 720 @200%), so this
 gives an identical composition from 100% through ~187% zoom, and 200% lands
@@ -299,11 +411,11 @@ position by >0.6% of viewport width across that whole range.
    without a rem className. A px value freezes while everything around it
    shrinks — it silently doubles in relative size across the zoom range.
    1px hairlines/borders are the ONLY exception (they scale under real zoom).
-2. **Desktop layout switches on `md:` (768px) ONLY** — never `lg:`/`xl:`.
-   Media-query breakpoints resolve against the browser's initial 16px, not
-   the fluid root, so `lg:`(1024) and `xl:`(1280) fire *inside* the zoom
-   range and reflow the page at 150%/125% zoom. All former lg:/xl: desktop
-   variants were moved to md:.
+2. **Desktop layout switches on `md:` (now 1024px) ONLY.** `sm:`/`lg:`/`xl:`/
+   `2xl:` no longer exist — they are set to `initial` in the `@theme` block,
+   so using one generates no CSS at all. Media-query breakpoints resolve
+   against the browser's initial 16px, not the fluid root, so any second
+   breakpoint would fire *inside* the zoom range and reflow the page.
 3. **Marquee/carousel loop distances must be MEASURED from the DOM and
    rebuilt in a `ResizeObserver`**, never computed from constants and never
    via a lazy `x: () => -measure()` (a function-based value is resolved on
@@ -366,10 +478,12 @@ windows. Raise the clamp MIN in `globals.css` if that ever matters more.
    nav links moved into `components/ui/MobileNavDrawer.tsx`, opened by the
    header's left pill on phones only. **The two header pills now mean
    different things per breakpoint** (SiteHeader.tsx documents the split):
-   desktop left = "Menu Builder" → `/menu-builder`, right = the inert Booking
-   button, inline nav row unchanged; phone left = "Menu" → drawer, right =
-   "Booking" → `/menu-builder`, inline nav row hidden. Desktop was deliberately
-   left untouched.
+   desktop left = "Menu Builder" → `/menu-builder`, right = "Booking" →
+   `/booking`, inline nav row unchanged; phone left = "Menu" → drawer, right =
+   "Booking" → `/booking`, inline nav row hidden. **Superseded in part by the
+   Booking page pass below** — the phone Booking pill used to go to
+   `/menu-builder`, and the desktop Booking pill used to be an inert
+   `<button>`.
 - ~~Responsiveness calibration~~ — DONE 2026-08-03, see "ZOOM-PROOF LAYOUT"
    above. Reference width 1440 confirmed; the fluid-root floor was moved from
    12px (which bit at 1080px, mid-zoom-range) down to 768/90, all lg:/xl:
@@ -393,11 +507,14 @@ windows. Raise the clamp MIN in `globals.css` if that ever matters more.
     team as Editor at sanity.io/manage → Members). It currently sits under
     `rhythm1501taneja@gmail.com` — if the engagement ends they lose their CMS.
 13. Point the client at `docs/CMS_GUIDE.md` (field-by-field walkthrough).
-14. 🚨 **Bookings are saved NOWHERE.** A finished quote lives only in the
-    guest's `localStorage` (`context.tsx`) — no server record, no email, no
-    lead capture. That's Workstream 4 (deferred), but it must be flagged to
-    the client IN WRITING before handover: a quote tool that silently drops
-    every lead is worse than none.
+14. 🚨 **Bookings are saved NOWHERE *RAEC CAN SEE*.** A finished quote is now
+    written to the guest's own Booking History, but that is still
+    `localStorage` (see the Booking page notes above) — this browser only, no
+    server record, no email, no lead capture. /booking makes the gap LESS
+    visible to the guest and no smaller for the client, so it must still be
+    flagged IN WRITING before handover. Workstream 4 (CRM) is the fix;
+    `upsertBooking()` in `lib/menu-builder/booking-history.ts` is the single
+    place to also POST.
 
 # 📌 Live CMS facts
 - Sanity project `ze6ciec4`, dataset `production` (public read).

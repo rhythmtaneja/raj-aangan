@@ -64,6 +64,27 @@ export const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 // Quoted from the existing sections so the investors page inherits the exact
 // same sizes rather than approximating them.
 
+/**
+ * The STEP NUMBER that introduces an item in a numbered list — "01" over
+ * "Integrated business model", "02" over "Large & growing market", and the
+ * same role in Strategy and Business.
+ *
+ * ⚠️ `lining-nums` is the important half, not the size. Cormorant Garamond
+ * ships OLD-STYLE figures by default, which sit at x-height with descenders —
+ * so "01" rendered as two small marks and read as tiny no matter what
+ * font-size was set on it. Lining figures are full cap-height. `uppercase`
+ * does nothing to digits, which is why it never helped.
+ *
+ * Tracking is 0.18em rather than the 0.24em used for WORD labels: at this
+ * size the wider letter-spacing pulls "01" apart into two unrelated glyphs.
+ *
+ * Use this for pure numerals only. A worded label that merely contains digits
+ * ("Phase 01" in the Roadmap) keeps its own smaller size and just adds
+ * `lining-nums`.
+ */
+export const NUMERAL_STEP =
+  "font-semibold uppercase lining-nums tracking-[0.18em] text-[1.375rem] md:text-[clamp(1.375rem,1.75vw,1.5625rem)]";
+
 /** Uppercase label beside a NumeralMarker. = AboutSection / WhatWeOfferSection. */
 export const NUMERAL_LABEL =
   "leading-none uppercase tracking-[0.2em] text-[clamp(1rem,1.25vw,1.125rem)]";

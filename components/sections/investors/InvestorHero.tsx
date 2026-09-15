@@ -105,9 +105,14 @@ export default function InvestorHero() {
         correct as the fluid root font-size scales the header.
       */}
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-20 pt-28 text-center md:pb-28 md:pt-[12.5rem]">
+        {/* "INVESTOR RELATIONS". At 0.6875rem / 70% white over a 58%-dark
+            photograph this was effectively invisible — the client couldn't
+            find it. Now full white, semibold, a step larger, and with a soft
+            text-shadow so it stays legible over the LIGHT parts of the photo
+            too (an overlay opacity cannot guarantee contrast on its own). */}
         <p
-          className="hero-fade uppercase tracking-[0.28em] text-white/70 text-[0.6875rem] md:text-[0.8125rem]"
-          style={serif}
+          className="hero-fade font-semibold uppercase tracking-[0.28em] text-white text-[0.8125rem] md:text-[0.9375rem]"
+          style={{ ...serif, textShadow: "0 1px 12px rgba(0,0,0,0.45)" }}
         >
           {HERO.eyebrow}
         </p>
@@ -115,7 +120,7 @@ export default function InvestorHero() {
 
         <h1
           style={{ ...serif, fontSize: TITLE_FONT_SIZE }}
-          className="mt-8 max-w-[20rem] text-balance font-semibold leading-[1.1] text-white md:mt-10 md:max-w-[52rem] md:[text-wrap:auto]"
+          className="mt-8 max-w-[min(34rem,82vw)] text-balance font-semibold leading-[1.1] text-white md:mt-10 md:max-w-[52rem] md:[text-wrap:auto]"
         >
           {HERO.title.split(" ").map((w, i) => (
             <span key={i} className="hero-word inline-block will-change-transform">
@@ -127,7 +132,7 @@ export default function InvestorHero() {
 
         <p
           style={{ ...serif, fontSize: TAGLINE_FONT_SIZE }}
-          className="hero-fade mt-6 max-w-[22rem] leading-relaxed text-white/80 md:mt-8 md:max-w-[44rem]"
+          className="hero-fade mt-6 max-w-[min(36rem,90vw)] leading-relaxed text-white/80 md:mt-8 md:max-w-[44rem]"
         >
           {HERO.intro}
         </p>

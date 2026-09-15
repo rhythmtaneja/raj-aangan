@@ -1,5 +1,63 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE ONE BREAKPOINT  (moved 768px → 1024px, 2026-09-16)
+   ═══════════════════════════════════════════════════════════════════════════
+
+   `md:` is the ONLY design switch on this site: below it the phone layout,
+   above it the desktop layout, uniformly scaled by the root font-size rule
+   below. Redefining it here moves every `md:` in the app at once.
+
+   ─── WHY IT MOVED ──────────────────────────────────────────────────────────
+   At 768px the desktop design was handed to iPads, and measured on one it is
+   not usable:
+
+       viewport   root     nav link   header pill   form field
+       768px      8.53px   6.9px      28px tall     —
+       820px      9.11px   7.4px      30px tall     25px tall, 8px text
+       1024px     11.38px  9.2px      37px tall     —
+       1440px     16px     13px       52px tall     44px tall
+
+   An iPad is a TOUCH device. Apple's own minimum tap target is 44px; iPad
+   portrait was getting 25–30px, and body copy at 7–9px. The layout was not
+   broken — it was a mathematically perfect 57% scale of a design meant for a
+   mouse. That is the trade-off the root-font-size note below always named
+   ("a genuinely narrow DESKTOP window renders the design at a 10px root"); an
+   iPad is exactly that case, and unlike a narrow desktop window it cannot be
+   resized out of it.
+
+   The phone design already solves everything an iPad needs: 16px root, full
+   tap targets, the hamburger drawer, and no hover-only affordances (there is
+   no hover on glass). So iPad portrait now gets it.
+
+   ─── WHAT IT COSTS ─────────────────────────────────────────────────────────
+   A desktop window 768–1023px wide also gets the phone layout, and browser
+   zoom now crosses into the phone design at ~140% rather than ~190% (a 1440px
+   window reports 1152px at 125%, 960px at 150%). For a zooming visitor that
+   is arguably the better outcome — the phone design is the more legible one —
+   but it IS a change from the signed-off zoom behaviour. See the root
+   font-size note below for the full zoom table.
+
+   ─── KEEP THESE THREE IN SYNC ──────────────────────────────────────────────
+   A media query cannot read a CSS variable, so the number is written out in
+   three places and all three must move together:
+     1. this `--breakpoint-md`                    → 1024px
+     2. the two `@media (max-width: 1023px)` blocks in this file
+     3. `PHONE_MAX_WIDTH` in components/anim/anim.config.ts → 1023
+
+   sm/lg/xl/2xl are REMOVED, not just unused. They fire at 640/1024/1280/1536,
+   i.e. inside the zoom range, which is the failure the layout rule forbids;
+   deleting them means a stray `lg:` generates no CSS instead of silently
+   reflowing the page at 125% zoom.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+  --breakpoint-md: 1024px;
+  --breakpoint-sm: initial;
+  --breakpoint-lg: initial;
+  --breakpoint-xl: initial;
+  --breakpoint-2xl: initial;
+}
+
 @layer base {
   /* ═══════════════════════════════════════════════════════════════════════
      ─── TUNE THESE KNOBS ──────────────────────────────────────────────────
@@ -14,7 +72,7 @@
 
        REFERENCE VIEWPORT     1440px   ← the Figma artboard width
        REFERENCE ROOT SIZE      16px   ← 1rem at 1440px
-       MIN CLAMP           8.5333px   ← floor; == 768/90, i.e. the md: handoff
+       MIN CLAMP          11.3778px   ← floor; == 1024/90, i.e. the md: handoff
        MAX CLAMP                20px   ← ceiling; reached at 1800px and above
 
      FORMULA
@@ -24,58 +82,60 @@
        To change the reference viewport, recompute the divisor:
          1512px design → 1512 / 16 = 94.5  → calc(100vw / 94.5)
        To change where the clamps bite:
-         minViewport = MIN * divisor   (8.5333 * 90 = 768px)
+         minViewport = MIN * divisor   (11.3778 * 90 = 1024px)
          maxViewport = MAX * divisor   (20 * 90 = 1800px)
        So to keep scaling out to 1920px, raise MAX to 1920/90 = 21.33px.
 
      WHAT THIS GIVES YOU
-        768px →  8.53px (floor)     1440px → 16px (design reference, 1:1)
-        960px → 10.67px             1728px → 19.2px
-       1152px → 12.80px             1800px+ → 20px (clamped)
-       1280px → 14.22px
+       1024px → 11.38px (floor)    1440px → 16px (design reference, 1:1)
+       1152px → 12.80px            1728px → 19.2px
+       1280px → 14.22px            1800px+ → 20px (clamped)
+       1366px → 15.18px            (below 1024px → the phone design)
 
-     ─── WHY THE FLOOR IS AT 768 AND NOT HIGHER ───────────────────────────
-     The floor is the single most important number in this file. Above it the
-     page is a PURE UNIFORM SCALE of the 1440px design — every rem-based
-     length (Tailwind's p-8/gap-6/max-w-4xl and every hand-written token)
-     shrinks by the same factor, so nothing can drift relative to anything
-     else and no line-wrap point can flip. The moment the floor engages, rem
-     values FREEZE while `vw`-based font clamps, `vh`-based heights and `%`
-     bands keep shrinking — and that divergence is what makes the layout look
-     scrambled. The floor used to sit at 12px (== 1080px), which is squarely
-     inside the browser-zoom range, so the design came apart between 125% and
-     150% zoom. At 768/90 the proportional band covers the whole desktop
-     range and hands straight over to the mobile rule below.
+     ─── THE FLOOR MUST EQUAL THE BREAKPOINT ──────────────────────────────
+     The floor is the single most important number in this file, and its value
+     is not free: it must be `breakpoint / divisor` (1024/90), so that the
+     floor engages at exactly the width where the phone design takes over.
+
+     Above the floor the page is a PURE UNIFORM SCALE of the 1440px design —
+     every rem-based length (Tailwind's p-8/gap-6/max-w-4xl and every
+     hand-written token) shrinks by the same factor, so nothing can drift
+     relative to anything else and no line-wrap point can flip. The moment the
+     floor engages, rem values FREEZE while `vw`-based font clamps, `vh`-based
+     heights and `%` bands keep shrinking — and that divergence is what makes
+     the layout look scrambled. Keeping floor == breakpoint means that state
+     is never reachable: the phone rule below takes over on the same pixel.
+
+     (History: the floor sat at 12px (== 1080px) once, squarely inside the
+     zoom range, and the design came apart between 125% and 150% zoom. It then
+     sat at 768/90 = 8.5333px to match the old breakpoint. It is 1024/90 now
+     because the breakpoint moved — see THE ONE BREAKPOINT at the top of this
+     file for why.)
 
      Browser zoom divides the CSS viewport: a 1440px window reports 1152px at
-     125%, 960px at 150%, 823px at 175% and 720px at 200%. So this floor buys
-     an IDENTICAL desktop composition from 100% all the way through 175%, and
-     200% lands below 768px → mobile layout. That is the intended behaviour:
-     zoom magnifies, it never reflows, until the page deliberately becomes
-     the phone design.
+     125%, 960px at 150%, 823px at 175% and 720px at 200%. So the desktop
+     composition is IDENTICAL from 100% through ~140% zoom, and 150%+ lands
+     below 1024px → the phone design. Zoom magnifies without reflowing until
+     the page deliberately becomes the phone design. That switch is earlier
+     than it used to be (it was ~190%), which is the accepted cost of not
+     handing iPads a 9px root.
 
-     TRADE-OFF: a genuinely narrow DESKTOP window (say 900px at 100% zoom)
-     now renders the full desktop design at 10px root rather than a pinned
-     12px. That is the price of "nothing ever moves" and it is what the
-     reference site (resortkaskady.com, body: 1.3vmax) does too. Raise MIN if
-     narrow desktop windows ever matter more than zoom stability.
-
-     Media-query breakpoints are UNAFFECTED: `rem` inside a media query always
-     resolves against the browser's initial 16px, never against this value, so
-     Tailwind's md:/lg:/xl: still fire at 768/1024/1280px exactly as before.
-     For that reason NOTHING may use lg:/xl: for desktop layout — those fire
-     at 1024/1280px, i.e. INSIDE the zoom range, and would reflow the page at
-     125%/150% zoom. Desktop layout switches on `md:` only.
+     Media-query breakpoints are UNAFFECTED by this rule: `rem` inside a media
+     query always resolves against the browser's initial 16px, never against
+     this value, so `md:` fires at exactly 1024px regardless of the root size
+     here. sm/lg/xl/2xl no longer exist (see the top of this file) — `md:` is
+     the only variant that can switch layout, by construction.
      ═══════════════════════════════════════════════════════════════════════ */
   html {
     /* MUST stay in px — `rem` on the root element is self-referential.
-       8.5333px == 768/90, so the floor lands exactly on the md: handoff. */
-    font-size: clamp(8.5333px, calc(100vw / 90), 20px);
+       11.3778px == 1024/90, so the floor lands exactly on the md: handoff. */
+    font-size: clamp(11.3778px, calc(100vw / 90), 20px);
   }
 
-  /* Mobile keeps a fixed 16px root and uses ordinary responsive breakpoints —
-     the fluid scaling above is a DESKTOP-only mechanism. */
-  @media (max-width: 767px) {
+  /* Phone AND TABLET keep a fixed 16px root and use ordinary responsive
+     breakpoints — the fluid scaling above is a DESKTOP-only mechanism.
+     ⚠️ 1023px, not 767px: see THE ONE BREAKPOINT at the top of this file. */
+  @media (max-width: 1023px) {
     html {
       font-size: 16px;
     }
@@ -119,7 +179,7 @@ h3 {
 */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PHONE-ONLY OVERRIDES  (max-width: 767px)
+   PHONE + TABLET OVERRIDES  (max-width: 1023px)
    ═══════════════════════════════════════════════════════════════════════════
 
    WHY THESE LIVE HERE AND NOT AS `md:` CLASSES IN THE COMPONENT.
@@ -132,15 +192,16 @@ h3 {
    `md:text-[var(--x)]` is ambiguous in Tailwind (font-size vs colour), it
    resolved to `color`, and the desktop words silently lost their size.
 
-   A `@media (max-width: 767px)` block is provably unreachable above 767px, so
-   the desktop design CANNOT be affected by anything in here. `!important` is
+   A `@media (max-width: 1023px)` block is provably unreachable above 1023px,
+   so the desktop design CANNOT be affected by anything in here. (It was
+   767px until the breakpoint moved — see the top of this file.) `!important` is
    required only to win against those inline styles. This block is deliberately
    OUTSIDE `@layer`, so it also outranks Tailwind's utility layer.
 
    ⚠️ Do not move these rules into the components as `md:` variants. The
    desktop layout is signed off — this file is the safe place to diverge.
    ═══════════════════════════════════════════════════════════════════════════ */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   /* ── ServicesSection: vertical stack of plain links, no hover imagery ── */
   .services-row {
     flex-direction: column;
@@ -188,9 +249,22 @@ h3 {
      !important throughout: these beat the inline `style={{ fontSize }}` /
      `maxWidth` the hero components set from their own knob constants. Same
      reasoning as the ServicesSection rules above — see the block header. */
+  /* ⚠️ The measure caps are `min(rem, vw)`, NOT a flat rem, and NOT a second
+     media query. This block now covers everything up to 1023px, so it has to
+     serve a 390px phone and an 820px iPad from one rule:
+
+       390px phone → 82vw = 320px  ==  20rem, i.e. the signed-off phone
+                     measure, unchanged to within a fraction of a pixel.
+       820px iPad  → 34rem = 544px, so the hero fills a sensible share of the
+                     screen instead of a 320px ribbon down the middle.
+
+     A `@media (min-width: 768px) and (max-width: 1023px)` step would have
+     done the same thing and introduced the second breakpoint this file spends
+     its first 50 lines arguing against. One continuous expression cannot
+     reflow at a threshold, because it has no threshold. */
   .hero-display {
     text-wrap: balance;
-    max-width: 20rem !important;
+    max-width: min(34rem, 82vw) !important;
     margin-inline: auto;
   }
 
@@ -198,7 +272,7 @@ h3 {
     font-size: 1.375rem !important;
     line-height: 1.3 !important;
     text-wrap: balance;
-    max-width: 19rem !important;
+    max-width: min(30rem, 78vw) !important;
     margin-inline: auto;
   }
 

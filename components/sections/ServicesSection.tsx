@@ -245,8 +245,10 @@ export default function ServicesSection() {
   // affordance. On phones the section is a plain vertical link list, and a
   // stray touch firing these would tint the page background with no way to
   // clear it — there is no mouseleave on touch.
+  // Must match `--breakpoint-md` in globals.css (1024px), i.e. the inverse of
+  // PHONE_MAX_WIDTH. A tablet is a touch device and belongs on the phone side.
   const isDesktopPointer = () =>
-    typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+    typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches;
 
   // Zero every layer that sits BELOW `z` in the stack. Safe by construction:
   // the layer at `z` has just reached opacity 1 and covers the exact same

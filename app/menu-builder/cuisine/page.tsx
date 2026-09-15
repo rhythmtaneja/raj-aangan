@@ -41,7 +41,7 @@ const CARD_PADDING = "p-5 md:p-10";
 // aspect ratio as it shrinks.
 const CAT_CARD_W = 293;
 const CAT_CARD_H = 299;
-const CAT_GRID_COLS = "grid-cols-2 sm:grid-cols-3";
+const CAT_GRID_COLS = "grid-cols-2 md:grid-cols-3";
 const CAT_LABEL_PAD = "px-3 py-2.5";
 // Label strip: frosted white normally, warm gold wash once selected.
 const CAT_LABEL_BG = "rgba(255,255,255,0.95)";
@@ -136,7 +136,7 @@ export default function CustomCuisinePage() {
         </h3>
         <div className="mt-2 h-px w-full" style={{ backgroundColor: GOLD }} />
 
-        <div className={`mt-5 grid ${CAT_GRID_COLS} gap-4 sm:gap-5`}>
+        <div className={`mt-5 grid ${CAT_GRID_COLS} gap-4 md:gap-5`}>
           {cuisineCards.map((cat) => {
             const selected = selectedCuisines.includes(cat.id);
             return (
@@ -157,7 +157,7 @@ export default function CustomCuisinePage() {
                   src={cat.image}
                   alt={cat.name}
                   fill
-                  sizes={`(max-width: 640px) 50vw, ${CAT_CARD_W}px`}
+                  sizes={`(max-width: 1023px) 50vw, ${CAT_CARD_W}px`}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
                 <div

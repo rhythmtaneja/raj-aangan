@@ -133,7 +133,7 @@ export default function AboutStorySection() {
               alt="Raj Aangan story"
               fill
               className={`object-cover ${IMAGE_HOVER_TRANSITION} ${IMAGE_HOVER_SCALE}`}
-              sizes="(max-width: 768px) 100vw, 600px"
+              sizes="(max-width: 1023px) 100vw, 600px"
             />
             <div
               aria-hidden
@@ -185,7 +185,7 @@ export default function AboutStorySection() {
                   alt={`Raj Aangan story ${i + 2}`}
                   fill
                   className={`object-cover ${IMAGE_HOVER_TRANSITION} ${IMAGE_HOVER_SCALE}`}
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 1023px) 100vw, 600px"
                 />
                 <div
                   aria-hidden

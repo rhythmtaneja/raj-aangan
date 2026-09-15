@@ -40,9 +40,14 @@ export default function InvestorRoadmap({ numeral }: SectionProps) {
           <li key={r.phase}>
             <Reveal>
               <div className="flex flex-col items-center px-2 text-center">
+                {/* "Phase 01" — a worded label, so it keeps the small
+                    eyebrow size rather than taking NUMERAL_STEP. It still
+                    needs `lining-nums`: without it Cormorant's old-style
+                    digits sit at x-height beside full-height capitals, which
+                    reads as a rendering fault. */}
                 <span
                   style={{ ...serif, color: GOLD }}
-                  className="text-[0.8125rem] uppercase tracking-[0.24em]"
+                  className="lining-nums text-[0.8125rem] uppercase tracking-[0.24em]"
                 >
                   {r.phase}
                 </span>

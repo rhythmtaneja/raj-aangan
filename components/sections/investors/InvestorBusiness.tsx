@@ -20,7 +20,7 @@ import Reveal from "@/components/anim/Reveal";
 import ImageOverlay from "@/components/ui/ImageOverlay";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
 import { BUSINESS } from "@/lib/investor-content";
-import { CREAM_DEEP, GOLD, H3, PHOTO_FRAME_COLOR, PHOTO_FRAME_INSET, SECTION_PAD, serif } from "./theme";
+import { CREAM_DEEP, GOLD, H3, NUMERAL_STEP, PHOTO_FRAME_COLOR, PHOTO_FRAME_INSET, SECTION_PAD, serif } from "./theme";
 
 /* One image per vertical, drawn from what the site already ships. */
 const IMAGES: Record<string, string> = {
@@ -71,10 +71,11 @@ export default function InvestorBusiness({ numeral }: SectionProps) {
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-8 text-center text-white md:px-10">
                   <span
                     style={{ ...serif, color: GOLD }}
-                    /* Same text-shadow the title and body carry — the numeral
-                       sits over whatever the photograph happens to be doing
-                       up there, which on a daylight shot is near-white. */
-                    className="text-[0.8125rem] uppercase tracking-[0.24em] [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]"
+                    /* NUMERAL_STEP (theme.ts) plus the text-shadow the title
+                       and body carry — the numeral sits over whatever the
+                       photograph happens to be doing up there, which on a
+                       daylight shot is near-white. */
+                    className={`${NUMERAL_STEP} [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]`}
                   >
                     {b.num}
                   </span>

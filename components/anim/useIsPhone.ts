@@ -10,7 +10,7 @@
  *
  *   Almost every phone difference on this site belongs in a `md:` Tailwind
  *   variant, or (where an inline style would beat the class) in the
- *   `@media (max-width: 767px)` block at the bottom of globals.css. Reach for
+ *   `@media (max-width: 1023px)` block at the bottom of globals.css. Reach for
  *   this hook ONLY when JavaScript itself has to branch: a GSAP timeline that
  *   should be built differently, or — as in the two collage sections — a
  *   layout whose per-element coordinates are COMPUTED, so no media query can

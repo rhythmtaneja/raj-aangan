@@ -52,11 +52,13 @@ const PANEL_TRANSITION_MS = 420;
 // Roman numerals down the left of the list — the same treatment the footer
 // uses for its "explore" column, so the drawer looks like part of the site
 // rather than a bolted-on mobile menu.
-const NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+const NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
 
 // The gold CTA at the bottom. The drawer covers the header's Booking pill
-// while it is open, so the builder needs a way in from in here too.
-const BOOKING_HREF = "/menu-builder";
+// while it is open, so it mirrors that pill — which now opens the Booking page
+// (hero + the guest's saved quotations), not the wizard. The wizard has its own
+// entry in the link list above ("Menu Builder", directly under Events).
+const BOOKING_HREF = "/booking";
 const BOOKING_LABEL = "Start Your Booking";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -139,7 +141,9 @@ export default function MobileNavDrawer({ open, onClose, links }: Props) {
               alt="Raj Aangan Events and Caterers"
               width={110}
               height={110}
-              className="h-[2.05rem] w-[2.05rem]"
+              /* KEEP IN SYNC with SiteHeader's phone logo size, or the mark
+                 visibly jumps as the panel slides over the header. */
+              className="h-[2.75rem] w-[2.75rem]"
             />
           </Link>
           <button

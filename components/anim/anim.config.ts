@@ -60,16 +60,23 @@ export const prefersReducedMotion = (): boolean =>
 /**
  * The ONE phone/desktop boundary used by JS.
  *
- * It must stay identical to Tailwind's `md:` (768px) and to the
- * `@media (max-width: 767px)` block in globals.css — the layout rule in
+ * It must stay identical to `--breakpoint-md` (1024px) and to the two
+ * `@media (max-width: 1023px)` blocks in globals.css — the layout rule in
  * CLAUDE.md is that this site has exactly one breakpoint, and a second one
  * introduced here would reflow the page mid-browser-zoom.
+ *
+ * 767 → 1023 (2026-09-16): iPad portrait now gets the phone design rather
+ * than the desktop design at a 9px root. See THE ONE BREAKPOINT at the top of
+ * app/globals.css for the measurements and the trade-off. Everything gated on
+ * this — CircleButton's hover ball, ServicesSection's hover imagery, the two
+ * collage layouts via useIsPhone — is a mouse affordance, so a tablet wanting
+ * the phone behaviour is the point, not a side effect.
  *
  * Deliberately a WIDTH query rather than `(hover: none)`: it has to be true
  * in devtools' phone emulation too, since that is how the phone design is
  * reviewed, and ServicesSection already gates its hover imagery the same way.
  */
-export const PHONE_MAX_WIDTH = 767;
+export const PHONE_MAX_WIDTH = 1023;
 
 export const isPhoneViewport = (): boolean =>
   typeof window !== "undefined" &&

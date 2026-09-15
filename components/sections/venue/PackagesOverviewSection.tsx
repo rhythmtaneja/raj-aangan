@@ -63,7 +63,7 @@ export default function PackagesOverviewSection({
         className={`w-full ${MIDDLE_PAD} px-6 md:px-12`}
         style={{ backgroundColor: MIDDLE_BG }}
       >
-        <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 ${cols}`}>
+        <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 ${cols}`}>
           {packages.map((p) => (
             <Reveal key={p.name}>
               <OverviewCard {...p} />

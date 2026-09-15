@@ -46,6 +46,13 @@ type Props = {
   titleColor?: string;
 };
 
+/*
+ * MEASURE CAPS ARE `min(rem, vw)`, NOT A FLAT REM.
+ * The phone band runs to 1023px now (see THE ONE BREAKPOINT in globals.css),
+ * so a cap tuned for a 390px phone would render as a 320px ribbon on an 820px
+ * iPad. The vw term reproduces the phone value exactly at 390px; the rem term
+ * is the tablet ceiling. Same idiom as `.hero-display` / `.hero-tagline`.
+ */
 export default function SectionHeading({
   numeral,
   label,
@@ -85,7 +92,7 @@ export default function SectionHeading({
       <Reveal>
         <h2
           style={{ ...serif, color: titleColor ?? (light ? "#ffffff" : GOLD) }}
-          className={`${eyebrow ? "mt-7 md:mt-8" : "mt-10 md:mt-14"} max-w-[20rem] text-balance md:max-w-[48rem] md:[text-wrap:auto] ${H2}`}
+          className={`${eyebrow ? "mt-7 md:mt-8" : "mt-10 md:mt-14"} max-w-[min(34rem,82vw)] text-balance md:max-w-[48rem] md:[text-wrap:auto] ${H2}`}
         >
           {title}
         </h2>
@@ -95,7 +102,7 @@ export default function SectionHeading({
         <Reveal>
           <p
             style={{ ...serif, color: light ? "rgba(255,255,255,0.78)" : "#2a2a2a" }}
-            className="mt-5 max-w-[22rem] leading-relaxed text-[1.0625rem] md:mt-7 md:max-w-[46rem] md:text-[clamp(1.1rem,1.45vw,1.3125rem)]"
+            className="mt-5 max-w-[min(36rem,90vw)] leading-relaxed text-[1.0625rem] md:mt-7 md:max-w-[46rem] md:text-[clamp(1.1rem,1.45vw,1.3125rem)]"
           >
             {intro}
           </p>

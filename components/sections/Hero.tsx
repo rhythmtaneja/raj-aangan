@@ -99,7 +99,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           It normally lives in the header bar between the two pills; on a
           phone the client wants the two marks read as one centred lockup
           here instead, so SiteHeader is told to drop its copy
-          (`hideCenterLogoOnPhone`) and this one takes over below 768px.
+          (`hideCenterLogoOnPhone`) and this one takes over below 1024px.
           `md:hidden` + the header's `hidden md:block` are exact complements,
           so exactly one round logo exists at every width and the desktop
           composition is untouched.
@@ -136,7 +136,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
       */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-40 text-center md:pt-[calc(16.25rem+1rem)]">
         <div className="overflow-hidden">
-          <h1 className="hero-title mx-auto max-w-[19rem] font-medium leading-[1.12] text-white text-[1.9rem] md:max-w-275 md:leading-[1.03] md:text-[clamp(2.75rem,6.25vw,5.625rem)]">
+          <h1 className="hero-title mx-auto max-w-[min(32rem,78vw)] font-medium leading-[1.12] text-white text-[1.9rem] md:max-w-275 md:leading-[1.03] md:text-[clamp(2.75rem,6.25vw,5.625rem)]">
             The Crown of Heritage Hospitality
           </h1>
         </div>
@@ -145,7 +145,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           The <br/> is a desktop line-break; on phones it would strand a single
           word, so it is hidden and the paragraph wraps naturally.
         */}
-        <p className="hero-sub mx-auto mt-5 max-w-[20rem] text-center font-medium leading-relaxed text-white text-[0.9375rem] md:mt-10 md:max-w-4xl md:text-[clamp(1.125rem,1.56vw,1.375rem)]">
+        <p className="hero-sub mx-auto mt-5 max-w-[min(34rem,82vw)] text-center font-medium leading-relaxed text-white text-[0.9375rem] md:mt-10 md:max-w-4xl md:text-[clamp(1.125rem,1.56vw,1.375rem)]">
           Where ancient architecture
           <br className="hidden md:inline" />{" "}
           meets modern comfort to create unforgettable royal experience
