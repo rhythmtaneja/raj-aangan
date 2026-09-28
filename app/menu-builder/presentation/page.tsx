@@ -253,6 +253,12 @@ function PhotoGrid({
             onClick={() => onToggle(it.id)}
             className="group relative block h-full w-full overflow-hidden text-left"
             style={{
+              // Keep every tile's visual frame fixed; source photos may have
+              // different intrinsic dimensions, but must never size the card.
+              height: TILE_IMG_H,
+              minHeight: TILE_IMG_H,
+              maxHeight: TILE_IMG_H,
+              alignSelf: "stretch",
               borderRadius: "0.375rem",
               outline: selected ? `2px solid ${GOLD}` : "none",
             }}
@@ -262,7 +268,14 @@ function PhotoGrid({
               alt={it.name}
               fill
               sizes="(max-width: 640px) 50vw, 33vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className={`object-cover transition-transform duration-700 ease-out ${
+                // This source includes a large white border above and below
+                // the photograph. Zoom its photo area into the same frame as
+                // every other Stall Theme, while preserving their normal crop.
+                it.id === "royal-palace"
+                  ? "scale-[1.6] group-hover:scale-[1.68]"
+                  : "group-hover:scale-105"
+              }`}
             />
             <div
               aria-hidden
