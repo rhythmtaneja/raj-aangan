@@ -200,7 +200,7 @@ function CounterBlock({
       />
 
       <SectionLabel>Live Counter Design</SectionLabel>
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {designs.map((lc) => (
           <Pill
             key={lc.id}
@@ -241,16 +241,18 @@ function PhotoGrid({
   onToggle: (id: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+    <div
+      className="grid grid-cols-2 gap-4 md:grid-cols-3"
+      style={{ gridAutoRows: TILE_IMG_H }}
+    >
       {items.map((it) => {
         const selected = isSelected(it.id);
         return (
           <button
             key={it.id}
             onClick={() => onToggle(it.id)}
-            className="group relative overflow-hidden text-left"
+            className="group relative block h-full w-full overflow-hidden text-left"
             style={{
-              height: TILE_IMG_H,
               borderRadius: "0.375rem",
               outline: selected ? `2px solid ${GOLD}` : "none",
             }}
@@ -277,10 +279,10 @@ function PhotoGrid({
                 </svg>
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 z-20 bg-white/95 px-3 py-2">
+            <div className="absolute inset-x-0 bottom-0 z-20 flex h-[3.625rem] items-center bg-white/95 px-3 py-2">
               <span
                 style={{ ...serif, color: selected ? GOLD : INK }}
-                className="text-sm font-medium"
+                className="line-clamp-2 text-sm font-medium leading-snug"
               >
                 {it.name}
               </span>
@@ -304,7 +306,7 @@ function Pill({
   return (
     <button
       onClick={onClick}
-      className="rounded-full px-5 py-2 text-sm transition-colors"
+      className="w-full rounded-full px-2 py-2 text-sm transition-colors"
       style={{
         backgroundColor: selected ? GOLD : "transparent",
         color: selected ? "#ffffff" : INK,

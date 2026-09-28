@@ -273,9 +273,9 @@ function TotalBlock({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-2 items-baseline gap-3 py-2.5 text-[clamp(0.9rem,1vw,0.9375rem)]">
+    <div className="grid grid-cols-2 items-start gap-3 py-2.5 text-[clamp(0.9rem,1vw,0.9375rem)]">
       <span style={{ ...serif, color: ROW_LABEL_COLOR }}>{label}</span>
-      <span style={{ ...serif, color: VALUE_COLOR }} className="truncate">
+      <span style={{ ...serif, color: VALUE_COLOR }} className="min-w-0 break-words leading-snug">
         {value}
       </span>
     </div>

@@ -154,14 +154,14 @@ export default function SetMenuStep() {
         {/* Section pickers for the selected menu */}
         {selectedMenu && (
           <div className="mt-10">
-            <div className="mb-3 flex items-center gap-4">
+            <div className="mb-3 flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
               <h3
                 style={{ ...serif, color: INK }}
-                className="shrink-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold tracking-wide"
+                className="min-w-0 text-[clamp(1.15rem,1.7vw,1.375rem)] font-semibold leading-snug tracking-wide md:shrink-0"
               >
                 {selectedMenu.name} — Choose Your Dishes
               </h3>
-              <div className="h-px flex-1" style={{ backgroundColor: "#e5e5e5" }} />
+              <div className="hidden h-px flex-1 md:block" style={{ backgroundColor: "#e5e5e5" }} />
             </div>
             {selectedMenu.description && (
               <p style={{ color: INK_MUTED }} className="mb-6 text-sm">

@@ -45,6 +45,8 @@ type Props = {
   nextLabel?: string;
   onNext?: () => void | boolean;
   nextDisabled?: boolean;
+  /** The final quote is already the complete summary, so it omits the live preview. */
+  showBookingSummary?: boolean;
 };
 
 export default function BuilderLayout({
@@ -57,6 +59,7 @@ export default function BuilderLayout({
   nextLabel,
   onNext,
   nextDisabled,
+  showBookingSummary = true,
 }: Props) {
   return (
     <div className="min-h-screen w-full" style={{ backgroundColor: MB_COLORS.bg }}>
@@ -88,16 +91,18 @@ export default function BuilderLayout({
           the summary stacks below with a horizontal divider instead. */}
       <div className={`mx-auto ${CONTENT_MAX_W} ${CONTENT_PAD_X} pb-16`}>
         <div
-          className={`grid grid-cols-1 ${GRID_COLS} overflow-hidden rounded-sm`}
+          className={`grid grid-cols-1 ${showBookingSummary ? GRID_COLS : ""} overflow-hidden rounded-sm`}
           style={{ backgroundColor: MB_COLORS.card }}
         >
           <main className="min-w-0">{children}</main>
-          <div
-            className={`border-t md:border-t-0 md:border-l ${SUMMARY_PAD}`}
-            style={{ borderColor: MB_COLORS.border }}
-          >
-            <BookingSummary steps={steps} currentStep={currentStep} />
-          </div>
+          {showBookingSummary && (
+            <div
+              className={`border-t md:border-t-0 md:border-l ${SUMMARY_PAD}`}
+              style={{ borderColor: MB_COLORS.border }}
+            >
+              <BookingSummary steps={steps} currentStep={currentStep} />
+            </div>
+          )}
         </div>
 
         {/* Nav sits below the panel on the navy background (figma reference). */}

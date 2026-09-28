@@ -225,7 +225,12 @@ function VenueEventQuote() {
   );
 
   return (
-    <BuilderLayout steps={steps} currentStep={stepIndexOf(steps, "quote")} backHref="/menu-builder/presentation">
+    <BuilderLayout
+      steps={steps}
+      currentStep={stepIndexOf(steps, "quote")}
+      backHref="/menu-builder/presentation"
+      showBookingSummary={false}
+    >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <QuoteHeader title={pricing.quoteHeading} subtitle={pricing.quoteSubheading} />
 
@@ -401,7 +406,12 @@ function OutdoorQuote() {
   );
 
   return (
-    <BuilderLayout steps={STEPS_OUTDOOR} currentStep={4} backHref="/menu-builder/packaging">
+    <BuilderLayout
+      steps={STEPS_OUTDOOR}
+      currentStep={4}
+      backHref="/menu-builder/packaging"
+      showBookingSummary={false}
+    >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
         <QuoteHeader
           title="Review & Quote — Outdoor Order"
