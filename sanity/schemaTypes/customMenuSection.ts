@@ -1,15 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/customMenuSection.ts
-// ══════════════════════════════════════════════════════════════════
-// One section of the à-la-carte master menu used by the custom builder
-// (/menu-builder/custom-menu) — e.g. "The Great Indian Chaat Experience".
-// Mirrors `CustomMenuSection` in lib/menu-builder/types.ts: a section holds
-// subsections, and a subsection holds the dishes with their per-plate prices.
-//
-// A section with a single blank-labelled subsection renders as a flat list.
-// Item ids come from the array `_key`s (seeded from the generated file).
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
@@ -21,14 +9,15 @@ export default defineType({
       name: "label",
       title: "Section Name",
       type: "string",
-      description: 'The heading guests see, e.g. “The Soup Atelier”.',
+      description: "The heading guests see, e.g. “The Soup Atelier”.",
       validation: (r) => r.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
-      description: "Used as the section's id. Generate once and leave it alone.",
+      description:
+        "Used as the section's id. Generate once and leave it alone.",
       options: { source: "label", maxLength: 96 },
       validation: (r) => r.required(),
     }),
@@ -62,7 +51,8 @@ export default defineType({
               name: "label",
               title: "Group Name",
               type: "string",
-              description: 'Leave blank for a flat list, e.g. “The Nawabi Chaat Atelier”.',
+              description:
+                "Leave blank for a flat list, e.g. “The Nawabi Chaat Atelier”.",
             }),
             defineField({
               name: "items",
@@ -83,13 +73,15 @@ export default defineType({
                       name: "traditionalName",
                       title: "Traditional Name",
                       type: "string",
-                      description: "Optional second line, e.g. “Aloo Bukhara / Plum”.",
+                      description:
+                        "Optional second line, e.g. “Aloo Bukhara / Plum”.",
                     }),
                     defineField({
                       name: "description",
                       title: "Description",
                       type: "string",
-                      description: "Optional — used instead of the traditional name when set.",
+                      description:
+                        "Optional — used instead of the traditional name when set.",
                     }),
                     defineField({
                       name: "price",
@@ -115,13 +107,23 @@ export default defineType({
                       price: "price",
                       isActive: "isActive",
                     },
-                    prepare({ title, traditionalName, description, price, isActive }) {
-                      const bits = [traditionalName || description, price ? `₹${price}` : null]
+                    prepare({
+                      title,
+                      traditionalName,
+                      description,
+                      price,
+                      isActive,
+                    }) {
+                      const bits = [
+                        traditionalName || description,
+                        price ? `₹${price}` : null,
+                      ]
                         .filter(Boolean)
                         .join(" · ");
                       return {
                         title,
-                        subtitle: isActive === false ? `${bits} · hidden` : bits,
+                        subtitle:
+                          isActive === false ? `${bits} · hidden` : bits,
                       };
                     },
                   },
@@ -156,15 +158,23 @@ export default defineType({
     },
   ],
   preview: {
-    select: { title: "label", subsections: "subsections", isActive: "isActive" },
+    select: {
+      title: "label",
+      subsections: "subsections",
+      isActive: "isActive",
+    },
     prepare({ title, subsections, isActive }) {
       const groups = Array.isArray(subsections) ? subsections : [];
       const items = groups.reduce(
-        (n: number, g: { items?: unknown[] }) => n + (Array.isArray(g.items) ? g.items.length : 0),
+        (n: number, g: { items?: unknown[] }) =>
+          n + (Array.isArray(g.items) ? g.items.length : 0),
         0,
       );
       const label = `${items} ${items === 1 ? "dish" : "dishes"}`;
-      return { title, subtitle: isActive === false ? `${label} · hidden` : label };
+      return {
+        title,
+        subtitle: isActive === false ? `${label} · hidden` : label,
+      };
     },
   },
 });

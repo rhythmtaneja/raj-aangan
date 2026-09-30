@@ -5,34 +5,19 @@ import Reveal from "@/components/anim/Reveal";
 import CircleButton from "@/components/anim/CircleButton";
 import ImageOverlay from "@/components/ui/ImageOverlay";
 
-
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Section bg + title ──
-// NOTE: In Figma this section is titled "Decor & Styling" but its cards are
-// general services (Theme & Concept, Guest Hospitality etc.). Image 6 uses
-// the same title with actual decor themes. Assuming a paste error — using
-// "Our Services" as placeholder. Change SECTION_TITLE when confirmed.
 const SECTION_BG = "#ffffff";
-const SECTION_TITLE = "Our Services";        // ← confirm w/ Figma; may be "Decor & Styling"
+const SECTION_TITLE = "Our Services";
 const TITLE_COLOR = "#191919";
 
-// ─ Card image ──
-const CARD_ASPECT = "aspect-square"; // matches Figma; use aspect-[4/5] for taller
+const CARD_ASPECT = "aspect-square";
 
-// ─ Frame on each card ──
 const FRAME_INSET = "1rem";
 const FRAME_COLOR = "rgba(255,255,255,0.7)";
 
-// ─ Grid gap ──
 const GAP_X = "gap-x-8";
 const GAP_Y = "gap-y-16";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type Service = {
   title: string;
@@ -114,7 +99,9 @@ export default function EventsServicesGrid() {
         </h2>
       </Reveal>
 
-      <div className={`mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-2 md:grid-cols-3 ${GAP_X} ${GAP_Y}`}>
+      <div
+        className={`mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-2 md:grid-cols-3 ${GAP_X} ${GAP_Y}`}
+      >
         {SERVICES.map((s) => (
           <Reveal key={s.title}>
             <ServiceCard {...s} />
@@ -128,7 +115,6 @@ export default function EventsServicesGrid() {
 function ServiceCard({ title, description, image, href = "#" }: Service) {
   return (
     <div className="group flex flex-col">
-      {/* Image card with text overlay + inner frame */}
       <div className={`relative ${CARD_ASPECT} w-full overflow-hidden`}>
         <Image
           src={image}
@@ -138,13 +124,13 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
         <ImageOverlay opacity={0.44} />
-        {/* Inner outline frame */}
+
         <div
           aria-hidden
           className="pointer-events-none absolute z-10"
           style={{ inset: FRAME_INSET, border: `1px solid ${FRAME_COLOR}` }}
         />
-        {/* Text overlay */}
+
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
           <h3
             style={serif}
@@ -161,16 +147,12 @@ function ServiceCard({ title, description, image, href = "#" }: Service) {
         </div>
       </div>
 
-      {/* "See our services" button below the card */}
       <div className="mt-10 flex justify-center">
         <CircleButton
           href={href}
           circleColor="#191919"
           arrowColor="#ffffff"
-          // The card image sits directly above, so the whole reach of the ball
-          // — radius x (1 + magnet) — has to fit in the gap. mt-10 (40px) plus
-          // half the pill (~21px) gives 61px; 50 x 1.2 = 60px fits. Was
-          // 7.5rem/0.3, a 78px reach against a 45px gap: it ate the card.
+
           circleSize="6.25rem"
           magnet={0.2}
           className="rounded-full border border-[#191919] px-6 py-2.5 text-[#191919] text-[clamp(0.85rem,0.95vw,0.875rem)]"

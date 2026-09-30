@@ -1,7 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/venue/VenuePropertiesSection.tsx
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import Image from "next/image";
@@ -12,33 +8,22 @@ import ImageOverlay from "@/components/ui/ImageOverlay";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const SECTION_BG = "#ffffff"; // matches VenueHero.HERO_BLEND_TO_COLOR
+const SECTION_BG = "#ffffff";
 const SECTION_PAD = "pt-24 pb-12 md:pt-32 md:pb-16";
 const PARTNERS_CTA_GAP = "mt-12 md:mt-16";
-// Split layout ← → glass chrome, same as VenueHero: the chrome goes on
-// CircleButton's `pillClassName` layer so the whole pill fades on hover
-// instead of the ball opening on top of it.
+
 const GLASS_EXPLORE_BUTTON_CLASS =
   "min-h-[3.125rem] min-w-[8.125rem] px-6 py-2.5 text-white text-[clamp(0.85rem,0.95vw,0.875rem)]";
 const GLASS_EXPLORE_PILL_CLASS =
   "rounded-full border-[0.5px] border-white/55 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-1px_0_rgba(255,255,255,0.06),0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-md";
 
-// ─ Property card ──
-const CARD_ASPECT = "aspect-square"; // matches Figma; try aspect-[4/5] for taller
+const CARD_ASPECT = "aspect-square";
 const FRAME_INSET = "1rem";
 const FRAME_COLOR = "rgba(255,255,255,0.65)";
 
-// ─ Overlay tint on card image so title reads clearly ──
 const CARD_OVERLAY = "rgba(15,10,10,0.30)";
 
-// ─ Gap between the two property cards ──
 const CARD_GAP = "gap-8 md:gap-14";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type Property = {
   name: string;
@@ -66,8 +51,9 @@ export default function VenuePropertiesSection() {
       className={`relative w-full px-6 ${SECTION_PAD} md:px-12`}
       style={{ backgroundColor: SECTION_BG }}
     >
-      {/* Two property cards */}
-      <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 ${CARD_GAP} md:grid-cols-2`}>
+      <div
+        className={`mx-auto grid w-full max-w-6xl grid-cols-1 ${CARD_GAP} md:grid-cols-2`}
+      >
         {PROPERTIES.map((p) => (
           <Reveal key={p.name}>
             <PropertyCard {...p} />
@@ -75,7 +61,6 @@ export default function VenuePropertiesSection() {
         ))}
       </div>
 
-      {/* Our Venue Partners CTA (this one is standalone — not nested) */}
       <Reveal>
         <div className={`${PARTNERS_CTA_GAP} flex justify-center`}>
           <CircleButton
@@ -96,7 +81,6 @@ export default function VenuePropertiesSection() {
 
 function PropertyCard({ name, image, href }: Property) {
   return (
-    // Outer Link → whole card is clickable + accessible as a link.
     <Link href={href} className="group block">
       <div className={`relative ${CARD_ASPECT} w-full overflow-hidden`}>
         <Image
@@ -107,15 +91,18 @@ function PropertyCard({ name, image, href }: Property) {
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
         <ImageOverlay opacity={0.44} />
-        {/* Dark overlay so title reads over any photo */}
-        <div className="absolute inset-0" style={{ backgroundColor: CARD_OVERLAY }} />
-        {/* Inner outline frame */}
+
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: CARD_OVERLAY }}
+        />
+
         <div
           aria-hidden
           className="pointer-events-none absolute z-10"
           style={{ inset: FRAME_INSET, border: `1px solid ${FRAME_COLOR}` }}
         />
-        {/* Centered title + Explore button — asStatic so no <a>-inside-<a> */}
+
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
           <h3
             style={serif}
@@ -128,10 +115,7 @@ function PropertyCard({ name, image, href }: Property) {
               asStatic
               circleColor="#ffffff"
               arrowColor="#191919"
-              // Same clearance budget as VenueHero: mt-12 (48px) + half the
-              // pill (25px) = 73px from the card title to the ball's centre,
-              // against a reach of 50 x 1.22 = 61px. Was 9.25rem/0.3 — a reach
-              // of 96px, which swallowed the property name.
+
               circleSize="6.25rem"
               magnet={0.22}
               className={GLASS_EXPLORE_BUTTON_CLASS}

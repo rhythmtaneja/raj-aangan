@@ -1,17 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/presentationOption.ts
-// ══════════════════════════════════════════════════════════════════
-// Every picture-tile / pill option on the Presentation step, in one type with
-// a "kind" selector (the desk splits them into five lists):
-//   • cutlery          — Base Table Cutlery tiles
-//   • presentationStyle— Presentation Style tiles
-//   • stallTheme       — Stall Design Theme tiles
-//   • liveCounterTile  — "Choose Your Live Counters" photo tiles
-//   • liveCounter      — live-counter design pills
-//
-// Code equivalent (fallback): lib/menu-builder/config.ts.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineField, defineType } from "sanity";
 
 export const PRESENTATION_KINDS = [
@@ -90,9 +76,15 @@ export default defineType({
     },
   ],
   preview: {
-    select: { title: "name", kind: "kind", media: "image", isActive: "isActive" },
+    select: {
+      title: "name",
+      kind: "kind",
+      media: "image",
+      isActive: "isActive",
+    },
     prepare({ title, kind, media, isActive }) {
-      const label = PRESENTATION_KINDS.find((k) => k.value === kind)?.title ?? kind;
+      const label =
+        PRESENTATION_KINDS.find((k) => k.value === kind)?.title ?? kind;
       return {
         title,
         subtitle: isActive === false ? `${label} · hidden` : label,

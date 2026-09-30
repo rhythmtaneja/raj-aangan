@@ -1,8 +1,7 @@
-// RSS 2.0 feed for the blog at /blog/rss.xml.
 import { client } from "@/sanity/client";
 import { isSanityConfigured } from "@/sanity/env";
 
-export const revalidate = 3600; // rebuild the feed hourly
+export const revalidate = 3600;
 
 type RssItem = {
   title: string;

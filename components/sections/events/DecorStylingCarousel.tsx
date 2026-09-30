@@ -12,47 +12,25 @@ gsap.registerPlugin(useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Three horizontal bands (same split-bg pattern as WeddingPackagesSection) ──
 const TOP_BG = "#ffffff";
-const MIDDLE_BG = "#0f2f3b"; // dark navy — should match ContactForm / WeddingPackages middle
+const MIDDLE_BG = "#0f2f3b";
 const BOTTOM_BG = "#ffffff";
 
 const TITLE_COLOR = "#191919";
 
-// ─ Padding per band ──
 const TOP_PAD = "py-14";
 const MIDDLE_PAD = "py-16";
-// The bottom band has to be tall enough to CONTAIN the CTA's hover ball, not
-// just its resting pill. The ball is 9.375rem (150px) across and grows from the
-// pill's centre, so it needs ~75px of clear space above and below that centre;
-// at py-10 (40px) it spilled out of the white band into the navy carousel above
-// and the section below. The ball's full reach is radius x (1 + magnet) = 98px
-// from the pill's centre, so 96px of padding either side of a ~48px pill clears
-// it with ~22px to spare even when the magnet has pulled the ball hard over.
+
 const BOTTOM_PAD = "py-24";
 
-// ─ Card sizing ──
-// rem, NOT px — the desktop layout scales off the root font-size (see
-// globals.css). A px card would stay 320px while everything around it shrank,
-// so it would balloon from 22% to 42% of the viewport across the browser-zoom
-// range. The loop distance is measured from the live DOM instead.
-const CARD_WIDTH = "20rem";   // 320px at the 1440px reference
-const CARD_HEIGHT = "20rem";  // square
-const CARD_GAP = "2rem";      // 32px at the 1440px reference
+const CARD_WIDTH = "20rem";
+const CARD_HEIGHT = "20rem";
+const CARD_GAP = "2rem";
 
-// ─ Frame on each image ──
 const FRAME_INSET = "0.75rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
-// ─ Auto-scroll ──
-// Seconds for one full loop of the ORIGINAL set. Higher = slower.
 const SCROLL_DURATION = 40;
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type Theme = { name: string; image: string };
 
@@ -74,17 +52,12 @@ export default function DecorStylingCarousel() {
       const track = trackRef.current;
       if (!track) return;
 
-      // MEASURED, not computed from the constants: the cards are rem-sized, so
-      // their px width tracks the fluid root font-size. `paddingLeft` adds one
-      // extra gap at the start, so the track's content width is
-      //   gap + 2N*card + (2N-1)*gap  →  one copy's advance = (scrollWidth)/2
-      // EAGER, not `x: () => -measure()` — see EventsHero for why.
       const measureAdvance = () => track.scrollWidth / 2;
 
       let tween: gsap.core.Tween | null = null;
       const build = () => {
         const advance = measureAdvance();
-        if (advance <= 0) return;            // layout not ready yet — RO will refire
+        if (advance <= 0) return;
         tween?.kill();
         gsap.set(track, { x: 0 });
         tween = gsap.to(track, {
@@ -97,7 +70,6 @@ export default function DecorStylingCarousel() {
 
       build();
 
-      // Rebuild when the rendered width changes (resize, browser zoom, fonts).
       const ro = new ResizeObserver(build);
       ro.observe(track);
       return () => {
@@ -105,14 +77,13 @@ export default function DecorStylingCarousel() {
         tween?.kill();
       };
     },
-    { scope: trackRef }
+    { scope: trackRef },
   );
 
   const cards = [...THEMES, ...THEMES];
 
   return (
     <section className="relative w-full">
-      {/* TOP — white with title */}
       <div className={`w-full ${TOP_PAD}`} style={{ backgroundColor: TOP_BG }}>
         <Reveal>
           <h2
@@ -124,20 +95,25 @@ export default function DecorStylingCarousel() {
         </Reveal>
       </div>
 
-      {/* MIDDLE — dark navy with auto-scrolling cards */}
       <div
         className={`w-full ${MIDDLE_PAD} overflow-hidden`}
         style={{ backgroundColor: MIDDLE_BG }}
       >
-        <div ref={trackRef} className="flex" style={{ gap: CARD_GAP, paddingLeft: CARD_GAP }}>
+        <div
+          ref={trackRef}
+          className="flex"
+          style={{ gap: CARD_GAP, paddingLeft: CARD_GAP }}
+        >
           {cards.map((c, i) => (
             <ThemeCard key={i} name={c.name} image={c.image} />
           ))}
         </div>
       </div>
 
-      {/* BOTTOM — white with CTA */}
-      <div className={`w-full ${BOTTOM_PAD} px-6`} style={{ backgroundColor: BOTTOM_BG }}>
+      <div
+        className={`w-full ${BOTTOM_PAD} px-6`}
+        style={{ backgroundColor: BOTTOM_BG }}
+      >
         <div className="mx-auto flex max-w-4xl items-center justify-center">
           <CircleButton
             href="#request-styling"

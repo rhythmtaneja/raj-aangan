@@ -1,26 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/investors/InvestorLeadership.tsx
-// ══════════════════════════════════════════════════════════════════
-/**
- * IX — LEADERSHIP.
- *
- * ⚠️ RENDERS NOTHING UNTIL REAL PEOPLE ARE SUPPLIED.
- *
- * `LEADERSHIP` is an empty array in lib/investor-content.ts and this returns
- * `null` when it is. No placeholder cards, no "Founder & Chairman" over a grey
- * avatar, no lorem biography.
- *
- * This rule is stricter than the rest of the page, deliberately: every other
- * placeholder here is a missing NUMBER, but a leadership card is a claim about
- * an identifiable person's name, role and career. A plausible invented bio on
- * an investor page is a fabrication about a real human being, and a grey
- * placeholder card is the kind of thing that quietly ships. Empty cannot ship
- * by accident — the section simply is not there.
- *
- * To add: fill LEADERSHIP with name/role/photo/bio (80–100 words per the
- * strategy doc), photos under /public/images/investors/.
- */
-
 import Image from "next/image";
 import Reveal from "@/components/anim/Reveal";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
@@ -74,20 +51,33 @@ export default function InvestorLeadership({ numeral }: SectionProps) {
                 <div
                   aria-hidden
                   className="pointer-events-none absolute z-10"
-                  style={{ inset: PHOTO_FRAME_INSET, border: `1px solid ${PHOTO_FRAME_COLOR}` }}
+                  style={{
+                    inset: PHOTO_FRAME_INSET,
+                    border: `1px solid ${PHOTO_FRAME_COLOR}`,
+                  }}
                 />
               </div>
-              <h3 style={{ ...serif, color: TEXT_MUTED }} className={`mt-6 ${H3}`}>
+              <h3
+                style={{ ...serif, color: TEXT_MUTED }}
+                className={`mt-6 ${H3}`}
+              >
                 {p.name}
               </h3>
-              <span aria-hidden className="mt-3 block h-px w-8" style={{ backgroundColor: GOLD }} />
+              <span
+                aria-hidden
+                className="mt-3 block h-px w-8"
+                style={{ backgroundColor: GOLD }}
+              />
               <p
                 style={{ ...serif, color: TEXT_LABEL }}
                 className="mt-3 text-[0.8125rem] uppercase tracking-[0.2em]"
               >
                 {p.role}
               </p>
-              <p style={{ ...serif, color: TEXT_BODY }} className={`mt-4 ${BODY_SM}`}>
+              <p
+                style={{ ...serif, color: TEXT_BODY }}
+                className={`mt-4 ${BODY_SM}`}
+              >
                 {p.bio}
               </p>
             </div>

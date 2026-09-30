@@ -1,25 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: lib/menu-builder/queries.ts
-// ══════════════════════════════════════════════════════════════════
-// Typed, server-only catalog fetchers — the single door between Sanity and
-// the Menu Builder.
-//
-//   • When Sanity is configured, fetch published content via GROQ, tagged
-//     for ISR so Studio publishes appear on the site within ~30s
-//     (revalidated by app/api/revalidate/route.ts on the Sanity webhook).
-//   • When it isn't (or a fetch fails / returns empty), fall back to the
-//     hardcoded data so the wizard always works:
-//         set menus            → generated/set-menus.ts
-//         à-la-carte sections  → generated/custom-menu.ts
-//         cuisine cards        → cuisine-groups.ts
-//         presentation options → config.ts
-//         outdoor + packaging  → data.ts
-//         pricing / quote      → config.ts/DEFAULT_PRICING_SETTINGS
-//         venues / occasions   → fallback.ts
-//
-// Never import this into a "use client" file — it uses the server client.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import "server-only";
 import { client } from "@/sanity/client";
 import { imageUrl } from "@/sanity/image";
@@ -39,19 +17,33 @@ import { CUSTOM_MENU_SECTIONS } from "./generated/custom-menu";
 import { SET_MENUS } from "./generated/set-menus";
 import { withCuisineCounts } from "./menu-utils";
 import type {
-  Occasion, Venue, CuisineCategory, Dish, DishTag, PresetMenu,
-  CatalogItem, CuisineCard, CustomMenuSection, DiscountCode, LiveCounter,
-  MealType, PackagingStyle, PricingSettings, SetMenu,
+  Occasion,
+  Venue,
+  CuisineCategory,
+  Dish,
+  DishTag,
+  PresetMenu,
+  CatalogItem,
+  CuisineCard,
+  CustomMenuSection,
+  DiscountCode,
+  LiveCounter,
+  MealType,
+  PackagingStyle,
+  PricingSettings,
+  SetMenu,
 } from "./types";
 
-const REVALIDATE = 30; // seconds
+const REVALIDATE = 30;
 const PLACEHOLDER = "/images/mb-placeholder.jpg";
 
 async function sanityFetch<T>(query: string, tag: string): Promise<T> {
-  return client.fetch<T>(query, {}, { next: { revalidate: REVALIDATE, tags: [tag] } });
+  return client.fetch<T>(
+    query,
+    {},
+    { next: { revalidate: REVALIDATE, tags: [tag] } },
+  );
 }
-
-// ─── Dish mapping helpers ──────────────────────────────────────────────────
 
 type RawDish = {
   id: string;
@@ -63,8 +55,6 @@ type RawDish = {
   categories?: { label: string; parentSection: string; sortOrder?: number }[];
 };
 
-// No "non-veg" entry — the tag is retired, so a legacy dish still carrying it
-// simply gets no dietary tag rather than surfacing "Non Veg" in the UI.
 const DIET_TO_TAG: Record<string, DishTag> = {
   veg: "Veg",
   jain: "Jain",
@@ -112,8 +102,6 @@ const DISH_PROJECTION = `{
   "categories": categoryTags[]->{ label, parentSection, sortOrder }
 }`;
 
-// ─── Public queries ────────────────────────────────────────────────────────
-
 export async function getOccasions(): Promise<Occasion[]> {
   if (!isSanityConfigured) return fallback.OCCASIONS;
   try {
@@ -141,9 +129,14 @@ export async function getVenues(): Promise<Venue[]> {
   try {
     const rows = await sanityFetch<
       {
-        id: string; name: string; image?: unknown;
-        type: Venue["type"]; category?: Venue["category"];
-        capacity?: string; pricingNote?: string; description?: string;
+        id: string;
+        name: string;
+        image?: unknown;
+        type: Venue["type"];
+        category?: Venue["category"];
+        capacity?: string;
+        pricingNote?: string;
+        description?: string;
         logisticsPerHead?: number;
       }[]
     >(
@@ -213,10 +206,16 @@ export async function getPresetMenus(): Promise<PresetMenu[]> {
   try {
     const rows = await sanityFetch<
       {
-        id: string; name: string; basePrice?: number | null;
-        priceNote?: string; coverImage?: unknown; description?: string;
+        id: string;
+        name: string;
+        basePrice?: number | null;
+        priceNote?: string;
+        coverImage?: unknown;
+        description?: string;
         sections?: {
-          sectionName: string; chooseCount?: number; dishes?: RawDish[];
+          sectionName: string;
+          chooseCount?: number;
+          dishes?: RawDish[];
         }[];
       }[]
     >(
@@ -246,12 +245,6 @@ export async function getPresetMenus(): Promise<PresetMenu[]> {
     return fallback.PRESET_MENUS;
   }
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── Menu Builder (Phase 8) — the types the live wizard reads ──────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─── Set menus ─────────────────────────────────────────────────────────────
 
 type RawSetMenu = {
   id: string;
@@ -312,8 +305,6 @@ export async function getSetMenus(): Promise<SetMenu[]> {
   }
 }
 
-// ─── À-la-carte master menu ────────────────────────────────────────────────
-
 type RawCustomSection = {
   id: string;
   label: string;
@@ -365,12 +356,6 @@ export async function getCustomMenuSections(): Promise<CustomMenuSection[]> {
   }
 }
 
-// ─── Cuisine cards ─────────────────────────────────────────────────────────
-
-/**
- * Cards come from Sanity but their counts are derived from `sections` (the
- * à-la-carte menu we just fetched), so the two can never drift.
- */
 export async function getCuisineCards(
   sections: CustomMenuSection[],
 ): Promise<CuisineCard[]> {
@@ -378,7 +363,12 @@ export async function getCuisineCards(
   if (!isSanityConfigured) return fallbackCards;
   try {
     const rows = await sanityFetch<
-      { id: string; name: string; image?: unknown; sectionIds?: (string | null)[] }[]
+      {
+        id: string;
+        name: string;
+        image?: unknown;
+        sectionIds?: (string | null)[];
+      }[]
     >(
       `*[_type=="cuisineGroup" && isActive != false && defined(slug.current)]
         |order(sortOrder asc, name asc){
@@ -401,8 +391,6 @@ export async function getCuisineCards(
     return fallbackCards;
   }
 }
-
-// ─── Presentation options ──────────────────────────────────────────────────
 
 export type PresentationCatalog = {
   cutlery: { id: string; name: string; image: string }[];
@@ -434,7 +422,11 @@ export async function getPresentationCatalog(): Promise<PresentationCatalog> {
     const tiles = (kind: string) =>
       rows
         .filter((r) => r.kind === kind)
-        .map((r) => ({ id: r.id, name: r.name, image: imageUrl(r.image, PLACEHOLDER, 600) }));
+        .map((r) => ({
+          id: r.id,
+          name: r.name,
+          image: imageUrl(r.image, PLACEHOLDER, 600),
+        }));
     const result: PresentationCatalog = {
       cutlery: tiles("cutlery"),
       presentationStyles: tiles("presentationStyle"),
@@ -444,9 +436,11 @@ export async function getPresentationCatalog(): Promise<PresentationCatalog> {
         .filter((r) => r.kind === "liveCounter")
         .map((r) => ({ id: r.id, name: r.name })),
     };
-    // A kind the client hasn't filled in yet keeps its hardcoded list.
+
     return {
-      cutlery: result.cutlery.length ? result.cutlery : PRESENTATION_FALLBACK.cutlery,
+      cutlery: result.cutlery.length
+        ? result.cutlery
+        : PRESENTATION_FALLBACK.cutlery,
       presentationStyles: result.presentationStyles.length
         ? result.presentationStyles
         : PRESENTATION_FALLBACK.presentationStyles,
@@ -465,27 +459,26 @@ export async function getPresentationCatalog(): Promise<PresentationCatalog> {
   }
 }
 
-// ─── Outdoor catalog + packaging ───────────────────────────────────────────
-
-/**
- * The outdoor catalog — sections, each holding the boxes/packets/vans inside it.
- *
- * ⚠️ The `outdoorCatalogItem` schema has NO variants field yet (that's the next
- * CMS pass), while the catalog step is built around them. So the usual
- * per-collection fallback is tightened one notch: Sanity wins only once its
- * documents actually carry variants. Until then the generated catalog — the 8
- * sections and 77 boxes from the client's workbook — is what ships. Add the
- * field to the schema, re-seed, and this starts reading Sanity on its own.
- */
 export async function getOutdoorCatalogItems(): Promise<CatalogItem[]> {
   if (!isSanityConfigured) return CATALOG_ITEMS;
   try {
     const rows = await sanityFetch<
       {
-        id: string; name: string; description?: string; price?: number | null;
-        unit?: string; image?: unknown; category: CatalogItem["category"];
-        variantLabel?: string; contentsLabel?: string;
-        variants?: { id?: string; name?: string; contents?: string[]; price?: number | null }[];
+        id: string;
+        name: string;
+        description?: string;
+        price?: number | null;
+        unit?: string;
+        image?: unknown;
+        category: CatalogItem["category"];
+        variantLabel?: string;
+        contentsLabel?: string;
+        variants?: {
+          id?: string;
+          name?: string;
+          contents?: string[];
+          price?: number | null;
+        }[];
       }[]
     >(
       `*[_type=="outdoorCatalogItem" && isActive != false && defined(slug.current)]
@@ -526,7 +519,12 @@ export async function getPackagingStyles(): Promise<PackagingStyle[]> {
   if (!isSanityConfigured) return PACKAGING_STYLES;
   try {
     const rows = await sanityFetch<
-      { id: string; label: string; description?: string; pricePerUnit?: number | null }[]
+      {
+        id: string;
+        label: string;
+        description?: string;
+        pricePerUnit?: number | null;
+      }[]
     >(
       `*[_type=="packagingStyle" && isActive != false && defined(slug.current)]
         |order(sortOrder asc, label asc){
@@ -545,8 +543,6 @@ export async function getPackagingStyles(): Promise<PackagingStyle[]> {
     return PACKAGING_STYLES;
   }
 }
-
-// ─── Pricing & quote settings (singleton) ──────────────────────────────────
 
 type RawPricingSettings = Partial<Omit<PricingSettings, "discountCodes">> & {
   discountCodes?: Partial<DiscountCode>[];
@@ -595,22 +591,19 @@ export async function getPricingSettings(): Promise<PricingSettings> {
   }
 }
 
-// ─── Aggregate — one parallel fetch for the wizard layout ──────────────────
-
 export type Catalog = {
-  // Client + venue steps
   occasions: Occasion[];
   venues: Venue[];
-  // Menu steps
+
   setMenus: SetMenu[];
   customMenuSections: CustomMenuSection[];
   cuisineCards: CuisineCard[];
-  // Presentation step
+
   presentation: PresentationCatalog;
-  // Outdoor sub-flow
+
   catalogItems: CatalogItem[];
   packagingStyles: PackagingStyle[];
-  // Quote / pricing
+
   pricing: PricingSettings;
 };
 
@@ -634,7 +627,7 @@ export async function getCatalog(): Promise<Catalog> {
     getPackagingStyles(),
     getPricingSettings(),
   ]);
-  // Cuisine cards need the sections to count their dishes.
+
   const cuisineCards = await getCuisineCards(customMenuSections);
   return {
     occasions,

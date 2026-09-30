@@ -7,25 +7,15 @@ import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const SECTION_BG = "#ffffff";
 const TEXT_COLOR = "#191919";
 const MUTED_COLOR = "#8a8a8a";
 const SECTION_PAD = "py-20 md:py-24";
 
-// ─ Card image ──
-const CARD_ASPECT = "aspect-[4/5]"; // matches figma tall card
+const CARD_ASPECT = "aspect-[4/5]";
 const FRAME_INSET = "0.75rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
-
-/* Re-exported so the pre-existing import path keeps working. The data itself
-   now lives in lib/venue-partners.ts — see that file for why. */
 export { PARTNERS };
 export type { Partner };
 
@@ -46,8 +36,6 @@ export default function PartnersGridSection() {
 
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
         {PARTNERS.map((p) => (
-          // h-full on both layers so every card in a row shares the row height
-          // and the "View Property" pills line up despite uneven descriptions.
           <Reveal key={p.name} className="h-full">
             <PartnerCard {...p} />
           </Reveal>
@@ -57,10 +45,20 @@ export default function PartnersGridSection() {
   );
 }
 
-function PartnerCard({ name, location, rooms, guests, description, image, href = "#" }: Partner) {
+function PartnerCard({
+  name,
+  location,
+  rooms,
+  guests,
+  description,
+  image,
+  href = "#",
+}: Partner) {
   return (
     <div className="flex h-full flex-col">
-      <div className={`group relative ${CARD_ASPECT} w-full shrink-0 overflow-hidden`}>
+      <div
+        className={`group relative ${CARD_ASPECT} w-full shrink-0 overflow-hidden`}
+      >
         <Image
           src={image}
           alt={name}
@@ -88,7 +86,6 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
         {location}
       </p>
 
-      {/* Capacity stats row */}
       <div className="mt-4 flex items-center justify-between gap-3 px-4 text-[clamp(0.9rem,1vw,0.875rem)]">
         <div className="flex items-center gap-2">
           <BedIcon className="h-5 w-5 shrink-0" />
@@ -107,7 +104,6 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
         {description}
       </p>
 
-      {/* mt-auto pins the pill to the bottom of the equal-height card */}
       <div className="mt-auto flex justify-center pt-6">
         <CircleButton
           href={href}
@@ -126,7 +122,15 @@ function PartnerCard({ name, location, rooms, guests, description, image, href =
 
 function BedIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M2 12h20v6H2z" />
       <path d="M2 12V7a2 2 0 0 1 2-2h5v7" />
       <path d="M9 12h13" />
@@ -136,7 +140,15 @@ function BedIcon({ className }: { className?: string }) {
 
 function PeopleIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="9" cy="8" r="3" />
       <circle cx="17" cy="9" r="2.5" />
       <path d="M2 20c0-3 3-5 7-5s7 2 7 5" />

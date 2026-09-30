@@ -1,18 +1,22 @@
 import SiteHeader from "@/components/ui/SiteHeader";
-import PropertyDetailSection, { type Area } from "@/components/sections/venue/PropertyDetailSection";
+import PropertyDetailSection, {
+  type Area,
+} from "@/components/sections/venue/PropertyDetailSection";
 import BackToVenueNav from "@/components/sections/venue/BackToVenueNav";
 import FooterSection from "@/components/sections/FooterSection";
 
 const AREAS: Area[] = [
   {
     title: "Grand Wedding Lawn",
-    description: "Designed for large-format celebrations, receptions, concerts, and destination-style weddings.",
+    description:
+      "Designed for large-format celebrations, receptions, concerts, and destination-style weddings.",
     image: "/images/raj-aangan-area-lawn.jpg",
     capacityLines: ["Capacity: Up to 2,500 Guests"],
   },
   {
     title: "Elegant Banquet Hall",
-    description: "An air-cooled indoor venue ideal for engagements, haldi ceremonies, mehendi functions, receptions, and corporate gatherings.",
+    description:
+      "An air-cooled indoor venue ideal for engagements, haldi ceremonies, mehendi functions, receptions, and corporate gatherings.",
     image: "/images/raj-aangan-area-hall.jpg",
     capacityLines: [
       "Capacity:",
@@ -23,12 +27,14 @@ const AREAS: Area[] = [
   },
   {
     title: "The Haveli Ralawata",
-    description: "A heritage-style accommodation experience featuring 26 luxury rooms with dedicated bridal and family stay areas.",
+    description:
+      "A heritage-style accommodation experience featuring 26 luxury rooms with dedicated bridal and family stay areas.",
     image: "/images/raj-aangan-area-haveli.jpg",
   },
   {
     title: "Poolside & Pavilion Area",
-    description: "A sophisticated outdoor space for cocktail evenings, sundowner events, brunches, and intimate celebrations.",
+    description:
+      "A sophisticated outdoor space for cocktail evenings, sundowner events, brunches, and intimate celebrations.",
     image: "/images/raj-aangan-area-poolside.jpg",
   },
 ];
@@ -49,7 +55,6 @@ export default function RajAanganResortPage() {
         />
       </div>
 
-      {/* Back button above the footer */}
       <BackToVenueNav />
 
       <FooterSection />

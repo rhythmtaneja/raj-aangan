@@ -1,19 +1,15 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/investors/InvestorWhy.tsx
-// ══════════════════════════════════════════════════════════════════
-/**
- * IV — WHY RAJ AANGAN. The six-card structure named in the strategy doc (§3).
- *
- * On the house ink (#191919) rather than the charcoal the doc suggested. This
- * is the argument section, and lifting it out of the cream run marks the turn
- * from description to case — the same job AboutStorySection's navy band does
- * on the About page.
- */
-
 import Reveal from "@/components/anim/Reveal";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
 import { WHY } from "@/lib/investor-content";
-import { BODY_SM, GOLD, H3, INK, NUMERAL_STEP, SECTION_PAD, serif } from "./theme";
+import {
+  BODY_SM,
+  GOLD,
+  H3,
+  INK,
+  NUMERAL_STEP,
+  SECTION_PAD,
+  serif,
+} from "./theme";
 
 export default function InvestorWhy({ numeral }: SectionProps) {
   return (
@@ -36,13 +32,18 @@ export default function InvestorWhy({ numeral }: SectionProps) {
         className="mt-14 grid w-full max-w-300 grid-cols-1 gap-y-12 md:mt-20 md:grid-cols-3 md:gap-x-14 md:gap-y-16"
       >
         {WHY.map((w, i) => (
-          <div key={w.title} className="flex flex-col items-center px-2 text-center">
-            {/* "01" … "06". Same treatment as Strategy and Business — see
-                NUMERAL_STEP in theme.ts. */}
+          <div
+            key={w.title}
+            className="flex flex-col items-center px-2 text-center"
+          >
             <span style={{ ...serif, color: GOLD }} className={NUMERAL_STEP}>
               {String(i + 1).padStart(2, "0")}
             </span>
-            <span aria-hidden className="mt-3 block h-px w-8" style={{ backgroundColor: GOLD }} />
+            <span
+              aria-hidden
+              className="mt-3 block h-px w-8"
+              style={{ backgroundColor: GOLD }}
+            />
             <h3 style={{ ...serif, color: "#ffffff" }} className={`mt-5 ${H3}`}>
               {w.title}
             </h3>

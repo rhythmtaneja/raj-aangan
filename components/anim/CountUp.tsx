@@ -1,14 +1,5 @@
 "use client";
 
-/**
- * CountUp.tsx
- * ---------------------------------------------------------------------------
- * Counts a number up from 0 when it scrolls into view (the "numeral counters
- * animate in" item from the plan). Formats with thousands separators, so
- * 10000 renders as "10,000". Add a suffix like "+" for "10,000+".
- * ---------------------------------------------------------------------------
- */
-
 import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -45,11 +36,15 @@ export default function CountUp({
         v: end,
         duration,
         ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "restart none restart none" },
+        scrollTrigger: {
+          trigger: el,
+          start: "top 85%",
+          toggleActions: "restart none restart none",
+        },
         onUpdate: () => setDisplay(Math.round(obj.v)),
       });
     },
-    { scope: ref }
+    { scope: ref },
   );
 
   return (

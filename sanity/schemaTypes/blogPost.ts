@@ -1,7 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-// The label is what appears above the post title on the page, so these are
-// stored Title Case rather than as slugs.
 export const BLOG_CATEGORIES = [
   { title: "Weddings", value: "Weddings" },
   { title: "Destinations", value: "Destinations" },

@@ -8,37 +8,24 @@ import ImageOverlay from "@/components/ui/ImageOverlay";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const SECTION_BG = "#fdfbf5"; // creamy off-white from figma
+const SECTION_BG = "#fdfbf5";
 const TITLE_COLOR = "#191919";
 
-// ─ Header spacing ──
-// HEADER_TOP_NUDGE moves the Roman numeral + "What We Offer" row upward/downward.
-// Use a more negative value to lift it higher.
 const HEADER_TOP_NUDGE = "-2rem";
 const EYEBROW_TO_SUBTITLE_GAP = "3.45rem";
 const SUBTITLE_TO_CARDS_GAP = "6rem";
 
-// ─ Subtitle (italic emphasis on "Flawlessly") ──
 const SUBTITLE_BEFORE = "End to End Celebration, ";
 const SUBTITLE_ITALIC = "Flawlessly";
 const SUBTITLE_AFTER = " Executed";
 
-// ─ Card layout ──
 const CARD_GRID_GAP_X = "gap-x-10 md:gap-x-20 md:gap-x-28";
 const CARD_GRID_GAP_Y = "gap-y-20";
-// Cards alternate left/right. Even-index cards sit at the top of their row;
-// odd-index cards offset DOWN by this amount to create the staggered pattern.
-const CARD_VERTICAL_OFFSET = "md:mt-32";  // bump to mt-40 / mt-48 for more stagger
 
-// ─ Card image ──
-const CARD_ASPECT = "aspect-[4/5]"; // change to aspect-square / aspect-[3/4] for different proportions
+const CARD_VERTICAL_OFFSET = "md:mt-32";
+
+const CARD_ASPECT = "aspect-[4/5]";
 const CARD_OVERLAY_OPACITY = 0.44;
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 const SERVICES = [
   {
@@ -92,7 +79,6 @@ export default function WhatWeOfferSection() {
       style={{ backgroundColor: SECTION_BG, color: TITLE_COLOR }}
     >
       <div style={{ transform: `translateY(${HEADER_TOP_NUDGE})` }}>
-        {/* TOP — Roman numeral + label */}
         <Reveal>
           <div
             className="flex items-center justify-center gap-5"
@@ -120,8 +106,9 @@ export default function WhatWeOfferSection() {
         </Reveal>
       </div>
 
-      {/* Staggered card grid */}
-      <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 md:grid-cols-2 ${CARD_GRID_GAP_X} ${CARD_GRID_GAP_Y}`}>
+      <div
+        className={`mx-auto grid w-full max-w-6xl grid-cols-1 md:grid-cols-2 ${CARD_GRID_GAP_X} ${CARD_GRID_GAP_Y}`}
+      >
         {SERVICES.map((s, i) => (
           <Reveal key={s.label}>
             <div className={i % 2 === 1 ? CARD_VERTICAL_OFFSET : ""}>
@@ -147,7 +134,6 @@ function OfferCard({
 }) {
   return (
     <div className="group flex flex-col">
-      {/* Image with inner outline frame + overlaid text */}
       <div className={`relative ${CARD_ASPECT} w-full overflow-hidden`}>
         <Image
           src={image}
@@ -157,13 +143,16 @@ function OfferCard({
           sizes="(max-width: 768px) 100vw, 50vw"
         />
         <ImageOverlay opacity={CARD_OVERLAY_OPACITY} />
-        {/* Inner outline frame — same pattern as FeaturedSection */}
+
         <div
           aria-hidden
           className="pointer-events-none absolute z-10"
-          style={{ inset: "1.25rem", border: "1px solid rgba(255,255,255,0.7)" }}
+          style={{
+            inset: "1.25rem",
+            border: "1px solid rgba(255,255,255,0.7)",
+          }}
         />
-        {/* Centered text overlay */}
+
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-8 text-center text-white">
           <h3
             style={serif}
@@ -180,7 +169,6 @@ function OfferCard({
         </div>
       </div>
 
-      {/* Button BELOW the card */}
       <div className="mt-6 flex justify-center">
         <CircleButton
           href="#"

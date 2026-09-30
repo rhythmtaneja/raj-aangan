@@ -1,14 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/pricingSettings.ts
-// ══════════════════════════════════════════════════════════════════
-// SINGLETON — "Pricing & Quote Settings". Every number and piece of wording
-// the quote depends on that isn't attached to one menu: GST, the add-on
-// surcharge, discount codes, and the quote page's terms / notes.
-//
-// Code equivalent (fallback when Sanity is empty or unset): the constants in
-// lib/menu-builder/pricing.ts + the quote page's copy.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
@@ -21,7 +10,6 @@ export default defineType({
     { name: "quote", title: "Quote Page" },
   ],
   fields: [
-    // ── Taxes & charges ────────────────────────────────────────────────────
     defineField({
       name: "gstPercent",
       title: "GST (%)",
@@ -51,13 +39,13 @@ export default defineType({
       validation: (r) => r.min(0),
     }),
 
-    // ── Discounts ──────────────────────────────────────────────────────────
     defineField({
       name: "showDiscountField",
       title: "Show the Discount Code Box",
       type: "boolean",
       group: "discounts",
-      description: "Turn off to hide discount codes from the quote page entirely.",
+      description:
+        "Turn off to hide discount codes from the quote page entirely.",
       initialValue: true,
     }),
     defineField({
@@ -76,7 +64,7 @@ export default defineType({
               name: "code",
               title: "Code",
               type: "string",
-              description: 'e.g. “RAEC30”. Case-insensitive for guests.',
+              description: "e.g. “RAEC30”. Case-insensitive for guests.",
               validation: (r) => r.required(),
             }),
             defineField({
@@ -132,7 +120,6 @@ export default defineType({
       initialValue: "That code isn't valid.",
     }),
 
-    // ── Quote page ─────────────────────────────────────────────────────────
     defineField({
       name: "quoteHeading",
       title: "Quote Heading",

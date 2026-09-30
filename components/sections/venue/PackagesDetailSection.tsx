@@ -7,20 +7,6 @@ import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-//
-// Reusable detailed package listing:
-//   • /venue/raj-aangan/packages  → numeral="II", title="Raj AANGAN" (image 10)
-//   • /venue/raj-gharana/packages → numeral="I",  title="Raj GHARANA" (image 9)
-//
-// For EACH package:
-//   [LEFT column: 2 stacked images]  [RIGHT column: title + desc + inclusions
-//                                     + View package CTA]
-//
-// ═══════════════════════════════════════════════════════════════════════════
-
 const SECTION_BG = "#ffffff";
 const TEXT_COLOR = "#191919";
 const MUTED_COLOR = "#4a4a4a";
@@ -34,24 +20,21 @@ const IMAGE_STACK_GAP = "gap-y-6";
 const ROW_GAP = "gap-y-24 md:gap-y-32";
 const COL_GAP = "gap-8 md:gap-16";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 export type PackageDetail = {
   title: string;
   description: string;
-  inclusions: string[];   // bulleted list
+  inclusions: string[];
   image1: string;
   image2: string;
-  /** Where "View package" leads. Use "#" while individual pages aren't built. */
+
   href?: string;
 };
 
 type PackagesDetailSectionProps = {
-  /** Numeral shown at top (e.g. "I", "II"). */
   numeral: string;
-  /** Uppercase label alongside numeral (defaults to "OUR PACKAGES"). */
+
   label?: string;
-  /** Big centered title, e.g. "Raj AANGAN" / "Raj GHARANA". */
+
   title: string;
   packages: PackageDetail[];
 };
@@ -67,7 +50,6 @@ export default function PackagesDetailSection({
       className={`relative w-full px-6 md:px-12 ${SECTION_PAD}`}
       style={{ backgroundColor: SECTION_BG, color: TEXT_COLOR }}
     >
-      {/* Numeral + label */}
       <Reveal>
         <div className="mb-6 flex items-center justify-center gap-5">
           <NumeralMarker numeral={numeral} />
@@ -80,7 +62,6 @@ export default function PackagesDetailSection({
         </div>
       </Reveal>
 
-      {/* Big title */}
       <Reveal>
         <h1
           style={serif}
@@ -90,7 +71,6 @@ export default function PackagesDetailSection({
         </h1>
       </Reveal>
 
-      {/* Packages */}
       <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 ${ROW_GAP}`}>
         {packages.map((pkg) => (
           <Reveal key={pkg.title}>
@@ -104,14 +84,14 @@ export default function PackagesDetailSection({
 
 function PackageRow({ pkg }: { pkg: PackageDetail }) {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 md:items-start ${COL_GAP}`}>
-      {/* LEFT — 2 stacked images */}
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 md:items-start ${COL_GAP}`}
+    >
       <div className={`flex flex-col ${IMAGE_STACK_GAP}`}>
         <FramedImage src={pkg.image1} alt={pkg.title} />
         <FramedImage src={pkg.image2} alt={pkg.title} />
       </div>
 
-      {/* RIGHT — text block */}
       <div className="flex flex-col">
         <h3
           style={serif}

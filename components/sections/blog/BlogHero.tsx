@@ -11,31 +11,21 @@ gsap.registerPlugin(useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Title ──
 const TITLE_TEXT = "Blog";
 const TITLE_FONT_SIZE = "clamp(3rem, 8vw, 7.1875rem)";
 
-// ─ Subtitle (single line beneath the title) ──
-const SUBTITLE_TEXT = "Where every event becomes a cherished memory worth sharing.";
+const SUBTITLE_TEXT =
+  "Where every event becomes a cherished memory worth sharing.";
 const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.6vw, 1.4375rem)";
 const SUBTITLE_MAX_W = "40rem";
 
-// ─ Letter-by-letter reveal ──
-// STAGGER larger because "Blog" is short — spreads the reveal over more time.
 const LETTER_STAGGER = 0.09;
 const LETTER_DURATION = 0.9;
 const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
-// ─ Subtitle + CTA fade-in timing ──
 const SUBTITLE_DELAY = 1.1;
 const CTA_DELAY = 1.9;
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 function Letters({ text }: { text: string }) {
   return (
@@ -66,8 +56,11 @@ export default function BlogHero() {
     () => {
       if (prefersReducedMotion()) return;
 
-      const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
-      const subtitle = root.current?.querySelector<HTMLElement>(".blog-hero-subtitle");
+      const letters =
+        root.current?.querySelectorAll<HTMLElement>(".hero-letter");
+      const subtitle = root.current?.querySelector<HTMLElement>(
+        ".blog-hero-subtitle",
+      );
       const cta = root.current?.querySelector<HTMLElement>(".blog-hero-cta");
 
       if (letters && letters.length > 0) {
@@ -102,15 +95,11 @@ export default function BlogHero() {
         });
       }
     },
-    { scope: root }
+    { scope: root },
   );
 
   return (
     <section ref={root} className="relative h-screen w-full overflow-hidden">
-      {/*
-        No dedicated bg <Image> here — the constant page backdrop set at the
-        <main> level shows through. Hero is just SiteHeader + centred content.
-      */}
       <SiteHeader />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
@@ -152,7 +141,17 @@ export default function BlogHero() {
 
 function DownArrowIcon() {
   return (
-    <svg className="w-[1.25rem] h-[1.25rem]" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.25rem] h-[1.25rem]"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );

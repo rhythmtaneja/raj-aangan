@@ -7,42 +7,28 @@ import { SITE_ADDRESS_LINES, SITE_MAP_HREF } from "@/lib/site-info";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Section bg — cream. MUST match HERO_BLEND_TO_COLOR in ContactHero.tsx
-//   so the hero photo dissolves cleanly into this section.
 const SECTION_BG = "#f5efe6";
 const TEXT_COLOR = "#191919";
 
-// ─ Content ──
 const SMALL_LABEL_TEXT = "Address";
 const TITLE_LINE_1 = "For Luxury";
 const TITLE_LINE_2 = "Wedding & Event";
-// Address comes from lib/site-info.ts — the single source of truth shared with
-// the footer. Do NOT hardcode it here again.
+
 const ADDRESS_LINES = SITE_ADDRESS_LINES;
 const MAP_HREF = SITE_MAP_HREF;
 
-// ─ Typography ──
 const SMALL_LABEL_SIZE = "clamp(1.25rem, 1.6vw, 1.4375rem)";
 const TITLE_SIZE = "clamp(2.2rem, 4vw, 3.625rem)";
 const ADDRESS_SIZE = "clamp(1.15rem, 1.45vw, 1.3125rem)";
 
-// ─ Photo ──
 const PHOTO_SRC = "/images/contact-address.jpg";
 const PHOTO_ASPECT = "aspect-[4/5]";
 
-// ─ White inner outline frame (same pattern as gallery / about) ──
 const FRAME_INSET = "0.875rem";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.65)";
 
-// ─ Hover zoom on the photo ──
 const HOVER_SCALE = "group-hover:scale-105";
 const HOVER_TRANSITION = "transition-transform duration-[800ms] ease-out";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function AddressSection() {
   return (
@@ -52,7 +38,6 @@ export default function AddressSection() {
       style={{ backgroundColor: SECTION_BG, color: TEXT_COLOR }}
     >
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-16 md:grid-cols-2 md:gap-24">
-        {/* LEFT — text stack, centered horizontally */}
         <div className="flex flex-col items-center text-center">
           <Reveal>
             <p
@@ -99,9 +84,10 @@ export default function AddressSection() {
           </Reveal>
         </div>
 
-        {/* RIGHT — photo with white frame + hover zoom */}
         <Reveal>
-          <div className={`group relative ${PHOTO_ASPECT} w-full overflow-hidden`}>
+          <div
+            className={`group relative ${PHOTO_ASPECT} w-full overflow-hidden`}
+          >
             <Image
               src={PHOTO_SRC}
               alt="Raj Aangan luxury wedding venue"
@@ -109,7 +95,7 @@ export default function AddressSection() {
               className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
               sizes="(max-width: 768px) 100vw, 600px"
             />
-            {/* Inner outline frame — sits above image so it stays put while zoom happens */}
+
             <div
               aria-hidden
               className="pointer-events-none absolute z-10"

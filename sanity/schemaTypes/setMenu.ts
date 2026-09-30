@@ -1,15 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/setMenu.ts
-// ══════════════════════════════════════════════════════════════════
-// One of the fixed, all-inclusive packages shown on the Menu step
-// (/menu-builder/menu) — Breakfast, Lunch, Maharani, Maharaja, Signature,
-// Royal Feast, Elite. Mirrors the `SetMenu` type in lib/menu-builder/types.ts.
-//
-// Ids the wizard stores in the guest's booking come from the array `_key`s, so
-// the seed script writes the existing generated ids as keys (see
-// scripts/seed-menu-builder.ts). Editing a menu in Studio keeps those keys.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 const MEAL_TYPES = [
@@ -36,7 +24,7 @@ export default defineType({
       title: "Name",
       type: "string",
       group: "main",
-      description: 'Shown on the menu card, e.g. “Maharani Dinner Menu”.',
+      description: "Shown on the menu card, e.g. “Maharani Dinner Menu”.",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -62,7 +50,7 @@ export default defineType({
       rows: 3,
       group: "main",
       description:
-        'Small print under the menu, e.g. “RO water and 200ml bottles are included in the package.”',
+        "Small print under the menu, e.g. “RO water and 200ml bottles are included in the package.”",
     }),
     defineField({
       name: "mealTypeFit",
@@ -79,7 +67,8 @@ export default defineType({
       title: "Show in the Menu Builder",
       type: "boolean",
       group: "main",
-      description: "Turn off to hide this package from guests without deleting it.",
+      description:
+        "Turn off to hide this package from guests without deleting it.",
       initialValue: true,
     }),
     defineField({
@@ -91,7 +80,6 @@ export default defineType({
       initialValue: 100,
     }),
 
-    // ── Pricing ────────────────────────────────────────────────────────────
     defineField({
       name: "perPersonPrice",
       title: "Price Per Person (₹)",
@@ -105,7 +93,7 @@ export default defineType({
       title: "Price Note",
       type: "string",
       group: "pricing",
-      description: 'Optional line under the price, e.g. “min 300 guests”.',
+      description: "Optional line under the price, e.g. “min 300 guests”.",
     }),
     defineField({
       name: "addOnPricePerItem",
@@ -117,7 +105,6 @@ export default defineType({
       validation: (r) => r.min(0),
     }),
 
-    // ── Courses ────────────────────────────────────────────────────────────
     defineField({
       name: "sections",
       title: "Courses",
@@ -134,7 +121,7 @@ export default defineType({
               name: "label",
               title: "Course Name",
               type: "string",
-              description: 'e.g. “Snacks”, “Main Course”, “Desserts”.',
+              description: "e.g. “Snacks”, “Main Course”, “Desserts”.",
               validation: (r) => r.required(),
             }),
             defineField({
@@ -150,7 +137,8 @@ export default defineType({
               name: "note",
               title: "Course Note",
               type: "string",
-              description: "Optional small print shown under the course heading.",
+              description:
+                "Optional small print shown under the course heading.",
             }),
             defineField({
               name: "dishOptions",
@@ -180,7 +168,11 @@ export default defineType({
             }),
           ],
           preview: {
-            select: { title: "label", chooseCount: "chooseCount", dishes: "dishOptions" },
+            select: {
+              title: "label",
+              chooseCount: "chooseCount",
+              dishes: "dishOptions",
+            },
             prepare({ title, chooseCount, dishes }) {
               const count = Array.isArray(dishes) ? dishes.length : 0;
               return {
@@ -210,7 +202,10 @@ export default defineType({
       isActive: "isActive",
     },
     prepare({ title, price, media, isActive }) {
-      const rate = typeof price === "number" ? `₹${price.toLocaleString("en-IN")} / head` : "No price";
+      const rate =
+        typeof price === "number"
+          ? `₹${price.toLocaleString("en-IN")} / head`
+          : "No price";
       return {
         title,
         subtitle: isActive === false ? `${rate} · hidden` : rate,

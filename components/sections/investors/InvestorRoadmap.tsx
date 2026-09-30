@@ -1,20 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/investors/InvestorRoadmap.tsx
-// ══════════════════════════════════════════════════════════════════
-/**
- * VIII — EXPANSION ROADMAP. Foundation → Capacity → Multi-city → Platform,
- * the structure the strategy doc recommends (§3).
- *
- * ⚠️ THE DATES ARE PLACEHOLDERS. The doc asks for "a visual timeline using
- * RAEC's actual dates and milestones" — RAEC has not given them, so `period`
- * is `null` on every phase and renders as an em-dash. Phase names and
- * descriptions are structural and safe to show; a date is a commitment, so it
- * is not invented here.
- *
- * On the navy (#0f2f3b) the contact page already uses, so the page's two dark
- * bands are the site's two dark tones rather than two shades of the same one.
- */
-
 import Reveal from "@/components/anim/Reveal";
 import SectionHeading, { type SectionProps } from "./SectionHeading";
 import { ROADMAP } from "@/lib/investor-content";
@@ -40,25 +23,27 @@ export default function InvestorRoadmap({ numeral }: SectionProps) {
           <li key={r.phase}>
             <Reveal>
               <div className="flex flex-col items-center px-2 text-center">
-                {/* "Phase 01" — a worded label, so it keeps the small
-                    eyebrow size rather than taking NUMERAL_STEP. It still
-                    needs `lining-nums`: without it Cormorant's old-style
-                    digits sit at x-height beside full-height capitals, which
-                    reads as a rendering fault. */}
                 <span
                   style={{ ...serif, color: GOLD }}
                   className="lining-nums text-[0.8125rem] uppercase tracking-[0.24em]"
                 >
                   {r.phase}
                 </span>
-                <span aria-hidden className="mt-3 block h-px w-8" style={{ backgroundColor: GOLD }} />
+                <span
+                  aria-hidden
+                  className="mt-3 block h-px w-8"
+                  style={{ backgroundColor: GOLD }}
+                />
                 <p
                   style={{ ...serif, color: "rgba(255,255,255,0.5)" }}
                   className="mt-3 text-[0.875rem] tabular-nums"
                 >
                   {r.period ?? "—"}
                 </p>
-                <h3 style={{ ...serif, color: "#ffffff" }} className={`mt-3 ${H3}`}>
+                <h3
+                  style={{ ...serif, color: "#ffffff" }}
+                  className={`mt-3 ${H3}`}
+                >
                   {r.title}
                 </h3>
                 <p

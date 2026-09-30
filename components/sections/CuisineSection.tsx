@@ -1,17 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/CuisineSection.tsx
-// ══════════════════════════════════════════════════════════════════
-
-// CHANGES vs previous version:
-//   • DragSlider swapped for the same auto-scroll pattern used in
-//     EventsHero: fixed-px card widths, array duplicated, single
-//     gsap.to({ x: -originalWidth, repeat: -1, ease: "none" }) tween.
-//   • Pause-on-hover added so the hover-zoom doesn't feel weird
-//     with the card drifting underneath the cursor.
-//   • Marquee "Cuisine" text that DragSlider owned is dropped. If you
-//     want it back as a static/animated background text, easy add.
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import Image from "next/image";
@@ -28,49 +14,51 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Background color SCROLL transition (continues from ServicesSection) ──
-const BG_START_COLOR = "#d4dad3"; // = ServicesSection's BG_END_COLOR
+const BG_START_COLOR = "#d4dad3";
 const BG_END_COLOR = "#ebe5db";
 const COLOR_TRANSITION_START = "top bottom";
 const COLOR_TRANSITION_END = "top top";
 
-// ─ Heading "Our Cuisine" ──
 const TITLE_FONT_SIZE = "clamp(1.8rem, 4vw, 3.625rem)";
 const TITLE_TRACKING = "0.15em";
 const TITLE_COLOR = "#6b4f3a";
 const TITLE_MARGIN_BOTTOM = "2.75rem";
 
-// ─ Auto-scrolling cards ──
-// rem, NOT px: the whole desktop layout scales off the root font-size (see
-// globals.css), so a px card would stay 440px while everything around it
-// shrank — the card would balloon from 30% to 57% of the viewport across the
-// browser-zoom range. The loop distance is measured from the live DOM below
-// and re-measured on resize, so rem sizing costs nothing.
-const CARD_WIDTH = "27.5rem";   // 440px at the 1440px reference
-const CARD_HEIGHT = "27.5rem";  // square
-const CARD_GAP = "1.5rem";      // 24px at the 1440px reference
+const CARD_WIDTH = "27.5rem";
+const CARD_HEIGHT = "27.5rem";
+const CARD_GAP = "1.5rem";
 
-// Seconds for one full loop of the ORIGINAL set. Higher = slower drift.
-// EventsHero uses 40 for 7 cards; Cuisine has 6, so 34 keeps a similar pace.
 const SCROLL_DURATION = 34;
 
-// ─ Card frame (matches the site-wide inner-outline pattern) ──
 const FRAME_INSET = "1.25rem";
 const FRAME_COLOR = "rgba(255,255,255,0.7)";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 const CUISINES = [
-  { name: "Rajasthani", img: "/images/cuisine-rajasthani.jpg", price: "from ₹3499 / person" },
-  { name: "Punjabi", img: "/images/cuisine-punjabi.jpg", price: "from ₹3499 / person" },
-  { name: "Dessert", img: "/images/cuisine-dessert.jpg", price: "from ₹3499 / person" },
-  { name: "South Indian", img: "/images/cuisine-south-indian.jpg", price: "from ₹3499 / person" },
-  { name: "Chinese", img: "/images/cuisine-chinese.jpg", price: "from ₹3499 / person" },
-  // { name: "Italian",      img: "/images/cuisine-italian.jpg",       price: "from ₹3499 / person" },
+  {
+    name: "Rajasthani",
+    img: "/images/cuisine-rajasthani.jpg",
+    price: "from ₹3499 / person",
+  },
+  {
+    name: "Punjabi",
+    img: "/images/cuisine-punjabi.jpg",
+    price: "from ₹3499 / person",
+  },
+  {
+    name: "Dessert",
+    img: "/images/cuisine-dessert.jpg",
+    price: "from ₹3499 / person",
+  },
+  {
+    name: "South Indian",
+    img: "/images/cuisine-south-indian.jpg",
+    price: "from ₹3499 / person",
+  },
+  {
+    name: "Chinese",
+    img: "/images/cuisine-chinese.jpg",
+    price: "from ₹3499 / person",
+  },
 ];
 
 export default function CuisineSection() {
@@ -80,7 +68,6 @@ export default function CuisineSection() {
 
   useGSAP(
     () => {
-      // BG scrub — unchanged from before.
       const colorProxy = { c: BG_START_COLOR };
       gsap.to(colorProxy, {
         c: BG_END_COLOR,
@@ -101,15 +88,6 @@ export default function CuisineSection() {
       const track = trackRef.current;
       if (!track) return;
 
-      // The track holds TWO copies of CUISINES. Moving by exactly one copy's
-      // width lands the second copy where the first started — seamless loop.
-      //
-      // The distance MUST be measured, not computed from a constant: the cards
-      // are rem-sized, so their pixel width changes with the root font-size
-      // (i.e. with viewport width and browser zoom). A stale constant would
-      // make the loop visibly jump.
-      //   2 copies laid out with `gap` → scrollWidth = 2N*card + (2N-1)*gap
-      //   one copy's advance          = N*card + N*gap = (scrollWidth + gap)/2
       const measureAdvance = () => {
         const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
         return (track.scrollWidth + gap) / 2;
@@ -128,8 +106,6 @@ export default function CuisineSection() {
 
       build();
 
-      // Re-measure when the root font-size changes under it (window resize,
-      // browser zoom, device rotation).
       const ro = new ResizeObserver(build);
       ro.observe(track);
       return () => {
@@ -137,11 +113,9 @@ export default function CuisineSection() {
         scrollAnim.current?.kill();
       };
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
-  // Pause the drift while the cursor is over the strip so hover-zoom
-  // reads cleanly. Resumes when cursor leaves.
   const handleStripEnter = () => {
     scrollAnim.current?.pause();
   };
@@ -149,7 +123,6 @@ export default function CuisineSection() {
     scrollAnim.current?.resume();
   };
 
-  // Duplicate for seamless loop
   const cards = [...CUISINES, ...CUISINES];
 
   return (
@@ -173,7 +146,6 @@ export default function CuisineSection() {
         </h2>
       </Reveal>
 
-      {/* Auto-scrolling cards strip */}
       <div
         className="w-full overflow-hidden py-4"
         onMouseEnter={handleStripEnter}
@@ -185,7 +157,12 @@ export default function CuisineSection() {
           style={{ gap: CARD_GAP, willChange: "transform" }}
         >
           {cards.map((c, i) => (
-            <CuisineCard key={`${c.name}-${i}`} name={c.name} img={c.img} price={c.price} />
+            <CuisineCard
+              key={`${c.name}-${i}`}
+              name={c.name}
+              img={c.img}
+              price={c.price}
+            />
           ))}
         </div>
       </div>
@@ -208,7 +185,15 @@ export default function CuisineSection() {
   );
 }
 
-function CuisineCard({ name, img, price }: { name: string; img: string; price: string }) {
+function CuisineCard({
+  name,
+  img,
+  price,
+}: {
+  name: string;
+  img: string;
+  price: string;
+}) {
   return (
     <div
       className="group relative shrink-0 overflow-hidden"
@@ -223,7 +208,7 @@ function CuisineCard({ name, img, price }: { name: string; img: string; price: s
         className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
       />
       <ImageOverlay opacity={0.44} />
-      {/* Inner outline frame — site-wide pattern, z-10 to stay above scaled image */}
+
       <div
         aria-hidden
         className="pointer-events-none absolute z-10"

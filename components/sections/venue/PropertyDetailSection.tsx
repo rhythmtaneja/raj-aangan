@@ -6,64 +6,39 @@ import Reveal from "@/components/anim/Reveal";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-//
-// Reusable page-body for resort detail pages:
-//   • /venue/raj-aangan  → numeral="I",  label="RAJ AANGAN RESORT" (image 4)
-//   • /venue/raj-gharana → numeral="II", label="RAJ GHARANA RESORT" (image 5)
-//
-// Layout:
-//   Top     — centered numeral + label + big title
-//   Intro   — [hero image | description paragraph]
-//   Areas   — repeated 2-col rows [area image | area title + copy]
-//
-// ═══════════════════════════════════════════════════════════════════════════
+const SECTION_BG = "#ffffff";
+const TEXT_COLOR = "#191919";
+const MUTED_COLOR = "#4a4a4a";
+const SECTION_PAD = "py-16 md:py-24";
 
-const SECTION_BG   = "#ffffff";
-const TEXT_COLOR   = "#191919";
-const MUTED_COLOR  = "#4a4a4a";
-const SECTION_PAD  = "py-16 md:py-24";
-
-// Image styling on left column
 const IMAGE_ASPECT = "aspect-[4/3]";
-const FRAME_INSET  = "0.75rem";
-const FRAME_COLOR  = "rgba(255,255,255,0.55)";
+const FRAME_INSET = "0.75rem";
+const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
-// Vertical rhythm between rows
 const ROW_GAP = "gap-y-16 md:gap-y-24";
 
-// Column gap
 const COL_GAP = "gap-8 md:gap-16";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 export type Area = {
-  title:       string;
+  title: string;
   description: string;
-  image:       string;
-  /**
-   * Optional capacity block rendered below the description.
-   * String array → each line rendered as a plain line.
-   * For bulleted capacity breakdowns pass strings prefixed with "• ".
-   */
+  image: string;
+
   capacityLines?: string[];
 };
 
 type PropertyDetailSectionProps = {
-  /** Roman numeral shown at top (e.g. "I", "II"). */
   numeral: string;
-  /** Uppercase label alongside the numeral (e.g. "RAJ AANGAN RESORT"). */
-  label:   string;
-  /** Big serif page title. */
-  title:   string;
-  /** Hero image below the title. */
+
+  label: string;
+
+  title: string;
+
   heroImage: string;
-  /** Description paragraph rendered next to the hero image. */
-  intro:   string;
-  /** Areas — each renders as a 2-col row. */
-  areas:   Area[];
+
+  intro: string;
+
+  areas: Area[];
 };
 
 export default function PropertyDetailSection({
@@ -79,7 +54,6 @@ export default function PropertyDetailSection({
       className={`relative w-full px-6 md:px-12 ${SECTION_PAD}`}
       style={{ backgroundColor: SECTION_BG, color: TEXT_COLOR }}
     >
-      {/* Numeral + label */}
       <Reveal>
         <div className="mb-10 flex items-center justify-center gap-5">
           <NumeralMarker numeral={numeral} />
@@ -92,7 +66,6 @@ export default function PropertyDetailSection({
         </div>
       </Reveal>
 
-      {/* Title */}
       <Reveal>
         <h1
           style={serif}
@@ -102,9 +75,10 @@ export default function PropertyDetailSection({
         </h1>
       </Reveal>
 
-      {/* Intro row — hero image + description */}
       <Reveal>
-        <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 md:grid-cols-2 md:items-center ${COL_GAP} mb-20`}>
+        <div
+          className={`mx-auto grid w-full max-w-6xl grid-cols-1 md:grid-cols-2 md:items-center ${COL_GAP} mb-20`}
+        >
           <FramedImage src={heroImage} alt={label} />
           <p
             style={{ ...serif, color: MUTED_COLOR }}
@@ -115,7 +89,6 @@ export default function PropertyDetailSection({
         </div>
       </Reveal>
 
-      {/* Areas — repeated 2-col rows */}
       <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 ${ROW_GAP}`}>
         {areas.map((area) => (
           <Reveal key={area.title}>
@@ -129,7 +102,9 @@ export default function PropertyDetailSection({
 
 function AreaRow({ area }: { area: Area }) {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 md:items-center ${COL_GAP}`}>
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 md:items-center ${COL_GAP}`}
+    >
       <FramedImage src={area.image} alt={area.title} />
       <div className="flex flex-col">
         <h3

@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * Reveal.tsx
- * Scroll-into-view reveal: fade + rise (+ optional scale-in). Replays whenever
- * the element re-enters the viewport (set replay={false} to play once).
- * Uses gsap.set() then .to() so elements always end visible under Strict Mode.
- */
-
 import { useRef, type ElementType, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -22,9 +15,9 @@ type RevealProps = {
   staggerEach?: number;
   delay?: number;
   y?: number;
-  /** Scale-in start (e.g. 0.7 for a zoom-toward-you). 1 = no scale. */
+
   scaleFrom?: number;
-  /** Replay every time it re-enters view (default true). */
+
   replay?: boolean;
   className?: string;
 };
@@ -47,7 +40,9 @@ export default function Reveal({
     () => {
       const root = ref.current;
       if (!root) return;
-      const targets = stagger ? (Array.from(root.children) as HTMLElement[]) : [root];
+      const targets = stagger
+        ? (Array.from(root.children) as HTMLElement[])
+        : [root];
 
       if (prefersReducedMotion()) {
         gsap.set(targets, { autoAlpha: 1, y: 0, scale: 1 });
@@ -66,11 +61,13 @@ export default function Reveal({
         scrollTrigger: {
           trigger: root,
           start: TRIGGER.revealStart,
-          toggleActions: replay ? "restart none restart reverse" : "play none none none",
+          toggleActions: replay
+            ? "restart none restart reverse"
+            : "play none none none",
         },
       });
     },
-    { scope: ref }
+    { scope: ref },
   );
 
   return (

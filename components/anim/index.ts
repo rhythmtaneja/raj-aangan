@@ -1,7 +1,3 @@
-/**
- * anim/index.ts — barrel export.
- *   import { Reveal, Parallax, KenBurnsImage, HoverRevealList } from "@/components/anim";
- */
 export { default as Reveal } from "./Reveal";
 export { default as Parallax } from "./Parallax";
 export { default as KenBurnsImage } from "./KenBurnsImage";

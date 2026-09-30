@@ -1,12 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/menu-builder/BookingSummary.tsx
-// ══════════════════════════════════════════════════════════════════
-// The sticky live-preview sidebar. Renders one of three variants:
-//   • venue-event + set package → fields, total captioned with the menu name
-//   • venue-event + custom menu → fields + selected dishes + per-head total
-//   • outdoor                   → minimal: Client + Date (+ est. total)
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useBooking } from "@/lib/menu-builder/context";
@@ -26,10 +17,6 @@ import { MB_COLORS, type WizardStep } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const TITLE_COLOR = MB_COLORS.ink;
 const LABEL_COLOR = MB_COLORS.inkMuted;
 const VALUE_COLOR = MB_COLORS.ink;
@@ -37,11 +24,9 @@ const ROW_LABEL_COLOR = MB_COLORS.ink;
 const DIVIDER_COLOR = MB_COLORS.borderLight;
 const GOLD = MB_COLORS.gold;
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 type Props = {
   steps: WizardStep[];
-  /** 1-based index of the current step within `steps`. */
+
   currentStep: number;
 };
 
@@ -60,7 +45,10 @@ export default function BookingSummary({ currentStep }: Props) {
       >
         Booking Summary
       </h3>
-      <p style={{ color: LABEL_COLOR }} className="mt-1 text-xs uppercase tracking-widest">
+      <p
+        style={{ color: LABEL_COLOR }}
+        className="mt-1 text-xs uppercase tracking-widest"
+      >
         Live Preview
       </p>
 
@@ -87,8 +75,6 @@ export default function BookingSummary({ currentStep }: Props) {
   );
 }
 
-// ─── Outdoor variant (minimal) ─────────────────────────────────────────────
-
 function OutdoorSummary({
   hydrated,
   state,
@@ -100,8 +86,12 @@ function OutdoorSummary({
   currentStep: number;
   pricingData: PricingData;
 }) {
-  const itemCount = Object.values(state.catalogSelections).reduce((a, b) => a + b, 0);
-  const showTotal = currentStep >= 2 && getOutdoorSubtotal(state, pricingData) > 0;
+  const itemCount = Object.values(state.catalogSelections).reduce(
+    (a, b) => a + b,
+    0,
+  );
+  const showTotal =
+    currentStep >= 2 && getOutdoorSubtotal(state, pricingData) > 0;
 
   return (
     <>
@@ -124,8 +114,6 @@ function OutdoorSummary({
   );
 }
 
-// ─── Venue-event variant (set package + custom) ────────────────────────────
-
 function VenueEventSummary({
   hydrated,
   state,
@@ -146,7 +134,9 @@ function VenueEventSummary({
   getSetMenu: ReturnType<typeof useCatalog>["getSetMenu"];
 }) {
   const customMenu = state.menuMode === "custom";
-  const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
+  const venue = state.venueId
+    ? venues.find((v) => v.id === state.venueId)
+    : null;
   const occasionsLabel =
     state.occasions.length > 0
       ? state.occasions
@@ -159,7 +149,8 @@ function VenueEventSummary({
   const showItemsAndTotal = currentStep >= 3;
 
   const perHead =
-    getVenueEventPerHead(state, pricingData) + getVenueLogisticsPerHead(state, venues);
+    getVenueEventPerHead(state, pricingData) +
+    getVenueLogisticsPerHead(state, venues);
   const total = getVenueEventEstimatedTotal(state, pricingData);
 
   return (
@@ -169,12 +160,22 @@ function VenueEventSummary({
         <Row label="Occasion" value={hydrated ? occasionsLabel || "—" : "—"} />
         <Row label="Date" value={hydrated ? state.eventDate || "—" : "—"} />
         <Row label="Guests" value={hydrated ? String(state.guests) : "—"} />
-        <Row label="Venue" value={hydrated ? venue?.name || state.customVenueAddress || "—" : "—"} />
-        <Row label="Meal" value={hydrated ? state.mealTypes.join(", ") || "—" : "—"} />
-        <Row label="Diet" value={hydrated ? state.dietaryPreferences.join(", ") || "—" : "—"} />
+        <Row
+          label="Venue"
+          value={
+            hydrated ? venue?.name || state.customVenueAddress || "—" : "—"
+          }
+        />
+        <Row
+          label="Meal"
+          value={hydrated ? state.mealTypes.join(", ") || "—" : "—"}
+        />
+        <Row
+          label="Diet"
+          value={hydrated ? state.dietaryPreferences.join(", ") || "—" : "—"}
+        />
       </div>
 
-      {/* Custom menu: selected dishes list */}
       {customMenu && showItemsAndTotal && state.selectedDishes.length > 0 && (
         <>
           <Divider />
@@ -183,7 +184,10 @@ function VenueEventSummary({
             className="mb-3 text-base font-semibold tracking-wide"
           >
             Selected Item{" "}
-            <span style={{ color: LABEL_COLOR }} className="font-normal normal-case">
+            <span
+              style={{ color: LABEL_COLOR }}
+              className="font-normal normal-case"
+            >
               {state.selectedDishes.length} Items
             </span>
           </h4>
@@ -200,7 +204,9 @@ function VenueEventSummary({
                   <span className="truncate pr-2">
                     {item.name}
                     {item.price != null && (
-                      <span style={{ color: GOLD }} className="ml-2">/ ₹{item.price}</span>
+                      <span style={{ color: GOLD }} className="ml-2">
+                        / ₹{item.price}
+                      </span>
                     )}
                   </span>
                   <RemoveButton dishId={dishId} />
@@ -235,8 +241,6 @@ function VenueEventSummary({
     </>
   );
 }
-
-// ─── Sub-components ────────────────────────────────────────────────────────
 
 function TotalBlock({
   total,
@@ -275,7 +279,10 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid grid-cols-2 items-start gap-3 py-2.5 text-[clamp(0.9rem,1vw,0.9375rem)]">
       <span style={{ ...serif, color: ROW_LABEL_COLOR }}>{label}</span>
-      <span style={{ ...serif, color: VALUE_COLOR }} className="min-w-0 break-words leading-snug">
+      <span
+        style={{ ...serif, color: VALUE_COLOR }}
+        className="min-w-0 break-words leading-snug"
+      >
         {value}
       </span>
     </div>
@@ -283,7 +290,12 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function Divider() {
-  return <div className="my-5 h-px w-full" style={{ backgroundColor: DIVIDER_COLOR }} />;
+  return (
+    <div
+      className="my-5 h-px w-full"
+      style={{ backgroundColor: DIVIDER_COLOR }}
+    />
+  );
 }
 
 function RemoveButton({ dishId }: { dishId: string }) {

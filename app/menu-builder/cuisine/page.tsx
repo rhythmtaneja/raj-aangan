@@ -1,18 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: app/menu-builder/cuisine/page.tsx
-// ══════════════════════════════════════════════════════════════════
-// Custom builder — step 1 of 2, reached from the "Build a Custom Menu" CTA on
-// the Menu step. Picks meal type(s) + cuisine categories; the categories chosen
-// here are exactly what /menu-builder/custom-menu then lists (see
-// lib/menu-builder/cuisine-groups.ts for the card → master-menu-section map).
-//
-// The per-person budget block from the original design is deliberately gone —
-// custom menus price by the dishes chosen.
-//
-// This is its own step in the progress bar (Cuisine, before Menu) whenever
-// menuMode === "custom" — see STEPS_VENUE_EVENT_CUSTOM in types.ts.
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useEffect } from "react";
@@ -26,35 +11,25 @@ import { MB_COLORS, MEAL_TYPES, type MealType } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
 
-// Cuisine card — 293 × 299 px in the Figma. Three per row (two on the
-// narrowest phones); a card never grows past 293px wide and keeps the Figma
-// aspect ratio as it shrinks.
 const CAT_CARD_W = 293;
 const CAT_CARD_H = 299;
 const CAT_GRID_COLS = "grid-cols-2 md:grid-cols-3";
 const CAT_LABEL_PAD = "px-3 py-2.5";
-// Label strip: frosted white normally, warm gold wash once selected.
+
 const CAT_LABEL_BG = "rgba(255,255,255,0.95)";
 const CAT_LABEL_BG_SELECTED = "rgba(244,232,220,0.97)";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function CustomCuisinePage() {
   const { state, dispatch, hydrated } = useBooking();
   const { cuisineCards, itemIdsForCuisine } = useCatalog();
   const router = useRouter();
 
-  // Route protection — venue-event flow with a venue selected.
   useEffect(() => {
     if (!hydrated) return;
     if (state.cateringType !== "venue-event") {
@@ -62,10 +37,14 @@ export default function CustomCuisinePage() {
     } else if (!state.venueId && !state.customVenueAddress.trim()) {
       router.replace("/menu-builder/venue");
     }
-  }, [hydrated, state.cateringType, state.venueId, state.customVenueAddress, router]);
+  }, [
+    hydrated,
+    state.cateringType,
+    state.venueId,
+    state.customVenueAddress,
+    router,
+  ]);
 
-  // Landing here IS opting into the custom builder (covers deep links and
-  // browser-back), which is what puts Cuisine in the progress bar.
   useEffect(() => {
     if (!hydrated) return;
     if (state.menuMode !== "custom") {
@@ -81,9 +60,12 @@ export default function CustomCuisinePage() {
 
   const toggleCategory = (id: string) => {
     const removing = state.selectedCuisineCategories.includes(id);
-    dispatch({ type: "TOGGLE_ARRAY", field: "selectedCuisineCategories", value: id });
-    // Dropping a cuisine drops any dish already picked from it, so the summary
-    // and the quote never carry dishes the guest can no longer see.
+    dispatch({
+      type: "TOGGLE_ARRAY",
+      field: "selectedCuisineCategories",
+      value: id,
+    });
+
     if (removing) {
       const gone = new Set(itemIdsForCuisine(id));
       state.selectedDishes
@@ -114,7 +96,6 @@ export default function CustomCuisinePage() {
           category you choose.
         </p>
 
-        {/* MEAL TYPE PILLS */}
         <div className="mt-6 flex flex-wrap gap-3">
           {MEAL_TYPES.map((m) => (
             <Pill
@@ -127,7 +108,6 @@ export default function CustomCuisinePage() {
           ))}
         </div>
 
-        {/* CUISINE CATEGORIES */}
         <h3
           style={{ ...serif, color: INK }}
           className="mt-10 text-[clamp(1.4rem,2vw,1.8125rem)] font-semibold"
@@ -163,13 +143,18 @@ export default function CustomCuisinePage() {
                 <div
                   aria-hidden
                   className="pointer-events-none absolute z-10"
-                  style={{ inset: "0.5rem", border: "1px solid rgba(255,255,255,0.5)" }}
+                  style={{
+                    inset: "0.5rem",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                  }}
                 />
                 {selected && <SelectedTick />}
                 <div
                   className={`absolute inset-x-0 bottom-0 z-20 flex flex-col transition-colors ${CAT_LABEL_PAD}`}
                   style={{
-                    backgroundColor: selected ? CAT_LABEL_BG_SELECTED : CAT_LABEL_BG,
+                    backgroundColor: selected
+                      ? CAT_LABEL_BG_SELECTED
+                      : CAT_LABEL_BG,
                   }}
                 >
                   <span
@@ -178,7 +163,10 @@ export default function CustomCuisinePage() {
                   >
                     {cat.name}
                   </span>
-                  <span style={{ color: INK_MUTED }} className="text-[0.6875rem]">
+                  <span
+                    style={{ color: INK_MUTED }}
+                    className="text-[0.6875rem]"
+                  >
                     {cat.itemCount} {cat.itemCount === 1 ? "Item" : "Items"}
                   </span>
                 </div>
@@ -199,8 +187,6 @@ export default function CustomCuisinePage() {
   );
 }
 
-// ─── Inline primitives ────────────────────────────────────────────────────
-
 function Pill({
   children,
   selected,
@@ -217,7 +203,9 @@ function Pill({
       style={{
         backgroundColor: selected ? GOLD : "transparent",
         color: selected ? "#ffffff" : INK,
-        border: selected ? `1px solid ${GOLD}` : `1px solid ${MB_COLORS.border}`,
+        border: selected
+          ? `1px solid ${GOLD}`
+          : `1px solid ${MB_COLORS.border}`,
       }}
     >
       {children}
@@ -231,7 +219,17 @@ function SelectedTick() {
       className="absolute right-3 top-3 z-20 flex h-6 w-6 items-center justify-center rounded-full"
       style={{ backgroundColor: GOLD }}
     >
-      <svg className="w-[0.8125rem] h-[0.8125rem]" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        className="w-[0.8125rem] h-[0.8125rem]"
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <polyline points="20 6 9 17 4 12" />
       </svg>
     </span>

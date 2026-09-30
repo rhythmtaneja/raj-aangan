@@ -1,11 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: lib/blog/queries.ts
-// ══════════════════════════════════════════════════════════════════
-// Server-only blog fetchers. Same graceful-fallback contract as the menu
-// queries: when Sanity isn't configured (or a fetch fails), the grid shows
-// the original hardcoded placeholder posts so the page never breaks.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import "server-only";
 import { client } from "@/sanity/client";
 import { imageUrl } from "@/sanity/image";
@@ -16,11 +8,15 @@ import type { BlogPostCard, BlogPostFull } from "./types";
 const REVALIDATE = 30;
 const PLACEHOLDER = "/images/mb-placeholder.jpg";
 
-async function sanityFetch<T>(query: string, params: Record<string, unknown> = {}): Promise<T> {
-  return client.fetch<T>(query, params, { next: { revalidate: REVALIDATE, tags: ["blogPost"] } });
+async function sanityFetch<T>(
+  query: string,
+  params: Record<string, unknown> = {},
+): Promise<T> {
+  return client.fetch<T>(query, params, {
+    next: { revalidate: REVALIDATE, tags: ["blogPost"] },
+  });
 }
 
-/** ISO datetime → "DD.MM.YYYY" to match the existing card design. */
 function formatDate(iso?: string): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -30,9 +26,6 @@ function formatDate(iso?: string): string {
   return `${dd}.${mm}.${d.getFullYear()}`;
 }
 
-// Cards for the posts written by hand in ./posts.ts. Used whenever Sanity has
-// no blogPost documents (which is the case today) — each one links to a real
-// /blog/<slug> page, so the grid is clickable with or without the CMS.
 const FALLBACK_CARDS: BlogPostCard[] = LOCAL_BLOG_POSTS.map((post) => ({
   slug: post.slug,
   title: post.title,
@@ -89,11 +82,6 @@ export async function getAllBlogPosts(): Promise<BlogPostCard[]> {
   }
 }
 
-/**
- * All slugs — for generateStaticParams. Always includes the hand-written posts
- * so they get prebuilt; a Sanity post sharing a slug simply overrides it at
- * render time.
- */
 export async function getBlogSlugs(): Promise<string[]> {
   const local = LOCAL_BLOG_POSTS.map((p) => p.slug);
   if (!isSanityConfigured) return local;
@@ -107,7 +95,6 @@ export async function getBlogSlugs(): Promise<string[]> {
   }
 }
 
-/** Shape a hand-written post from ./posts.ts as a full post page. */
 function localPostToFull(slug: string): BlogPostFull | null {
   const post = getLocalBlogPost(slug);
   if (!post) return null;
@@ -128,7 +115,9 @@ function localPostToFull(slug: string): BlogPostFull | null {
   };
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | null> {
+export async function getBlogPostBySlug(
+  slug: string,
+): Promise<BlogPostFull | null> {
   if (!isSanityConfigured) return localPostToFull(slug);
   try {
     const r = await sanityFetch<{
@@ -161,7 +150,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | nu
       }`,
       { slug },
     );
-    // Nothing in Studio under this slug — it's one of the hand-written posts.
+
     if (!r) return localPostToFull(slug);
     return {
       slug: r.slug,
@@ -173,7 +162,9 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostFull | nu
       author: r.author
         ? {
             name: r.author.name,
-            avatar: r.author.avatar ? imageUrl(r.author.avatar, PLACEHOLDER, 128) : undefined,
+            avatar: r.author.avatar
+              ? imageUrl(r.author.avatar, PLACEHOLDER, 128)
+              : undefined,
             shortBio: r.author.shortBio || undefined,
           }
         : undefined,

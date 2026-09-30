@@ -1,44 +1,16 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: lib/menu-builder/cuisine-groups.ts
-// ══════════════════════════════════════════════════════════════════
-// The FALLBACK cuisine cards for /menu-builder/cuisine (custom-menu step 1 of
-// 2) — used until Sanity has `cuisineGroup` documents, and whenever Sanity is
-// unreachable. Once the CMS is seeded, queries.ts serves these from Sanity and
-// this file is only the safety net (it also seeds the CMS — see
-// scripts/seed-menu-builder.ts).
-//
-// Each card groups one or more sections of the à-la-carte master menu
-// (CUSTOM_MENU_SECTIONS, generated from RAEC_master_menu.csv). Whatever the
-// guest picks here is exactly what /menu-builder/custom-menu then shows — pick
-// Drinks + Chaat + Soup and only those three groups' sections appear.
-//
-// Item counts are DERIVED from the real data (not hardcoded), so regenerating
-// the master menu keeps the cards honest. Any section that is not listed in a
-// group below is collected into a trailing "Chef's Selection" card, so a new
-// section added to the CSV can never silently disappear from the builder.
-//
-// TODO(assets): "Salads & Wellness Bowls" has no photo yet — it currently uses
-// the generic mb-placeholder. Swap in a real shot when the client supplies one.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { CUSTOM_MENU_SECTIONS } from "./generated/custom-menu";
 import { unmappedSectionIds, withCuisineCounts } from "./menu-utils";
 import type { CuisineCard } from "./types";
 
 const PLACEHOLDER_IMG = "/images/mb-placeholder.jpg";
 
-/** A card before its counts are derived (what the mapping below declares). */
 export type CuisineGroup = {
   id: string;
   name: string;
   image: string;
-  /** ids of the CUSTOM_MENU_SECTIONS this card unlocks. */
+
   sectionIds: string[];
 };
-
-// ─── The mapping ───────────────────────────────────────────────────────────
-// Card order = the order they appear on the cuisine screen (loosely the order
-// of a meal: drinks → soups → starters → mains → sides → desserts).
 
 export const CUISINE_GROUPS: CuisineGroup[] = [
   {
@@ -93,7 +65,10 @@ export const CUISINE_GROUPS: CuisineGroup[] = [
     id: "oriental",
     name: "Oriental",
     image: "/images/mb-cat-oriental.jpg",
-    sectionIds: ["the-oriental-culinary-experience", "oriental-dim-sum-pavilion-live"],
+    sectionIds: [
+      "the-oriental-culinary-experience",
+      "oriental-dim-sum-pavilion-live",
+    ],
   },
   {
     id: "thai",
@@ -111,7 +86,10 @@ export const CUISINE_GROUPS: CuisineGroup[] = [
     id: "lebanese",
     name: "Lebanese",
     image: "/images/mb-cat-lebanese.jpg",
-    sectionIds: ["the-levantine-culinary-experience", "pita-khubus-artisanal-bread-bar"],
+    sectionIds: [
+      "the-levantine-culinary-experience",
+      "pita-khubus-artisanal-bread-bar",
+    ],
   },
   {
     id: "italian",
@@ -182,12 +160,6 @@ export const CUISINE_GROUPS: CuisineGroup[] = [
   },
 ];
 
-// ─── Derived: the fallback cards ───────────────────────────────────────────
-
-/**
- * The mapping above plus a trailing "Chef's Selection" card for any section no
- * group claims, so nothing in the master menu is unreachable.
- */
 export const CUISINE_GROUPS_WITH_REST: CuisineGroup[] = (() => {
   const rest = unmappedSectionIds(CUISINE_GROUPS, CUSTOM_MENU_SECTIONS);
   if (!rest.length) return CUISINE_GROUPS;
@@ -202,7 +174,6 @@ export const CUISINE_GROUPS_WITH_REST: CuisineGroup[] = (() => {
   ];
 })();
 
-/** Fallback cuisine cards, with real item counts. Empty cards are dropped. */
 export const CUISINE_CARDS: CuisineCard[] = withCuisineCounts(
   CUISINE_GROUPS_WITH_REST,
   CUSTOM_MENU_SECTIONS,

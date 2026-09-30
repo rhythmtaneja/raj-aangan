@@ -1,10 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/packagingStyle.ts
-// ══════════════════════════════════════════════════════════════════
-// Packaging choice on the outdoor sub-flow (/menu-builder/packaging).
-// Mirrors `PackagingStyle` in lib/menu-builder/types.ts.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineField, defineType } from "sanity";
 
 export default defineType({
@@ -16,7 +9,7 @@ export default defineType({
       name: "label",
       title: "Name",
       type: "string",
-      description: 'e.g. “Eco Kraft Box”.',
+      description: "e.g. “Eco Kraft Box”.",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -64,7 +57,11 @@ export default defineType({
   preview: {
     select: { title: "label", subtitle: "description", isActive: "isActive" },
     prepare({ title, subtitle, isActive }) {
-      return { title, subtitle: isActive === false ? `${subtitle ?? ""} · hidden`.trim() : subtitle };
+      return {
+        title,
+        subtitle:
+          isActive === false ? `${subtitle ?? ""} · hidden`.trim() : subtitle,
+      };
     },
   },
 });

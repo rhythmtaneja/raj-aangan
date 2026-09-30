@@ -1,23 +1,8 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/structure.ts
-// ══════════════════════════════════════════════════════════════════
-// The Studio's left-hand desk. Organised around what the client actually
-// edits: the Menu Builder first (set menus, à-la-carte menu, cuisine cards,
-// presentation options, outdoor catalog and the pricing / quote settings),
-// then Site Photos and the Blog.
-//
-// The pre-rework Menu Builder types (dish / category / cuisine / presetMenu)
-// are deliberately NOT listed — nothing reads them any more, and showing them
-// would leave the client editing content that never appears on the site.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import type { StructureResolver } from "sanity/structure";
 import { PRESENTATION_KINDS } from "./schemaTypes/presentationOption";
 
-/** Document types edited as a single entry, not a list. */
 export const SINGLETONS = new Set(["siteImages", "pricingSettings"]);
 
-/** Types placed by hand below — anything else falls through to the bottom. */
 const PLACED = [
   "setMenu",
   "customMenuSection",
@@ -31,7 +16,7 @@ const PLACED = [
   "siteImages",
   "blogPost",
   "author",
-  // legacy, intentionally hidden
+
   "dish",
   "category",
   "cuisine",
@@ -41,7 +26,6 @@ const PLACED = [
 const bySortOrder = [{ field: "sortOrder", direction: "asc" as const }];
 
 export const structure: StructureResolver = (S) => {
-  /** A list of one `kind` of presentation option, with a matching + button. */
   const presentationList = (title: string, kind: string) =>
     S.listItem()
       .title(title)
@@ -57,16 +41,16 @@ export const structure: StructureResolver = (S) => {
           ]),
       );
 
-  /** A plain document list ordered by sortOrder. */
   const orderedList = (type: string, title: string) =>
     S.documentTypeListItem(type)
       .title(title)
-      .child(S.documentTypeList(type).title(title).defaultOrdering(bySortOrder));
+      .child(
+        S.documentTypeList(type).title(title).defaultOrdering(bySortOrder),
+      );
 
   return S.list()
     .title("Content")
     .items([
-      // ── Menu Builder ──────────────────────────────────────────────────
       S.listItem()
         .title("Menu Builder")
         .child(
@@ -89,7 +73,9 @@ export const structure: StructureResolver = (S) => {
                         presentationList(`${k.title}`, k.value),
                       ),
                       S.divider(),
-                      S.documentTypeListItem("presentationOption").title("All Options"),
+                      S.documentTypeListItem("presentationOption").title(
+                        "All Options",
+                      ),
                     ]),
                 ),
 
@@ -111,7 +97,6 @@ export const structure: StructureResolver = (S) => {
 
               S.divider(),
 
-              // Singleton — pricing, discounts and quote wording.
               S.listItem()
                 .title("Pricing & Quote Settings")
                 .id("pricingSettings")
@@ -126,7 +111,6 @@ export const structure: StructureResolver = (S) => {
 
       S.divider(),
 
-      // ── Site Photos (singleton) ──
       S.listItem()
         .title("Site Photos")
         .id("siteImages")
@@ -134,7 +118,6 @@ export const structure: StructureResolver = (S) => {
 
       S.divider(),
 
-      // ── Blog ──
       S.listItem()
         .title("Blog")
         .child(
@@ -148,7 +131,6 @@ export const structure: StructureResolver = (S) => {
 
       S.divider(),
 
-      // Anything registered later that isn't placed above.
       ...S.documentTypeListItems().filter((item) => {
         const id = item.getId();
         return id ? !PLACED.includes(id) : false;

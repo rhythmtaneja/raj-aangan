@@ -7,9 +7,6 @@ import DecorStylingCarousel from "@/components/sections/events/DecorStylingCarou
 import EntertainmentCollage from "@/components/sections/events/EntertainmentCollage";
 import FooterSection from "@/components/sections/FooterSection";
 
-// ─── PAGE-LEVEL DATA ─────────────────────────────────────────────────────────
-// Kept here (not inside the component) so copy is easy to find and edit.
-
 const CURATE_COL_A = [
   "Roka",
   "Engagement",
@@ -42,25 +39,23 @@ const EXPERTISE_ITEMS = [
 export default function EventsPage() {
   return (
     <main className="bg-white">
-      {/* 1. Auto-scrolling category hero (replaces the "black strip" bg) */}
       <EventsHero />
 
-      {/* 2. Reused IntroSection with events copy */}
       <IntroSection
         numeral="I"
         title="We believe a great celebration is the sum of a"
-        secondaryLines={["Thousand Thoughtful Details.", "Planned to Perfection"]}
+        secondaryLines={[
+          "Thousand Thoughtful Details.",
+          "Planned to Perfection",
+        ]}
         buttonText="Explore"
         buttonHref="#services"
       />
 
-      {/* 3. 3×3 services grid with per-card CTAs */}
       <EventsServicesGrid />
 
-      {/* 4. Wedding Packages — split white/navy/white layout */}
       <WeddingPackagesSection />
 
-      {/* 5. Two Expertise blocks, image + bullets */}
       <ExpertiseSection
         title="Celebration"
         titleItalic="we"
@@ -74,13 +69,10 @@ export default function EventsPage() {
         columns={[EXPERTISE_ITEMS]}
       />
 
-      {/* 6. Decor & Styling — auto-scrolling themed carousel */}
       <DecorStylingCarousel />
 
-      {/* 7. Entertainment collage — pinned scroll with darkening bg */}
       <EntertainmentCollage />
 
-      {/* 8. Footer — same shared component used site-wide */}
       <FooterSection />
     </main>
   );

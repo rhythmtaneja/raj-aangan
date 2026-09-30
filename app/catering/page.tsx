@@ -7,19 +7,8 @@ export default async function CateringPage() {
   const siteImages = await getSiteImages();
   return (
     <main className="bg-white">
-      {/* 1. Hero — RAEC logo block + letter-reveal tagline + Plan Your Event */}
       <CateringHero bgImage={siteImages.cateringHeroImage ?? undefined} />
 
-      {/*
-        2. Intro — reuses the existing IntroSection component with catering copy.
-        Matches image 2 in the Figma:
-          - Numeral I
-          - "At RAEC Resort, the world is on your plate every cuisine,
-             every flavour," + italic "all in one place"
-          - "Explore cusine" button (keeping the Figma spelling; flag if it
-             should be "cuisine")
-        The button routes to /menu-builder (the wizard we build in phase 2).
-      */}
       <IntroSection
         numeral="I"
         title="At RAEC Resort, the world is on your plate every cuisine, every flavour,"
@@ -28,7 +17,6 @@ export default async function CateringPage() {
         buttonHref="/menu-builder"
       />
 
-      {/* 3. Shared footer */}
       <FooterSection />
     </main>
   );

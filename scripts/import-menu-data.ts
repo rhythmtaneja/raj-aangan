@@ -1,38 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: scripts/import-menu-data.ts
-// ══════════════════════════════════════════════════════════════════
-// One-shot importer: transforms a structured JSON menu file into Sanity
-// NDJSON and imports it with `sanity dataset import --replace`.
-//
-// IDEMPOTENT: every document gets a deterministic _id derived from its
-// slug (e.g. dish-<slug>), so re-running REPLACES documents instead of
-// creating duplicates. Safe to run as many times as you like.
-//
-// USAGE:
-//   node scripts/import-menu-data.ts [path/to/menu-data.json] [--dry-run]
-//   npm run import-menu -- ./data/menu-data.json
-//
-// Requires NEXT_PUBLIC_SANITY_PROJECT_ID + NEXT_PUBLIC_SANITY_DATASET in
-// the environment (load .env.local first, e.g. `set -a; . ./.env.local`).
-//
-// Input JSON shape (all top-level keys optional):
-//   {
-//     "cuisines":   [{ label, slug, description?, sortOrder? }],
-//     "categories": [{ label, slug, parentSection, sortOrder? }],
-//     "occasions":  [{ label, slug, sortOrder? }],
-//     "venues":     [{ name, slug, type, category?, capacity?, pricingNote?,
-//                      logisticsPerHead?, description?, sortOrder? }],
-//     "dishes":     [{ name, slug, subtitle?, description?, price?, cuisine,
-//                      categories?: string[], dietaryTags?: string[],
-//                      isActive? }],
-//     "presetMenus":[{ name, slug, basePrice?, priceNote?, description?,
-//                      sortOrder?, sections: [{ sectionName, chooseCount?,
-//                      dishes: string[] }] }]
-//   }
-// `cuisine`, `categories[]`, and section `dishes[]` reference other items
-// BY SLUG. Images are added later in Studio (not part of this import).
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -51,7 +16,8 @@ type InputData = {
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
-const inputPath = args.find((a) => !a.startsWith("--")) ?? "data/menu-data.json";
+const inputPath =
+  args.find((a) => !a.startsWith("--")) ?? "data/menu-data.json";
 
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
@@ -66,7 +32,9 @@ function slugField(current: string) {
 function requireStr(obj: Json, key: string, ctx: string): string {
   const v = obj[key];
   if (typeof v !== "string" || !v.trim()) {
-    throw new Error(`Missing required "${key}" on ${ctx}: ${JSON.stringify(obj)}`);
+    throw new Error(
+      `Missing required "${key}" on ${ctx}: ${JSON.stringify(obj)}`,
+    );
   }
   return v;
 }
@@ -129,7 +97,9 @@ function build(input: InputData): Json[] {
   for (const d of input.dishes ?? []) {
     const slug = requireStr(d, "slug", "dish");
     const cuisineSlug = requireStr(d, "cuisine", `dish ${slug}`);
-    const categories = Array.isArray(d.categories) ? (d.categories as string[]) : [];
+    const categories = Array.isArray(d.categories)
+      ? (d.categories as string[])
+      : [];
     docs.push({
       _id: `dish-${slug}`,
       _type: "dish",
@@ -185,7 +155,9 @@ function main() {
     raw = readFileSync(inputPath, "utf8");
   } catch {
     console.error(`✗ Could not read input JSON at "${inputPath}".`);
-    console.error(`  Pass a path: node scripts/import-menu-data.ts ./data/menu-data.json`);
+    console.error(
+      `  Pass a path: node scripts/import-menu-data.ts ./data/menu-data.json`,
+    );
     process.exit(1);
   }
 
@@ -200,7 +172,10 @@ function main() {
   }, {});
   console.log("Transformed documents:", counts, `(total ${docs.length})`);
 
-  const outFile = join(mkdtempSync(join(tmpdir(), "menu-import-")), "menu.ndjson");
+  const outFile = join(
+    mkdtempSync(join(tmpdir(), "menu-import-")),
+    "menu.ndjson",
+  );
   writeFileSync(outFile, ndjson, "utf8");
   console.log(`NDJSON written to ${outFile}`);
 
@@ -210,7 +185,9 @@ function main() {
   }
 
   if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
-    console.error("✗ NEXT_PUBLIC_SANITY_PROJECT_ID is not set. Load .env.local first.");
+    console.error(
+      "✗ NEXT_PUBLIC_SANITY_PROJECT_ID is not set. Load .env.local first.",
+    );
     process.exit(1);
   }
 

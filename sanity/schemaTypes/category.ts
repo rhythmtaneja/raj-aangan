@@ -1,8 +1,5 @@
 import { defineField, defineType } from "sanity";
 
-// A category = a course grouping a dish belongs to (e.g. "Paneer Preparation",
-// "Welcome Elixirs"). `parentSection` buckets it into a coarse course so the
-// wizard can derive Starter/Main/Dessert/Beverage filter tags.
 export const PARENT_SECTIONS = [
   { title: "Starters", value: "starters" },
   { title: "Mains", value: "mains" },
@@ -20,7 +17,8 @@ export default defineType({
       name: "label",
       title: "Label",
       type: "string",
-      description: 'Section header shown above dishes, e.g. “Paneer Preparation”.',
+      description:
+        "Section header shown above dishes, e.g. “Paneer Preparation”.",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -34,7 +32,8 @@ export default defineType({
       name: "parentSection",
       title: "Course",
       type: "string",
-      description: "Which broad course this category falls under. Drives dish filter tags.",
+      description:
+        "Which broad course this category falls under. Drives dish filter tags.",
       options: { list: [...PARENT_SECTIONS], layout: "radio" },
       validation: (r) => r.required(),
     }),

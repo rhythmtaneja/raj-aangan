@@ -1,24 +1,9 @@
 import GalleryHero from "@/components/sections/gallery/GalleryHero";
 import GalleryGridSection from "@/components/sections/gallery/GalleryGridSection";
-import GalleryBackNav from "@/components/sections/gallery/GalleryBackNav";
 import FooterSection from "@/components/sections/FooterSection";
 import { getSiteImages } from "@/lib/site-images/queries";
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Page background colour.
-// This is the single source of truth for the dark bg — GalleryHero's bottom
-// gradient blends INTO this exact colour, so if you tune this, also update
-// HERO_BLEND_TO_COLOR in GalleryHero.tsx to match. Otherwise the hero fade
-// will land on the wrong colour and create a visible seam.
-// ═══════════════════════════════════════════════════════════════════════════
-const PAGE_BG = "#0a1e26"; // ↓ push toward "#050f14" for near-black
-// ↑ push toward "#0f3a4a" to lighten
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Image lists per section.
-// Drop actual photos in /public/images/gallery/ using these filenames, or
-// edit these arrays to point at your own paths.
-// ═══════════════════════════════════════════════════════════════════════════
+const PAGE_BG = "#0a1e26";
 
 const RAEC_RESORT_IMAGES = [
   "/images/gallery/raec-1.jpg",
@@ -41,8 +26,6 @@ const INDOOR_AREA_IMAGES = [
   "/images/gallery/indoor-3.jpg",
   "/images/gallery/indoor-4.jpg",
 ];
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default async function GalleryPage() {
   const siteImages = await getSiteImages();
@@ -80,8 +63,6 @@ export default async function GalleryPage() {
           showMoreButton
         />
       </div>
-
-      {/* <GalleryBackNav /> */}
 
       <FooterSection />
     </main>

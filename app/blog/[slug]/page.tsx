@@ -10,8 +10,6 @@ import { getBlogPostBySlug, getBlogSlugs } from "@/lib/blog/queries";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// Prebuild all known posts; new ones render on-demand then cache (dynamicParams
-// defaults to true). ISR keeps everything fresh via the "blogPost" cache tag.
 export async function generateStaticParams() {
   const slugs = await getBlogSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -54,16 +52,24 @@ export default async function BlogPostPage(props: PageParams) {
 
   return (
     <main className="relative bg-[#efe9df]">
-      {/* ── Hero: cover image as a fixed backdrop, matching the blog index ── */}
       <div aria-hidden className="fixed inset-0 z-0 pointer-events-none">
-        <Image src={post.coverImage} alt="" fill priority sizes="100vw" className="object-cover object-center" />
-        <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.5)" }} />
+        <Image
+          src={post.coverImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        />
       </div>
 
       <div className="relative z-10">
         <SiteHeader colorScheme="light" />
 
-        {/* Hero content */}
         <header className="flex min-h-[70vh] flex-col items-center justify-center px-6 py-24 text-center text-white">
           <Link
             href="/blog"
@@ -83,7 +89,10 @@ export default async function BlogPostPage(props: PageParams) {
             {post.title}
           </h1>
           {post.excerpt && (
-            <p style={serif} className="mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,1.4375rem)] text-white/90">
+            <p
+              style={serif}
+              className="mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,1.4375rem)] text-white/90"
+            >
               {post.excerpt}
             </p>
           )}
@@ -98,16 +107,14 @@ export default async function BlogPostPage(props: PageParams) {
                   className="h-10 w-10 rounded-full object-cover"
                 />
               )}
-              <span className="text-sm tracking-wide text-white/90">By {post.author.name}</span>
+              <span className="text-sm tracking-wide text-white/90">
+                By {post.author.name}
+              </span>
             </div>
           )}
         </header>
 
-        {/* ── Body card ── */}
         <article className="mx-auto -mb-px w-full max-w-4xl bg-[#f5efe6] px-6 py-16 md:px-16 md:py-24">
-          {/* Two sources, one look: posts written in lib/blog/posts.ts render
-              through LocalBlogBody, posts written in Studio through
-              PortableTextRenderer. Both use identical typography. */}
           {post.localBody ? (
             <LocalBlogBody blocks={post.localBody} />
           ) : (
@@ -139,10 +146,15 @@ export default async function BlogPostPage(props: PageParams) {
                 />
               )}
               <div>
-                <p style={serif} className="text-lg font-semibold text-[#221d18]">
+                <p
+                  style={serif}
+                  className="text-lg font-semibold text-[#221d18]"
+                >
                   {post.author.name}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed text-[#6b6255]">{post.author.shortBio}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#6b6255]">
+                  {post.author.shortBio}
+                </p>
               </div>
             </div>
           )}

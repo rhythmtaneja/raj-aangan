@@ -12,40 +12,28 @@ gsap.registerPlugin(useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const BG_IMAGE = "/images/contact-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
-// ─ Bottom fade — must match the AddressSection's SECTION_BG so the hero
-//   dissolves smoothly into the next section instead of hard-cutting.
-//   AddressSection is CREAM, so we fade to cream here (NOT to dark navy).
-const HERO_BLEND_TO_COLOR = "#f5efe6"; // = AddressSection.SECTION_BG
+const HERO_BLEND_TO_COLOR = "#f5efe6";
 const HERO_BLEND_HEIGHT = "0vh";
 const HERO_BLEND_START = "0%";
 
-// ─ Title ──
 const TITLE_TEXT = "Contact Us";
 const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 5.375rem)";
 
-// ─ Subtitle beneath the title (from figma image 1) ──
-const SUBTITLE_TEXT = "Let's start a conversation. Our team is here to help you create something extraordinary.";
+const SUBTITLE_TEXT =
+  "Let's start a conversation. Our team is here to help you create something extraordinary.";
 const SUBTITLE_FONT_SIZE = "clamp(1rem, 1.5vw, 1.375rem)";
 const SUBTITLE_MAX_W = "42rem";
 
-// ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.05;
 const LETTER_DURATION = 0.9;
 const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
-// ─ Subtitle + CTA fade-in timing ──
 const SUBTITLE_DELAY = 1.3;
 const CTA_DELAY = 2.0;
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 function Letters({ text }: { text: string }) {
   return (
@@ -76,8 +64,11 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
     () => {
       if (prefersReducedMotion()) return;
 
-      const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
-      const subtitle = root.current?.querySelector<HTMLElement>(".contact-hero-subtitle");
+      const letters =
+        root.current?.querySelectorAll<HTMLElement>(".hero-letter");
+      const subtitle = root.current?.querySelector<HTMLElement>(
+        ".contact-hero-subtitle",
+      );
       const cta = root.current?.querySelector<HTMLElement>(".contact-hero-cta");
 
       if (letters && letters.length > 0) {
@@ -112,12 +103,11 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
         });
       }
     },
-    { scope: root }
+    { scope: root },
   );
 
   return (
     <section ref={root} className="relative h-screen w-full overflow-hidden">
-      {/* Background photo */}
       <div className="absolute inset-0">
         <Image
           src={bgImage ?? BG_IMAGE}
@@ -129,13 +119,11 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
         />
       </div>
 
-      {/* Dark overlay */}
       <div
         className="absolute inset-0"
         style={{ backgroundColor: `rgba(25, 25, 25, ${OVERLAY_OPACITY})` }}
       />
 
-      {/* Bottom blend — dissolves the hero into the CREAM AddressSection */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0"
@@ -146,10 +134,8 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
         }}
       />
 
-      {/* Navbar */}
       <SiteHeader />
 
-      {/* Centered title + subtitle + down-arrow CTA */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
         <h1
           style={{ ...serif, fontSize: TITLE_FONT_SIZE }}
@@ -189,7 +175,17 @@ export default function ContactHero({ bgImage }: { bgImage?: string }) {
 
 function DownArrowIcon() {
   return (
-    <svg className="w-[1.25rem] h-[1.25rem]" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.25rem] h-[1.25rem]"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );

@@ -1,47 +1,51 @@
 "use client";
 
-/**
- * DragSlider.tsx
- * ---------------------------------------------------------------------------
- * Horizontal drag-to-scroll row (the reference "Stay packages" slider). Hold
- * the mouse down and drag left/right to move through the cards. While hovering,
- * the cursor becomes a blurry circle with a drag arrow. An optional faint
- * `marqueeWord` runs behind the cards.
- *
- * Cards: give each direct child a fixed width and `shrink-0` so they line up in
- * a row (e.g. className="w-[min(80vw,420px)] shrink-0").
- * ---------------------------------------------------------------------------
- */
-
 import { useRef, useState, type ReactNode } from "react";
 import Marquee from "./Marquee";
 
 type DragSliderProps = {
   children: ReactNode;
-  /** Faint word looping behind the cards (e.g. "Cuisine"). */
+
   marqueeWord?: string;
-  /** Colour/opacity of the running word. Change this to make it more visible. */
+
   marqueeClassName?: string;
-  /** Gap between cards (CSS length). */
+
   gap?: string;
   className?: string;
 };
 
-export default function DragSlider({ children, marqueeWord, marqueeClassName = "text-white opacity-25", gap = "1.5rem", className }: DragSliderProps) {
+export default function DragSlider({
+  children,
+  marqueeWord,
+  marqueeClassName = "text-white opacity-25",
+  gap = "1.5rem",
+  className,
+}: DragSliderProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+  const drag = useRef({
+    active: false,
+    startX: 0,
+    startScroll: 0,
+    moved: false,
+  });
   const [hovering, setHovering] = useState(false);
   const [grabbing, setGrabbing] = useState(false);
 
   const moveCursor = (x: number, y: number) => {
-    if (cursorRef.current) cursorRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+    if (cursorRef.current)
+      cursorRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
   };
 
   const onDown = (e: React.MouseEvent) => {
     const el = scrollRef.current;
     if (!el) return;
-    drag.current = { active: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    drag.current = {
+      active: true,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: false,
+    };
     setGrabbing(true);
   };
 
@@ -60,7 +64,6 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
     setGrabbing(false);
   };
 
-  // Prevent a drag from also triggering link clicks on the cards
   const onClickCapture = (e: React.MouseEvent) => {
     if (drag.current.moved) {
       e.preventDefault();
@@ -79,18 +82,33 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
       }}
       onMouseMove={onMove}
     >
-      {/* Faint running word behind the cards */}
       {marqueeWord && (
-        <div aria-hidden style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 0 }}>
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        >
           <Marquee speed={50} repeat={6} className={marqueeClassName}>
-            <span style={{ fontFamily: "var(--font-cormorant-garamond)", fontSize: "clamp(7.5rem,22vw,19.8125rem)", lineHeight: 1, fontWeight: 600 }}>
+            <span
+              style={{
+                fontFamily: "var(--font-cormorant-garamond)",
+                fontSize: "clamp(7.5rem,22vw,19.8125rem)",
+                lineHeight: 1,
+                fontWeight: 600,
+              }}
+            >
               {marqueeWord}
             </span>
           </Marquee>
         </div>
       )}
 
-      {/* Scroll track */}
       <div
         ref={scrollRef}
         onMouseDown={onDown}
@@ -112,7 +130,6 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
         {children}
       </div>
 
-      {/* Custom blurry-circle cursor */}
       <div
         ref={cursorRef}
         aria-hidden
@@ -136,7 +153,17 @@ export default function DragSlider({ children, marqueeWord, marqueeClassName = "
           transition: "width .2s ease, height .2s ease",
         }}
       >
-        <svg className="w-[1.625rem] h-[1.625rem]" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          className="w-[1.625rem] h-[1.625rem]"
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M8 7l-4 5 4 5M16 7l4 5-4 5M4 12h16" />
         </svg>
       </div>

@@ -15,7 +15,6 @@ const INK = "#221d18";
 const INK_MUTED = "#6b6255";
 const GOLD = "#b08d57";
 
-// Sanity asset refs encode dimensions, e.g. "image-abc123-2400x1600-jpg".
 function refDimensions(ref?: string): { w: number; h: number } {
   const m = ref?.match(/-(\d+)x(\d+)-/);
   if (!m) return { w: 1600, h: 1000 };
@@ -31,8 +30,6 @@ type ImageValue = {
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      // whitespace-pre-line so a soft line break (Shift+Enter in Studio) is
-      // kept — Sanity stores it as a "\n" inside the span.
       <p
         style={{ color: INK }}
         className="mx-auto mb-6 max-w-2xl whitespace-pre-line text-[clamp(1rem,1.15vw,1.0625rem)] leading-[1.85]"
@@ -84,7 +81,9 @@ const components: PortableTextComponents = {
     ),
   },
   marks: {
-    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+    strong: ({ children }) => (
+      <strong className="font-semibold">{children}</strong>
+    ),
     em: ({ children }) => <em className="italic">{children}</em>,
     link: ({ children, value }) => {
       const href = (value?.href as string) ?? "#";
@@ -94,7 +93,9 @@ const components: PortableTextComponents = {
           href={href}
           style={{ color: GOLD }}
           className="underline decoration-1 underline-offset-4 transition-opacity hover:opacity-70"
-          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          {...(external
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
         >
           {children}
         </Link>
@@ -130,6 +131,10 @@ const components: PortableTextComponents = {
   },
 };
 
-export default function PortableTextRenderer({ value }: { value: PortableTextBlock[] }) {
+export default function PortableTextRenderer({
+  value,
+}: {
+  value: PortableTextBlock[];
+}) {
   return <PortableText value={value} components={components} />;
 }

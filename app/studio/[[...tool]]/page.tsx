@@ -4,7 +4,6 @@ import Studio from "./Studio";
 
 export const dynamic = "force-static";
 
-// Studio renders best without mobile zoom, matching next-sanity's own viewport.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -32,7 +31,9 @@ function StudioNotConfigured() {
       }}
     >
       <div style={{ maxWidth: 560 }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: "1rem", color: "#d4a574" }}>
+        <h1
+          style={{ fontSize: "1.6rem", marginBottom: "1rem", color: "#d4a574" }}
+        >
           Sanity Studio isn&apos;t connected yet
         </h1>
         <p style={{ lineHeight: 1.6, opacity: 0.9 }}>

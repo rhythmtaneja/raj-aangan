@@ -1,19 +1,5 @@
 "use client";
 
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/AboutSection.tsx
-// ══════════════════════════════════════════════════════════════════
-
-// Hover-zoom recipe (same as GalleryGridSection):
-//   • `group` on the overflow-hidden container
-//   • `transition-transform duration-[1200ms] ease-out group-hover:scale-105`
-//     on the <Image>
-//   • `z-10` on the inner outline frame so it stays put while the image
-//     scales beneath it
-// Row 1's Parallax wrapper untouched — parallax translates the container,
-// hover scales the image element, different DOM nodes, no conflict.
-// ══════════════════════════════════════════════════════════════════
-
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
@@ -29,45 +15,17 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Hover zoom recipe (shared with GalleryGridSection). Change here to affect
-// every About photo consistently.
 const HOVER_TRANSITION = "transition-transform duration-[1200ms] ease-out";
 const HOVER_SCALE = "group-hover:scale-105";
 
-// ─── PHONE PHOTO EDGE SEAM (Sep 2026) ──────────────────────────────────────
-// Each photo is an `overflow-hidden` box holding an absolutely-positioned
-// `<Image fill>`. When the box's top lands on a fractional device pixel — which
-// depends on the scroll position, so it comes and goes — the clip edge is
-// antialiased against whatever is painted behind it and a ~1px light hairline
-// appears along the photo's top AND bottom edge. Measured off the client's
-// screenshot: background rows read 234 brightness, the photo 80, and the single
-// row between them 240 — brighter than either, i.e. genuinely a light line
-// rather than a blend of the two.
-//
-// The fix is to give the image a 1px bleed on every side so a half-pixel of
-// clip rounding still has image behind it. 1px is the ONE fixed-px value the
-// zoom-proof layout rule allows (see CLAUDE.md), and it is hidden under the
-// clip at every width, so this changes nothing visible on desktop.
 const PHOTO_BLEED = "-inset-px";
 
-// Continues Cuisine's final colour, then arrives at Events' base colour.
 const BG_START_COLOR = "#ebe5dbff";
 const BG_END_COLOR = "#f1ece3";
 const COLOR_TRANSITION_START = "top bottom";
 const COLOR_TRANSITION_END = "top top";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ── ADD ABOUT IMAGES HERE ───────────────────────────────────────────────────
-const ABOUT_IMAGES = [
-  "/images/about-2.jpg",
-  "/images/about-3.jpg",
-  // "/images/about-4.jpg",
-];
+const ABOUT_IMAGES = ["/images/about-2.jpg", "/images/about-3.jpg"];
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -89,7 +47,7 @@ export default function AboutSection() {
         },
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -98,30 +56,23 @@ export default function AboutSection() {
       className="flex w-full flex-col items-center px-6 py-24 text-center"
       style={{ backgroundColor: `var(--page-bg, ${BG_START_COLOR})` }}
     >
-      {/* III ABOUT + OUR STORY + gold heading */}
       <Reveal stagger staggerEach={0.12} className="flex flex-col items-center">
         <div className="flex items-center gap-4">
           <NumeralMarker numeral="III" />
-          <span style={serif} className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,1.125rem)]">About</span>
+          <span
+            style={serif}
+            className="uppercase tracking-[0.25em] text-[#444444] text-[clamp(1rem,1.25vw,1.125rem)]"
+          >
+            About
+          </span>
         </div>
         <div className="mt-12">
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,0.875rem)]">Our Story</p>
+          <p className="font-semibold uppercase tracking-[0.2em] text-[#444444] text-[clamp(0.8rem,0.94vw,0.875rem)]">
+            Our Story
+          </p>
           <span className="mx-auto mt-2 block h-px w-16 bg-[#bf9a3f]" />
         </div>
-        {/*
-          ONE LINE ON PHONES (client request).
-          "Raj Aangan Events and Caterers" needs ~1.19x its own width at the
-          2rem clamp floor, so it wrapped to two lines on a 390px screen. The
-          phone size is therefore expressed in `vw`, which scales with the
-          measure itself: 6.6vw keeps the string inside the section's `px-6`
-          content box at every phone width, so `whitespace-nowrap` is safe
-          rather than an overflow risk. Capped at 2rem so a wide phone never
-          renders it larger than the desktop clamp floor.
 
-          ⚠️ The 6.6vw coefficient is tuned to THIS string. If the wording
-          changes, re-measure — or drop the nowrap and let it wrap again.
-          Desktop is untouched: the md: clamp is the original value.
-        */}
         <h2
           style={serif}
           className="mt-8 whitespace-nowrap font-semibold text-[#bf9a3f] text-[min(6.6vw,2rem)] md:whitespace-normal md:text-[clamp(2rem,3.4vw,3.0625rem)]"
@@ -130,84 +81,88 @@ export default function AboutSection() {
         </h2>
       </Reveal>
 
-      {/*
-        PHONE ORDER FIX.
-        The two rows below are separate grids, so on phones they stacked as
-        image-1 → paragraph → image-2 → image-3 → stats, dropping the paragraph
-        in the MIDDLE of the photos. The wrapper turns into a flex column on
-        phones and both rows become `display: contents`, which dissolves them
-        so their four blocks become direct flex children of this wrapper — only
-        then can `order` sequence them across the original row boundary:
-
-            1 image-1   2 image-stack   3 paragraph   4 stats
-
-        At md+ the wrapper itself becomes `display: contents` too, so it
-        DISSOLVES — the two rows become direct children of the <section> again,
-        exactly as they were before. That matters: the rows are centred by the
-        section's own `items-center`, so a wrapper that stayed a real block box
-        would left-align them (`max-w-300` + block = no centring).
-      */}
-      {/*
-        `mt-12` matches the `gap-12` between the photos below it. Without it
-        the heading sat flush on the first photo (measured: 0px, against 48px
-        between every other pair), which is the uneven spacing in
-        phone-changes/alignment.jpeg. At md+ the wrapper becomes
-        `display: contents` and dissolves, taking the margin with it.
-      */}
       <div className="mt-12 flex w-full flex-col items-center gap-12 md:mt-0 md:contents">
-
-      {/* Row 1: image (parallax + hover zoom) + paragraph */}
-      <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-1 md:items-center md:gap-12 md:grid-cols-2">
-        <div className="group relative order-1 aspect-square w-full max-w-[26rem] overflow-hidden md:order-none md:max-w-none">
-          <Parallax distance={30} className="absolute -inset-y-12 -inset-x-px">
-            <div className="relative h-full w-full">
-              <Image
-                src="/images/about-1.jpg"
-                alt="Chef plating a luxury catering spread"
-                fill
-                className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
-                sizes="(max-width: 1023px) 100vw, 600px"
-              />
-            </div>
-          </Parallax>
-          <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
-        </div>
-        <Reveal className="order-3 w-full max-w-[26rem] md:order-none md:max-w-none">
-          <p style={serif} className="leading-relaxed text-[#2a2a2a] text-[1.0625rem] md:px-6 md:text-[clamp(1.1rem,1.45vw,1.3125rem)]">
-            What started as a passion for bringing people together has grown into one of Jaipur&rsquo;s trusted names in luxury events, destination weddings, and premium catering experiences. Inspired by Rajasthan&rsquo;s royal culture and timeless traditions, Raj Aangan blends heritage hospitality with modern event craftsmanship.
-          </p>
-        </Reveal>
-      </div>
-
-      {/* Row 2: SCROLLING image stack (left, each with hover zoom) + STICKY stats (right) */}
-      <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-2 md:gap-12 md:items-start">
-        <div className="order-2 flex w-full max-w-[26rem] flex-col gap-12 md:order-none md:max-w-none">
-          {ABOUT_IMAGES.map((src, i) => (
-            <div key={src} className="group relative aspect-square w-full overflow-hidden">
-              <div className={`absolute ${PHOTO_BLEED}`}>
+        <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-1 md:items-center md:gap-12 md:grid-cols-2">
+          <div className="group relative order-1 aspect-square w-full max-w-[26rem] overflow-hidden md:order-none md:max-w-none">
+            <Parallax
+              distance={30}
+              className="absolute -inset-y-12 -inset-x-px"
+            >
+              <div className="relative h-full w-full">
                 <Image
-                  src={src}
-                  alt={`Raj Aangan catering ${i + 1}`}
+                  src="/images/about-1.jpg"
+                  alt="Chef plating a luxury catering spread"
                   fill
                   className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
                   sizes="(max-width: 1023px) 100vw, 600px"
                 />
               </div>
-              <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
-            </div>
-          ))}
-        </div>
-
-        {/* Sticky: stays pinned while the images on the left scroll past */}
-        <div className="order-4 w-full md:order-none md:sticky md:top-28 md:self-start">
-          <Reveal stagger staggerEach={0.15} className="flex flex-col items-center gap-8 py-2 md:gap-12 md:py-8">
-            <Stat icon={<CalendarIcon />} end={200} suffix="+" label="Events" />
-            <Stat icon={<UsersIcon />} end={10000} suffix="+" label="Guests" />
-            <Stat icon={<CalendarIcon />} end={15} suffix="+" label="Years of Experience" />
+            </Parallax>
+            <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
+          </div>
+          <Reveal className="order-3 w-full max-w-[26rem] md:order-none md:max-w-none">
+            <p
+              style={serif}
+              className="leading-relaxed text-[#2a2a2a] text-[1.0625rem] md:px-6 md:text-[clamp(1.1rem,1.45vw,1.3125rem)]"
+            >
+              What started as a passion for bringing people together has grown
+              into one of Jaipur&rsquo;s trusted names in luxury events,
+              destination weddings, and premium catering experiences. Inspired
+              by Rajasthan&rsquo;s royal culture and timeless traditions, Raj
+              Aangan blends heritage hospitality with modern event
+              craftsmanship.
+            </p>
           </Reveal>
         </div>
-      </div>
 
+        <div className="contents md:mt-16 md:grid md:w-full md:max-w-300 md:grid-cols-2 md:gap-12 md:items-start">
+          <div className="order-2 flex w-full max-w-[26rem] flex-col gap-12 md:order-none md:max-w-none">
+            {ABOUT_IMAGES.map((src, i) => (
+              <div
+                key={src}
+                className="group relative aspect-square w-full overflow-hidden"
+              >
+                <div className={`absolute ${PHOTO_BLEED}`}>
+                  <Image
+                    src={src}
+                    alt={`Raj Aangan catering ${i + 1}`}
+                    fill
+                    className={`object-cover ${HOVER_TRANSITION} ${HOVER_SCALE}`}
+                    sizes="(max-width: 1023px) 100vw, 600px"
+                  />
+                </div>
+                <div className="pointer-events-none absolute z-10 inset-5 border border-white/80" />
+              </div>
+            ))}
+          </div>
+
+          <div className="order-4 w-full md:order-none md:sticky md:top-28 md:self-start">
+            <Reveal
+              stagger
+              staggerEach={0.15}
+              className="flex flex-col items-center gap-8 py-2 md:gap-12 md:py-8"
+            >
+              <Stat
+                icon={<CalendarIcon />}
+                end={200}
+                suffix="+"
+                label="Events"
+              />
+              <Stat
+                icon={<UsersIcon />}
+                end={10000}
+                suffix="+"
+                label="Guests"
+              />
+              <Stat
+                icon={<CalendarIcon />}
+                end={15}
+                suffix="+"
+                label="Years of Experience"
+              />
+            </Reveal>
+          </div>
+        </div>
       </div>
 
       <Reveal>
@@ -226,11 +181,24 @@ export default function AboutSection() {
   );
 }
 
-function Stat({ icon, end, suffix, label }: { icon: React.ReactNode; end: number; suffix?: string; label: string }) {
+function Stat({
+  icon,
+  end,
+  suffix,
+  label,
+}: {
+  icon: React.ReactNode;
+  end: number;
+  suffix?: string;
+  label: string;
+}) {
   return (
     <div className="flex flex-col items-center text-center">
       <span className="mb-3 text-[#444444]">{icon}</span>
-      <p style={serif} className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,1.875rem)]">
+      <p
+        style={serif}
+        className="text-[#3a3a3a] text-[clamp(1.4rem,2.08vw,1.875rem)]"
+      >
         <span className="font-medium">
           <CountUp end={end} suffix={suffix} />{" "}
         </span>
@@ -242,7 +210,17 @@ function Stat({ icon, end, suffix, label }: { icon: React.ReactNode; end: number
 
 function CalendarIcon() {
   return (
-    <svg className="w-[1.875rem] h-[1.875rem]" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.875rem] h-[1.875rem]"
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="3" y="4" width="18" height="18" rx="2" />
       <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>
@@ -251,7 +229,17 @@ function CalendarIcon() {
 
 function UsersIcon() {
   return (
-    <svg className="w-[1.875rem] h-[1.875rem]" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.875rem] h-[1.875rem]"
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />

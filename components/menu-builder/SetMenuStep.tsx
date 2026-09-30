@@ -1,16 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/menu-builder/SetMenuStep.tsx
-// ══════════════════════════════════════════════════════════════════
-// The venue-event Menu step — shown for EVERY venue. Per-person pricing cards
-// pick a fixed package; each course then renders its dishes in the same
-// add-to-cart style as the custom builder (title + description + toggle).
-//
-// Soft "choose N" rule: the first N picks (in order) are included in the
-// package price; any further picks are flagged as paid ADD-ONS and surcharge
-// the package. Dish selection is optional, so guests can continue as soon as
-// they choose a package.
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import Image from "next/image";
@@ -30,22 +17,16 @@ import {
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
-// Set-menu card knobs. Desktop dimensions match the Figma reference.
+
 const MENU_CARD_WIDTH = "15.25rem";
 const MENU_CARD_GAP = "gap-8";
 const MENU_CARD_HEIGHT = "md:h-[13.9375rem]";
 const MENU_IMAGE_HEIGHT = "md:h-[10.3125rem]";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function SetMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
@@ -53,24 +34,20 @@ export default function SetMenuStep() {
   const pricingData = usePricingData();
   const router = useRouter();
 
-  // Step-set follows the mode: 5 steps on the set path, 6 (with Cuisine) once
-  // the guest has opted into the custom builder.
   const steps = getSteps(state);
 
   const selectedId = state.selectedSetMenuId;
   const selectedMenu = getSetMenu(selectedId);
-  // Surcharge per extra pick: the menu's own override, else the global setting.
+
   const addOnPrice = getAddOnPricePerItem(state, pricingData);
 
-  // Accordion: which course sections are expanded. Collapsed by default so the
-  // guest sees only headings; selections persist in state regardless.
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const toggleSection = (id: string) =>
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const pickMenu = (id: string) => dispatch({ type: "SET_SET_MENU", setMenuId: id });
+  const pickMenu = (id: string) =>
+    dispatch({ type: "SET_SET_MENU", setMenuId: id });
 
-  // Custom path = cuisine categories first, then the dishes in those cuisines.
   const goCustom = () => {
     dispatch({ type: "SET_FIELD", field: "menuMode", value: "custom" });
     router.push("/menu-builder/cuisine");
@@ -84,9 +61,9 @@ export default function SetMenuStep() {
       chooseCount: section.chooseCount,
     });
 
-  const chosenIn = (sectionId: string): string[] => state.setMenuSelections[sectionId] ?? [];
+  const chosenIn = (sectionId: string): string[] =>
+    state.setMenuSelections[sectionId] ?? [];
 
-  // Used only for the per-course selection status; selecting dishes is optional.
   const allSectionsComplete = Boolean(
     selectedMenu &&
     selectedMenu.sections.every((s) => chosenIn(s.id).length >= s.chooseCount),
@@ -114,7 +91,6 @@ export default function SetMenuStep() {
           add-ons. Prefer full control? Build a custom menu instead.
         </p>
 
-        {/* Fixed menu cards */}
         <div
           className={`mt-6 grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--menu-card-width)))] md:grid-cols-[repeat(3,minmax(0,var(--menu-card-width)))] ${MENU_CARD_GAP}`}
           style={{ "--menu-card-width": MENU_CARD_WIDTH } as CSSProperties}
@@ -129,13 +105,15 @@ export default function SetMenuStep() {
           ))}
         </div>
 
-        {/* Custom builder CTA */}
         <div
           className="mt-10 flex flex-col items-start gap-3 rounded-lg border border-dashed p-6 md:flex-row md:items-center md:justify-between"
           style={{ borderColor: GOLD, backgroundColor: `${GOLD}0d` }}
         >
           <div>
-            <p style={{ ...serif, color: INK }} className="text-lg font-semibold">
+            <p
+              style={{ ...serif, color: INK }}
+              className="text-lg font-semibold"
+            >
               Don&apos;t want a fixed package?
             </p>
             <p style={{ color: INK_MUTED }} className="text-sm">
@@ -151,7 +129,6 @@ export default function SetMenuStep() {
           </button>
         </div>
 
-        {/* Section pickers for the selected menu */}
         {selectedMenu && (
           <div className="mt-10">
             <div className="mb-3 flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
@@ -161,7 +138,10 @@ export default function SetMenuStep() {
               >
                 {selectedMenu.name} — Choose Your Dishes
               </h3>
-              <div className="hidden h-px flex-1 md:block" style={{ backgroundColor: "#e5e5e5" }} />
+              <div
+                className="hidden h-px flex-1 md:block"
+                style={{ backgroundColor: "#e5e5e5" }}
+              />
             </div>
             {selectedMenu.description && (
               <p style={{ color: INK_MUTED }} className="mb-6 text-sm">
@@ -181,11 +161,12 @@ export default function SetMenuStep() {
                     className="overflow-hidden rounded-lg border"
                     style={{ borderColor: isOpen ? GOLD : MB_COLORS.border }}
                   >
-                    {/* Heading — click to expand / collapse */}
                     <button
                       onClick={() => toggleSection(section.id)}
                       className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors"
-                      style={{ backgroundColor: isOpen ? `${GOLD}12` : "transparent" }}
+                      style={{
+                        backgroundColor: isOpen ? `${GOLD}12` : "transparent",
+                      }}
                       aria-expanded={isOpen}
                     >
                       <div className="flex items-center gap-3">
@@ -199,14 +180,18 @@ export default function SetMenuStep() {
                           </h3>
                           <p style={{ color: INK_MUTED }} className="text-xs">
                             Choose any {section.chooseCount}
-                            {section.chooseCount > 1 ? " (extras become add-ons)" : ""}
+                            {section.chooseCount > 1
+                              ? " (extras become add-ons)"
+                              : ""}
                           </p>
                         </div>
                       </div>
                       <span
                         className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
                         style={{
-                          backgroundColor: met ? `${GOLD}22` : MB_COLORS.borderLight,
+                          backgroundColor: met
+                            ? `${GOLD}22`
+                            : MB_COLORS.borderLight,
                           color: met ? GOLD : INK_MUTED,
                         }}
                       >
@@ -215,7 +200,6 @@ export default function SetMenuStep() {
                       </span>
                     </button>
 
-                    {/* Items — only when expanded */}
                     {isOpen && (
                       <ul
                         className="divide-y border-t px-5"
@@ -224,15 +208,25 @@ export default function SetMenuStep() {
                         {section.dishOptions.map((opt) => {
                           const idx = hydrated ? chosen.indexOf(opt.id) : -1;
                           const isSelected = idx >= 0;
-                          const isAddOn = isSelected && idx >= section.chooseCount;
+                          const isAddOn =
+                            isSelected && idx >= section.chooseCount;
                           return (
-                            <li key={opt.id} className="flex items-center justify-between gap-4 py-3">
+                            <li
+                              key={opt.id}
+                              className="flex items-center justify-between gap-4 py-3"
+                            >
                               <div className="min-w-0">
-                                <p style={{ ...serif, color: INK }} className="text-lg font-medium leading-tight">
+                                <p
+                                  style={{ ...serif, color: INK }}
+                                  className="text-lg font-medium leading-tight"
+                                >
                                   {opt.name}
                                 </p>
                                 {opt.subtitle && (
-                                  <p style={{ color: INK_MUTED }} className="mt-0.5 line-clamp-1 text-xs">
+                                  <p
+                                    style={{ color: INK_MUTED }}
+                                    className="mt-0.5 line-clamp-1 text-xs"
+                                  >
                                     {opt.subtitle}
                                   </p>
                                 )}
@@ -266,8 +260,6 @@ export default function SetMenuStep() {
   );
 }
 
-// ─── Sub-components ────────────────────────────────────────────────────────
-
 function SetMenuCard({
   menu,
   selected,
@@ -284,10 +276,14 @@ function SetMenuCard({
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
         backgroundColor: MB_COLORS.cardCream,
-        boxShadow: selected ? `0 0 0 1px ${GOLD}` : "0 1px 3px rgba(0,0,0,0.06)",
+        boxShadow: selected
+          ? `0 0 0 1px ${GOLD}`
+          : "0 1px 3px rgba(0,0,0,0.06)",
       }}
     >
-      <div className={`relative aspect-[1.48/1] w-full overflow-hidden bg-[#f4f0e8] ${MENU_IMAGE_HEIGHT}`}>
+      <div
+        className={`relative aspect-[1.48/1] w-full overflow-hidden bg-[#f4f0e8] ${MENU_IMAGE_HEIGHT}`}
+      >
         <Image
           src={menu.coverImage}
           alt={menu.name}
@@ -297,7 +293,10 @@ function SetMenuCard({
         />
       </div>
       <div className="flex min-h-[3.25rem] items-center px-3 py-2.5">
-        <span style={{ ...serif, color: GOLD }} className="text-sm font-medium leading-snug">
+        <span
+          style={{ ...serif, color: GOLD }}
+          className="text-sm font-medium leading-snug"
+        >
           {menu.name}
         </span>
       </div>
@@ -332,7 +331,7 @@ function AddToCartToggle({
 }: {
   selected: boolean;
   isAddOn: boolean;
-  /** Per-head surcharge for an extra pick (Sanity: menu override → settings). */
+
   addOnPrice: number;
   onClick: () => void;
 }) {
@@ -344,7 +343,15 @@ function AddToCartToggle({
         style={{ borderColor: GOLD, backgroundColor: `${GOLD}22`, color: INK }}
         title={isAddOn ? `Add-on · +${formatINR(addOnPrice)}/head` : "Included"}
       >
-        <svg className="w-[0.875rem] h-[0.875rem]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={3}>
+        <svg
+          className="w-[0.875rem] h-[0.875rem]"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={GOLD}
+          strokeWidth={3}
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
         {isAddOn ? (

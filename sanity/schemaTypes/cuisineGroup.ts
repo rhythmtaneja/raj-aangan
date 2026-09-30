@@ -1,15 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/cuisineGroup.ts
-// ══════════════════════════════════════════════════════════════════
-// A cuisine card on /menu-builder/cuisine (Drinks, Chaat, Thai, …). Each card
-// points at the à-la-carte sections it unlocks: pick Drinks + Soup and the
-// next step lists only those sections' dishes.
-//
-// Code equivalent (used as the fallback): lib/menu-builder/cuisine-groups.ts.
-// The dish count on the card is COUNTED from the linked sections — there is
-// nothing to keep in sync by hand.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
@@ -21,7 +9,7 @@ export default defineType({
       name: "name",
       title: "Name",
       type: "string",
-      description: 'Shown on the card, e.g. “Pan Asian”.',
+      description: "Shown on the card, e.g. “Pan Asian”.",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -57,7 +45,8 @@ export default defineType({
       name: "isActive",
       title: "Show in the Menu Builder",
       type: "boolean",
-      description: "Turn off to hide this card from guests without deleting it.",
+      description:
+        "Turn off to hide this card from guests without deleting it.",
       initialValue: true,
     }),
     defineField({
@@ -76,7 +65,12 @@ export default defineType({
     },
   ],
   preview: {
-    select: { title: "name", media: "image", sections: "sections", isActive: "isActive" },
+    select: {
+      title: "name",
+      media: "image",
+      sections: "sections",
+      isActive: "isActive",
+    },
     prepare({ title, media, sections, isActive }) {
       const count = Array.isArray(sections) ? sections.length : 0;
       const label = `${count} ${count === 1 ? "section" : "sections"}`;

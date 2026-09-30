@@ -1,12 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: lib/site-images/queries.ts
-// ══════════════════════════════════════════════════════════════════
-// Fetches the `siteImages` singleton and resolves every field to CDN URLs.
-// Always returns a full SiteImages object (nulls / empty arrays when a slot
-// is unset or Sanity isn't configured) so consumers coalesce with their
-// hardcoded /public fallbacks. Server-only.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import "server-only";
 import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/image";

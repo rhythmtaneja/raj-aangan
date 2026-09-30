@@ -11,27 +11,21 @@ import { MB_COLORS, type Venue } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 export default function Step2VenuePage() {
   const { state, dispatch, hydrated } = useBooking();
   const { venues } = useCatalog();
   const router = useRouter();
 
-  // Route protection — the Venue step belongs to the venue-event flow only.
   useEffect(() => {
     if (!hydrated) return;
-    if (state.cateringType !== "venue-event") router.replace("/menu-builder/client");
+    if (state.cateringType !== "venue-event")
+      router.replace("/menu-builder/client");
   }, [hydrated, state.cateringType, router]);
 
   const steps = getSteps(state);
@@ -40,13 +34,15 @@ export default function Step2VenuePage() {
   const partners = venues.filter((v) => v.type === "partner");
 
   const selectVenue = (id: string) =>
-    dispatch({ type: "SET_FIELD", field: "venueId", value: state.venueId === id ? null : id });
+    dispatch({
+      type: "SET_FIELD",
+      field: "venueId",
+      value: state.venueId === id ? null : id,
+    });
 
   const setCustom = (addr: string) =>
     dispatch({ type: "SET_FIELD", field: "customVenueAddress", value: addr });
 
-  // Every venue now leads to the same Menu step (fixed set menus, with an
-  // optional custom builder reachable from there).
   const canContinue = Boolean(state.venueId || state.customVenueAddress.trim());
 
   return (
@@ -69,7 +65,6 @@ export default function Step2VenuePage() {
           Choose from our properties or a partner venue in Jaipur.
         </p>
 
-        {/* OUR PROPERTIES */}
         <SectionLabel>Our Properties</SectionLabel>
         <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
           {ourProperties.map((v) => (
@@ -82,7 +77,6 @@ export default function Step2VenuePage() {
           ))}
         </div>
 
-        {/* VENUE PARTNERS */}
         <SectionLabel>Venue Partner in Jaipur</SectionLabel>
         <div className="grid max-w-[40rem] grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
           {partners.map((v) => (
@@ -95,7 +89,6 @@ export default function Step2VenuePage() {
           ))}
         </div>
 
-        {/* CUSTOM VENUE ADDRESS */}
         <SectionLabel>Custom Venue Address</SectionLabel>
         <input
           type="text"
@@ -112,8 +105,6 @@ export default function Step2VenuePage() {
     </BuilderLayout>
   );
 }
-
-// ─── Sub-components ────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -148,7 +139,6 @@ function VenueCard({
         borderRadius: 6,
       }}
     >
-      {/* Image + category badge */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#f4f0e8]">
         <Image
           src={venue.image}
@@ -175,7 +165,6 @@ function VenueCard({
         </div>
       </div>
 
-      {/* Body */}
       <div className="p-3.5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -189,12 +178,16 @@ function VenueCard({
                 Capacity {venue.capacity}
               </p>
             )}
-            <p style={{ color: venue.type === "partner" ? MB_COLORS.greenCheck : GOLD }} className="mt-1 text-xs font-medium">
+            <p
+              style={{
+                color: venue.type === "partner" ? MB_COLORS.greenCheck : GOLD,
+              }}
+              className="mt-1 text-xs font-medium"
+            >
               {venue.pricingNote}
             </p>
           </div>
 
-          {/* Selection indicator */}
           <div
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
             style={{
@@ -203,7 +196,17 @@ function VenueCard({
             }}
           >
             {selected && (
-              <svg className="w-[0.875rem] h-[0.875rem]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                className="w-[0.875rem] h-[0.875rem]"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             )}

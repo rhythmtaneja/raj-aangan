@@ -6,32 +6,23 @@ import Reveal from "@/components/anim/Reveal";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Split bg pattern (same family as WeddingPackagesSection on /events) ──
-const TOP_BG = "#ffffff"; // white strip with title
-const MIDDLE_BG = "#0f2f3b"; // dark navy card strip
+const TOP_BG = "#ffffff";
+const MIDDLE_BG = "#0f2f3b";
 
 const TITLE_COLOR = "#191919";
 
-// ─ Padding ──
 const TOP_PAD = "min-h-[13.75rem] py-16 md:min-h-[15.75rem] md:py-20";
 const MIDDLE_PAD = "py-16 md:py-20";
 
-// ─ Card image ──
 const CARD_ASPECT = "aspect-square";
 const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type Property = { name: string; image: string; href: string };
 
 const PROPERTIES: Property[] = [
   {
-    name: "Raj\u00A0Aangan", // \u00A0 = non-breaking space so it doesn't wrap
+    name: "Raj\u00A0Aangan",
     image: "/images/venue-pkg-raj-aangan.jpg",
     href: "/venue/raj-aangan/packages",
   },
@@ -45,7 +36,6 @@ const PROPERTIES: Property[] = [
 export default function VenuePackagesSection() {
   return (
     <section className="relative w-full">
-      {/* TOP — white title band */}
       <div
         className={`flex w-full items-center justify-center ${TOP_PAD}`}
         style={{ backgroundColor: TOP_BG }}
@@ -60,7 +50,6 @@ export default function VenuePackagesSection() {
         </Reveal>
       </div>
 
-      {/* MIDDLE — navy strip with 2 clickable cards */}
       <div
         className={`w-full ${MIDDLE_PAD} px-6 md:px-12`}
         style={{ backgroundColor: MIDDLE_BG }}

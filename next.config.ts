@@ -8,8 +8,6 @@ const nextConfig: NextConfig = {
     root: projectRoot,
   },
   images: {
-    // Sanity's image CDN. urlFor() generates https://cdn.sanity.io/... URLs
-    // which next/image then handles for width/height + lazy-loading.
     remotePatterns: [
       {
         protocol: "https",

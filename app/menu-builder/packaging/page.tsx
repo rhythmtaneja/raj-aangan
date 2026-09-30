@@ -1,11 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: app/menu-builder/packaging/page.tsx
-// ══════════════════════════════════════════════════════════════════
-// Sub-flow C (Outdoor / Bulk) Step 3. Single-select packaging style + the
-// delivery date & address. Continue unlocks once a packaging style is chosen
-// and both delivery fields are filled.
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useEffect } from "react";
@@ -17,26 +9,19 @@ import { MB_COLORS, STEPS_OUTDOOR } from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const CARD_BG      = MB_COLORS.card;
-const INK          = MB_COLORS.ink;
-const INK_MUTED    = MB_COLORS.inkMuted;
-const GOLD         = MB_COLORS.gold;
+const CARD_BG = MB_COLORS.card;
+const INK = MB_COLORS.ink;
+const INK_MUTED = MB_COLORS.inkMuted;
+const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
-const PACKAGING_STEP_INDEX = 3; // Client, Catalog, [Packaging], Quote
+const PACKAGING_STEP_INDEX = 3;
 
 export default function PackagingStepPage() {
   const { state, dispatch, hydrated } = useBooking();
   const { packagingStyles } = useCatalog();
   const router = useRouter();
 
-  // Route protection — outdoor sub-flow, and needs a catalog selection.
   useEffect(() => {
     if (!hydrated) return;
     if (state.cateringType !== "outdoor") {
@@ -48,9 +33,12 @@ export default function PackagingStepPage() {
 
   if (!hydrated || state.cateringType !== "outdoor") return null;
 
-  const pickStyle = (id: string) => dispatch({ type: "SET_PACKAGING_STYLE", styleId: id });
-  const setDate = (v: string) => dispatch({ type: "SET_FIELD", field: "eventDate", value: v });
-  const setAddress = (v: string) => dispatch({ type: "SET_DELIVERY_ADDRESS", value: v });
+  const pickStyle = (id: string) =>
+    dispatch({ type: "SET_PACKAGING_STYLE", styleId: id });
+  const setDate = (v: string) =>
+    dispatch({ type: "SET_FIELD", field: "eventDate", value: v });
+  const setAddress = (v: string) =>
+    dispatch({ type: "SET_DELIVERY_ADDRESS", value: v });
 
   const canContinue = Boolean(
     state.packagingStyleId && state.eventDate && state.deliveryAddress.trim(),
@@ -76,7 +64,6 @@ export default function PackagingStepPage() {
           Choose how your order should be packaged and where it should go.
         </p>
 
-        {/* Packaging style — single-select pills */}
         <SectionLabel>Packaging Style</SectionLabel>
         <div className="flex flex-wrap gap-3">
           {packagingStyles.map((s) => (
@@ -90,7 +77,6 @@ export default function PackagingStepPage() {
           ))}
         </div>
 
-        {/* Delivery details */}
         <SectionLabel>Delivery Details</SectionLabel>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
@@ -118,15 +104,14 @@ export default function PackagingStepPage() {
 
         {!canContinue && (
           <p style={{ color: INK_MUTED }} className="mt-6 text-xs">
-            Pick a packaging style and fill in the delivery date & address to continue.
+            Pick a packaging style and fill in the delivery date & address to
+            continue.
           </p>
         )}
       </div>
     </BuilderLayout>
   );
 }
-
-// ─── Sub-components ────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -166,7 +151,9 @@ function Pill({
       style={{
         backgroundColor: selected ? GOLD : "transparent",
         color: selected ? "#ffffff" : INK,
-        border: selected ? `1px solid ${GOLD}` : `1px solid ${MB_COLORS.border}`,
+        border: selected
+          ? `1px solid ${GOLD}`
+          : `1px solid ${MB_COLORS.border}`,
       }}
     >
       {children}

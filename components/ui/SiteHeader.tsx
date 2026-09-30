@@ -1,16 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/ui/SiteHeader.tsx
-// ══════════════════════════════════════════════════════════════════
-
-// FIX (Jul 2026):
-//   • quickTo can't tween `autoAlpha` (it's a GSAP shorthand for
-//     opacity+visibility, not a real CSS property). That's why the
-//     indicator never appeared — quickTo silently failed and the
-//     indicator stayed at visibility:hidden from the initial set.
-//     Now using `opacity` (a real property), with `pointer-events-none`
-//     on the indicator so it can't catch clicks when invisible.
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useCallback, useRef, useState } from "react";
@@ -23,9 +10,6 @@ import MobileNavDrawer from "./MobileNavDrawer";
 
 gsap.registerPlugin(useGSAP);
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Single source of truth for nav links.
-// ═══════════════════════════════════════════════════════════════════════════
 const NAV_LINKS = [
   { label: "ABOUT US", href: "/about" },
   { label: "CATERING", href: "/catering" },
@@ -34,133 +18,53 @@ const NAV_LINKS = [
   { label: "GALLERY", href: "/gallery" },
   { label: "CONTACT", href: "/contact" },
   { label: "BLOG", href: "/blog" },
-  /* Added Sep 2026. The footer's "Investor Relations" already points here;
-     this puts it one tap from every page. Kept last so the seven marketing
-     links stay in their signed-off order, and labelled "INVESTORS" rather
-     than "INVESTOR RELATIONS" — the strategy doc's own recommendation for the
-     main navigation ("cleaner for the main navigation", §1), and the longer
-     label would have forced the desktop row to wrap. */
+
   { label: "INVESTORS", href: "/investors" },
 ];
 
 const MENU_BUTTON_HREF = "/menu-builder";
 
-/* The Booking pill now opens a real page (Sep 2026) — hero + the guest's saved
-   quotations — instead of dropping straight into the wizard. Same destination
-   on phone and desktop, by request. */
 const BOOKING_BUTTON_HREF = "/booking";
 
-/**
- * The drawer's list = NAV_LINKS with "Menu Builder" spliced in after EVENTS.
- *
- * WHY IT ISN'T JUST IN NAV_LINKS: that array also feeds the DESKTOP inline row,
- * which already has a dedicated "Menu Builder" pill on its left — the link
- * would be a duplicate there, and a ninth word would push the row to wrap.
- * On a phone the pill is gone (the left pill is the hamburger), so the builder
- * needs an entry of its own, and the client asked for it directly under Events.
- */
 const MOBILE_NAV_LINKS = (() => {
   const menuBuilder = { label: "MENU BUILDER", href: MENU_BUTTON_HREF };
   const afterEvents = NAV_LINKS.findIndex((l) => l.label === "EVENTS") + 1;
-  // findIndex === -1 → afterEvents === 0 would put it FIRST, which is wrong;
-  // fall back to appending so a rename degrades to "last" rather than "first".
+
   if (afterEvents === 0) return [...NAV_LINKS, menuBuilder];
-  return [...NAV_LINKS.slice(0, afterEvents), menuBuilder, ...NAV_LINKS.slice(afterEvents)];
+  return [
+    ...NAV_LINKS.slice(0, afterEvents),
+    menuBuilder,
+    ...NAV_LINKS.slice(afterEvents),
+  ];
 })();
 
-// ─── PHONE SPLIT (Sep 2026) ────────────────────────────────────────────────
-// The two header pills mean DIFFERENT things on a phone, by request:
-//
-//            desktop (md+, ≥ 1024px)        phone + tablet (< 1024px)
-//   left     "Menu Builder" → /menu-builder  "Menu" → opens MobileNavDrawer
-//   right    "Booking" → /booking            "Booking" → /booking
-//
-// The Menu Builder is reachable on a phone from INSIDE the drawer (an entry
-// directly under Events), not from the Booking pill any more — see
-// MOBILE_NAV_LINKS above.
-//
-// The inline NAV_LINKS row is desktop-only now; on a phone those links
-// live inside the drawer. Each pill is rendered TWICE — once `md:hidden`, once
-// `hidden md:flex` — rather than switching one element's behaviour at runtime,
-// because the two versions are genuinely different elements (a <button> that
-// opens a panel vs. an <a> that navigates). Branching on a `matchMedia` read
-// during render would also desync from the server HTML on first paint.
-// ───────────────────────────────────────────────────────────────────────────
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Space between nav links. Desktop-only now — the row this styles is
-// `hidden md:block`, since the links moved into MobileNavDrawer on
-// phones. The phone values are kept only so the row still looks sane if the
-// breakpoint is ever lowered.
 const NAV_LINK_GAP = "gap-x-3.5 gap-y-1 md:gap-14";
 
-// Base opacity of nav links when nothing is hovered.
 const IDLE_LINK_OPACITY = "opacity-90";
-// Dimmed opacity applied to non-hovered links when SOMETHING in the nav
-// is hovered.
+
 const DIMMED_LINK_OPACITY_CLASS = "group-hover:opacity-40";
 
-// The cursor-tracking indicator on the lower divider ─────────────────────
-// SMALL_WIDTH = length of the bright segment when following cursor.
-// Expressed in REM, not px: the header scales off the root font-size, so a
-// fixed-px segment would grow from 2.5% to 4.7% of the bar across the
-// browser-zoom range. GSAP tweens `width` numerically (px), so resolve the
-// rem against the live root size at call time.
-const INDICATOR_SMALL_WIDTH_REM = 2.25; // 36px at the 1440px reference
+const INDICATOR_SMALL_WIDTH_REM = 2.25;
 const indicatorWidth = () =>
   INDICATOR_SMALL_WIDTH_REM *
   parseFloat(getComputedStyle(document.documentElement).fontSize);
-// How lazily the indicator follows the cursor.
+
 const INDICATOR_FOLLOW_DURATION = 0.35;
-// Fade in/out duration.
+
 const INDICATOR_FADE_DURATION = 0.35;
 
-// ─── Pill fill reveal (opt in with `revealPillsOnReturn`) ────────────────
-// First impression: "Menu Builder" / "Booking" are white text with NO pill
-// behind them. The dark fill appears the first time the visitor scrolls back
-// up to the top, and stays for the rest of the session.
-//
-// This is exactly how the reference site does it — it keeps a separate
-// `.menu-fill` layer inside each button and tweens its opacity. Verified
-// live: 0 on load, still 0 at scrollY 2000, then caught mid-tween at 0.488
-// on the way back to the top. Note the trigger is the RETURN, not the
-// scroll-down.
-//
-// ARM_VH: how far down (in viewports) counts as "went down". TOP_PX: how
-// close to the top counts as "came back".
 const PILL_REVEAL_ARM_VH = 0.6;
 const PILL_REVEAL_TOP_PX = 4;
 const PILL_REVEAL_DURATION = 0.6;
 const PILL_REVEAL_EASE = "power2.out";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 type SiteHeaderProps = {
   animateEntrance?: boolean;
   variant?: "full" | "minimal";
   colorScheme?: "light" | "dark";
-  /**
-   * Start the pills as bare text and fade their fill in once the visitor
-   * scrolls down and returns to the top. Landing page only by default —
-   * `colorScheme="dark"` pages must NOT enable it, since their pill text is
-   * white and would be invisible without the fill behind it.
-   */
+
   revealPillsOnReturn?: boolean;
-  /**
-   * Drop the centre round logo from the header on PHONES ONLY.
-   *
-   * The homepage re-renders it inside the hero, stacked directly above the
-   * RAEC wordmark (client request, Sep 2026) — the round mark and the
-   * wordmark read as one lockup there, which they cannot do while the round
-   * mark is pinned to the header bar. Every other page keeps it in the
-   * header, since no other page has a wordmark to sit above and the header
-   * logo is also the tap-target for "go home".
-   *
-   * Desktop is unaffected at every call site.
-   */
+
   hideCenterLogoOnPhone?: boolean;
 };
 
@@ -177,26 +81,22 @@ export default function SiteHeader({
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const pillFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Phone nav drawer. `useCallback` because MobileNavDrawer takes onClose as an
-  // effect dependency — a fresh closure each render would re-run its scroll
-  // lock on every parent render.
   const [navOpen, setNavOpen] = useState(false);
   const closeNav = useCallback(() => setNavOpen(false), []);
 
   const hoveredLinkIdx = useRef<number>(-1);
 
-  // quickTo handles for smooth indicator motion.
   const xTo = useRef<((v: number) => void) | null>(null);
   const widthTo = useRef<((v: number) => void) | null>(null);
   const opacityTo = useRef<((v: number) => void) | null>(null);
 
-  // ─── Entrance animation (unchanged) ──────────────────────────────────
   useGSAP(
     () => {
       if (!animateEntrance) return;
       if (prefersReducedMotion()) return;
 
-      const items = root.current?.querySelectorAll<HTMLElement>(".site-header-item");
+      const items =
+        root.current?.querySelectorAll<HTMLElement>(".site-header-item");
       if (!items || items.length === 0) return;
 
       gsap.set(items, { opacity: 0, y: -20 });
@@ -209,18 +109,15 @@ export default function SiteHeader({
         delay: 0.3,
       });
     },
-    { scope: root }
+    { scope: root },
   );
 
-  // ─── Indicator setup ─────────────────────────────────────────────────
   useGSAP(
     () => {
       if (variant !== "full") return;
       const indicator = indicatorRef.current;
       if (!indicator) return;
 
-      // Start hidden. Using `opacity` (not autoAlpha) because quickTo below
-      // can only tween real CSS properties, not GSAP shorthands.
       gsap.set(indicator, {
         opacity: 0,
         width: indicatorWidth(),
@@ -242,10 +139,9 @@ export default function SiteHeader({
         ease: "power2",
       });
     },
-    { scope: root, dependencies: [variant] }
+    { scope: root, dependencies: [variant] },
   );
 
-  // ─── Pill fill reveal ────────────────────────────────────────────────
   useGSAP(
     () => {
       if (!revealPillsOnReturn) return;
@@ -272,33 +168,21 @@ export default function SiteHeader({
         });
       };
 
-      // Wired to BOTH the `scroll` event and gsap.ticker, deliberately.
-      // Neither alone is dependable here: the site runs Lenis (see
-      // SmoothScroll.tsx) which drives scrolling from a rAF loop, so a
-      // programmatic `lenis.scrollTo(0, {immediate:true})` can land without a
-      // useful scroll event — while the ticker itself stalls whenever the tab
-      // is backgrounded and rAF is throttled. Together they cover both.
-      // `scrollY` is a cheap read and this unsubscribes from both the instant
-      // it fires, so it costs nothing after the reveal.
       const check = () => {
         const y = window.scrollY;
         if (y > window.innerHeight * PILL_REVEAL_ARM_VH) armed = true;
         else if (armed && y <= PILL_REVEAL_TOP_PX) reveal();
       };
 
-      // Deep links and refreshes can restore a mid-page scroll position; that
-      // still counts as "went down", so arm immediately rather than requiring
-      // a further scroll down first.
       check();
 
       gsap.ticker.add(check);
       window.addEventListener("scroll", check, { passive: true });
       return stop;
     },
-    { scope: root, dependencies: [revealPillsOnReturn] }
+    { scope: root, dependencies: [revealPillsOnReturn] },
   );
 
-  // ─── Indicator handlers ──────────────────────────────────────────────
   const handleNavContainerMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (hoveredLinkIdx.current !== -1) return;
 
@@ -336,33 +220,25 @@ export default function SiteHeader({
   };
 
   const isDark = colorScheme === "dark";
-  // The fill is now its OWN layer rather than a background on the pill, so it
-  // can be faded independently of the label (see `revealPillsOnReturn`).
+
   const pillFillColor = isDark ? "bg-[#191919]" : "bg-[#2d2d2d]";
   const pillBg = "text-white";
   const textColor = isDark ? "text-[#191919]" : "text-white";
 
-  /**
-   * Transparent-until-revealed fill behind a header pill. A plain render
-   * helper, NOT a component — a component declared in render is a fresh type
-   * every pass, so React would unmount/remount the span and drop the ref that
-   * the reveal tween holds.
-   */
   const pillFill = (index: number) => (
     <span
       aria-hidden
-      ref={(el) => { pillFillRefs.current[index] = el; }}
+      ref={(el) => {
+        pillFillRefs.current[index] = el;
+      }}
       className={`absolute inset-0 z-0 rounded-full ${pillFillColor}`}
-      // Inline (not a class) so the very first server-rendered paint is
-      // already transparent — a class would flash the filled pill first.
+
       style={{ opacity: revealPillsOnReturn ? 0 : 1 }}
     />
   );
   const dividerColor = isDark ? "bg-black/25" : "bg-white/30";
   const indicatorColor = isDark ? "bg-[#191919]" : "bg-white";
 
-  // Shared pill chrome. Phone and desktop copies of each pill must stay
-  // visually identical — only their element type and destination differ.
   const PILL_BASE = `site-header-item relative isolate items-center gap-2 rounded-full ${pillBg} px-3.5 py-2 transition-opacity hover:opacity-90 md:gap-3 md:px-7 md:py-3.5`;
   const PILL_LABEL =
     "relative z-10 font-semibold text-[0.8125rem] md:text-[clamp(0.9rem,1.15vw,1.0625rem)]";
@@ -370,16 +246,7 @@ export default function SiteHeader({
 
   return (
     <header ref={root} className={`absolute inset-x-0 top-0 z-30 ${textColor}`}>
-      {/*
-        Phone sizing: the pills and the centre logo used to be laid out at
-        desktop scale on a 390px screen, where "Menu Builder" + a 110px logo +
-        "Booking" cannot fit a single row — the logo ended up sitting under the
-        pills and colliding with the divider. Phones get compact pills, a short
-        "Menu" label and a 3.25rem logo, which leaves clear space between all
-        three. Desktop (md+) is unchanged.
-      */}
       <div className="relative flex items-center justify-between px-4 pt-5 pb-4 md:px-12 md:pt-9 md:pb-8">
-        {/* MENU — phone: hamburger that opens the nav drawer */}
         <button
           type="button"
           onClick={() => setNavOpen(true)}
@@ -393,40 +260,13 @@ export default function SiteHeader({
           <span className={PILL_LABEL}>Menu</span>
         </button>
 
-        {/* MENU — desktop: straight to the menu builder, as before */}
-        <Link
-          href={MENU_BUTTON_HREF}
-          className={`${PILL_BASE} hidden md:flex`}
-        >
+        <Link href={MENU_BUTTON_HREF} className={`${PILL_BASE} hidden md:flex`}>
           {pillFill(1)}
           <DehazeIcon className={PILL_ICON} />
           <span className={PILL_LABEL}>Menu Builder</span>
         </Link>
 
         {variant === "full" && (
-          /*
-            PHONE: an ordinary flex child, NOT an absolutely-positioned one.
-            ────────────────────────────────────────────────────────────────
-            It used to be `absolute left-1/2 top-1/2 -translate-1/2`, which
-            got both axes slightly wrong on a phone:
-
-              • HORIZONTALLY it centred on the SCREEN, but the two pills are
-                different widths ("Menu" vs "Booking"), so the gap to the left
-                pill was visibly wider than the gap to the right one.
-              • VERTICALLY it centred on the row's PADDING box (pt-5 / pb-4),
-                which is 2px above the pills' own centre line.
-
-            As a normal child of a `justify-between` row with exactly three
-            items, the two gaps around it are equal BY CONSTRUCTION, and
-            `items-center` on the row puts it on the pills' centre line. The
-            three items on a phone are: the hamburger pill, this, and the
-            Booking pill — the two `hidden md:flex` desktop pills contribute
-            nothing to the flex layout below 1024px.
-
-            DESKTOP is unchanged: `md:absolute` lifts it out of flow again and
-            re-pins it to the signed-off `left-1/2 / top-1.5rem` position, so
-            the row is back to two in-flow items exactly as before.
-          */
           <Link
             href="/"
             className={`site-header-item shrink-0 md:absolute md:left-1/2 md:top-[1.5rem] md:-translate-x-1/2 ${
@@ -439,23 +279,12 @@ export default function SiteHeader({
               width={110}
               height={110}
               priority
-              /* The white replacement has virtually no transparent padding,
-                 unlike the approved gold mark. Scale its image box to retain
-                 the same visible-logo footprint at every breakpoint. Keeping
-                 both values in rem preserves the established responsive
-                 relationship with the header.
 
-                 PHONE 2.05rem → 2.75rem (Sep 2026): at 2.05rem the mark read
-                 as smaller than either pill and got lost between them. 2.75rem
-                 makes it the tallest thing in the row, which is what makes it
-                 read as the centre of the lockup. Keep MobileNavDrawer's panel
-                 logo in sync or the mark jumps when the drawer opens. */
               className="h-[2.75rem] w-[2.75rem] md:h-[5.625rem] md:w-[5.625rem]"
             />
           </Link>
         )}
 
-        {/* BOOKING — phone: opens the Booking page (hero + saved quotations) */}
         <Link
           href={BOOKING_BUTTON_HREF}
           className={`${PILL_BASE} flex md:hidden`}
@@ -465,9 +294,6 @@ export default function SiteHeader({
           <span className={PILL_LABEL}>Booking</span>
         </Link>
 
-        {/* BOOKING — desktop: same destination as the phone pill. The Booking
-            page is explicitly "both phone and laptop", so this is no longer an
-            inert <button>. */}
         <Link
           href={BOOKING_BUTTON_HREF}
           className={`${PILL_BASE} hidden md:flex`}
@@ -478,24 +304,18 @@ export default function SiteHeader({
         </Link>
       </div>
 
-      {/* Phone nav panel. Rendered for every variant — the `minimal` venue
-          pages have no inline nav at all, so the drawer is the only nav they
-          have on a phone. */}
-      <MobileNavDrawer open={navOpen} onClose={closeNav} links={MOBILE_NAV_LINKS} />
+      <MobileNavDrawer
+        open={navOpen}
+        onClose={closeNav}
+        links={MOBILE_NAV_LINKS}
+      />
 
       {variant === "full" && (
         <>
-          {/* Upper divider.
-              Phone: hidden along with the nav row below it — with the links
-              gone it would be a stray line floating under the pills. */}
-          <div className={`site-header-item hidden h-px w-full md:block ${dividerColor}`} />
+          <div
+            className={`site-header-item hidden h-px w-full md:block ${dividerColor}`}
+          />
 
-          {/*
-            NAV CONTAINER — mousemove-tracked area. DESKTOP ONLY: on a phone
-            these links live in MobileNavDrawer instead (they wrapped to two
-            overflowing rows here). The whole block is `hidden md:block`,
-            so the cursor-tracking indicator below never runs on touch either.
-          */}
           <div
             ref={navContainerRef}
             className="site-header-item relative hidden md:block"
@@ -508,7 +328,9 @@ export default function SiteHeader({
               {NAV_LINKS.map((link, i) => (
                 <Link
                   key={link.label}
-                  ref={(el) => { linkRefs.current[i] = el; }}
+                  ref={(el) => {
+                    linkRefs.current[i] = el;
+                  }}
                   href={link.href}
                   onMouseEnter={() => handleLinkEnter(i)}
                   onMouseLeave={handleLinkLeave}
@@ -519,14 +341,16 @@ export default function SiteHeader({
               ))}
             </nav>
 
-            {/* LOWER DIVIDER + tracking indicator */}
             <div className="relative h-px w-full">
               <div className={`absolute inset-0 ${dividerColor}`} />
               <span
                 ref={indicatorRef}
                 aria-hidden
                 className={`pointer-events-none absolute inset-y-0 left-0 ${indicatorColor}`}
-                style={{ width: `${INDICATOR_SMALL_WIDTH_REM}rem`, willChange: "transform, width, opacity" }}
+                style={{
+                  width: `${INDICATOR_SMALL_WIDTH_REM}rem`,
+                  willChange: "transform, width, opacity",
+                }}
               />
             </div>
           </div>
@@ -538,7 +362,14 @@ export default function SiteHeader({
 
 function DehazeIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    >
       <line x1="3" y1="7" x2="21" y2="7" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="17" x2="21" y2="17" />
@@ -548,7 +379,15 @@ function DehazeIcon({ className }: { className?: string }) {
 
 function TripIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="4" y="8" width="16" height="12" rx="2" />
       <path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
     </svg>

@@ -1,34 +1,16 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/blog/LocalBlogBody.tsx
-// ══════════════════════════════════════════════════════════════════
-// Renders a post written by hand in lib/blog/posts.ts. The typography here is
-// deliberately IDENTICAL to PortableTextRenderer (same clamp sizes, same
-// max-w-2xl measure, same gold) so a hand-written post and a Studio post are
-// indistinguishable on the page. Change one, change the other.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { Fragment } from "react";
 import Image from "next/image";
 import type { LocalBlock } from "@/lib/blog/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-const INK       = "#221d18";
+const INK = "#221d18";
 const INK_MUTED = "#6b6255";
-const GOLD      = "#b08d57";
+const GOLD = "#b08d57";
 
-// One shared measure keeps every block optically centred on the same column.
-const MEASURE   = "mx-auto max-w-2xl";
+const MEASURE = "mx-auto max-w-2xl";
 const BODY_SIZE = "text-[clamp(1rem,1.15vw,1.0625rem)]";
 
-/**
- * The two bits of inline formatting the hand-written format supports:
- *   **bold**   → <strong>
- *   a newline  → a line break (kept via whitespace-pre-line on the wrapper,
- *                so a paragraph typed across several lines reads that way)
- * Anything else is plain text, on purpose — this is a hand-authoring format,
- * not a markdown engine.
- */
 function inline(text: string) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
@@ -54,7 +36,6 @@ export default function LocalBlogBody({ blocks }: { blocks: LocalBlock[] }) {
 function Block({ block }: { block: LocalBlock }) {
   switch (block.type) {
     case "p":
-      // An empty paragraph is a placeholder in posts.ts — render nothing.
       if (!block.text.trim()) return null;
       return (
         <p
@@ -122,7 +103,6 @@ function Block({ block }: { block: LocalBlock }) {
     case "image":
       return (
         <figure className="mx-auto my-10 max-w-3xl">
-          {/* Framed the same way as every other photo on the site. */}
           <div className="relative aspect-[3/2] w-full overflow-hidden">
             <Image
               src={block.src}
@@ -134,11 +114,17 @@ function Block({ block }: { block: LocalBlock }) {
             <div
               aria-hidden
               className="pointer-events-none absolute z-10"
-              style={{ inset: "0.75rem", border: "1px solid rgba(255,255,255,0.55)" }}
+              style={{
+                inset: "0.75rem",
+                border: "1px solid rgba(255,255,255,0.55)",
+              }}
             />
           </div>
           {block.caption && (
-            <figcaption style={{ color: INK_MUTED }} className="mt-3 text-center text-sm italic">
+            <figcaption
+              style={{ color: INK_MUTED }}
+              className="mt-3 text-center text-sm italic"
+            >
               {block.caption}
             </figcaption>
           )}

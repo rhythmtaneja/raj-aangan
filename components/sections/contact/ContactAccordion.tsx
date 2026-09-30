@@ -7,85 +7,124 @@ import { SITE_EMAIL, SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site-info";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const SECTION_BG = "#f5efe6"; // same cream as AddressSection — no seam between them
+const SECTION_BG = "#f5efe6";
 const TEXT_COLOR = "#191919";
 
-// ─ Row typography ──
 const ROW_TITLE_SIZE = "clamp(1.4rem, 2.4vw, 2.1875rem)";
-const ROW_DESC_SIZE  = "clamp(0.95rem, 1.1vw, 1rem)";
+const ROW_DESC_SIZE = "clamp(0.95rem, 1.1vw, 1rem)";
 
-// ─ Expand/collapse animation duration ──
 const EXPAND_DURATION_MS = 500;
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Data — each item can be expanded to reveal hours + one or more contact rows.
-// Add / remove items freely; the accordion adapts.
-// ═══════════════════════════════════════════════════════════════════════════
 
 type IconKind = "phone" | "mobile" | "email" | "online" | "clock";
 
 type ContactRow = {
-  icon:        IconKind;
-  label:       string;
-  value:       string;
+  icon: IconKind;
+  label: string;
+  value: string;
   actionLabel: string;
-  href:        string;
+  href: string;
 };
 
 type AccordionItem = {
-  title:       string;
+  title: string;
   description: string;
-  hours?:      { day: string; range: string };
-  rows:        ContactRow[];
+  hours?: { day: string; range: string };
+  rows: ContactRow[];
 };
 
 const ITEMS: AccordionItem[] = [
   {
-    title:       "Accommodation Booking And Information",
+    title: "Accommodation Booking And Information",
     description: "Contact for booking Banquet or garden",
-    hours:       { day: "Monday - Friday", range: "8:00 — 16:30" },
+    hours: { day: "Monday - Friday", range: "8:00 — 16:30" },
     rows: [
-      { icon: "phone",  label: "Phone",          value: SITE_PHONE,              actionLabel: "Call",   href: SITE_PHONE_HREF },
-      { icon: "mobile", label: "Mobile",         value: SITE_PHONE,              actionLabel: "Call",   href: SITE_PHONE_HREF },
-      { icon: "email",  label: "Email",          value: SITE_EMAIL,              actionLabel: "Write",  href: `mailto:${SITE_EMAIL}` },
-      { icon: "online", label: "Online booking", value: "",                       actionLabel: "Online", href: "#" },
+      {
+        icon: "phone",
+        label: "Phone",
+        value: SITE_PHONE,
+        actionLabel: "Call",
+        href: SITE_PHONE_HREF,
+      },
+      {
+        icon: "mobile",
+        label: "Mobile",
+        value: SITE_PHONE,
+        actionLabel: "Call",
+        href: SITE_PHONE_HREF,
+      },
+      {
+        icon: "email",
+        label: "Email",
+        value: SITE_EMAIL,
+        actionLabel: "Write",
+        href: `mailto:${SITE_EMAIL}`,
+      },
+      {
+        icon: "online",
+        label: "Online booking",
+        value: "",
+        actionLabel: "Online",
+        href: "#",
+      },
     ],
   },
   {
-    title:       "Raj Aangan Events & Caterers",
+    title: "Raj Aangan Events & Caterers",
     description: "Contact for booking Event & Caterers",
-    hours:       { day: "Monday - Sunday", range: "9:00 — 20:00" },
+    hours: { day: "Monday - Sunday", range: "9:00 — 20:00" },
     rows: [
-      { icon: "phone", label: "Phone", value: SITE_PHONE,       actionLabel: "Call",  href: SITE_PHONE_HREF },
-      { icon: "email", label: "Email", value: "events@rajaangan.com",  actionLabel: "Write", href: "mailto:events@rajaangan.com" },
+      {
+        icon: "phone",
+        label: "Phone",
+        value: SITE_PHONE,
+        actionLabel: "Call",
+        href: SITE_PHONE_HREF,
+      },
+      {
+        icon: "email",
+        label: "Email",
+        value: "events@rajaangan.com",
+        actionLabel: "Write",
+        href: "mailto:events@rajaangan.com",
+      },
     ],
   },
   {
-    title:       "Planning & Event Services",
+    title: "Planning & Event Services",
     description: "Contact for Services",
     rows: [
-      { icon: "phone", label: "Phone", value: SITE_PHONE,         actionLabel: "Call",  href: SITE_PHONE_HREF },
-      { icon: "email", label: "Email", value: "planning@rajaangan.com",  actionLabel: "Write", href: "mailto:planning@rajaangan.com" },
+      {
+        icon: "phone",
+        label: "Phone",
+        value: SITE_PHONE,
+        actionLabel: "Call",
+        href: SITE_PHONE_HREF,
+      },
+      {
+        icon: "email",
+        label: "Email",
+        value: "planning@rajaangan.com",
+        actionLabel: "Write",
+        href: "mailto:planning@rajaangan.com",
+      },
     ],
   },
   {
-    title:       "Event & Wedding Gallery",
+    title: "Event & Wedding Gallery",
     description: "See our Gallery",
     rows: [
-      { icon: "online", label: "Gallery", value: "View all our work", actionLabel: "View", href: "/gallery" },
+      {
+        icon: "online",
+        label: "Gallery",
+        value: "View all our work",
+        actionLabel: "View",
+        href: "/gallery",
+      },
     ],
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 export default function ContactAccordion() {
-  // Single-open behaviour: only one row expanded at a time.
-  // For multi-open, swap this for a Set<number>.
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
@@ -111,20 +150,17 @@ export default function ContactAccordion() {
   );
 }
 
-/* ─── Single row (closed → header only; open → header + panel) ─────────── */
-
 function AccordionRow({
   item,
   isOpen,
   onToggle,
 }: {
-  item:     AccordionItem;
-  isOpen:   boolean;
+  item: AccordionItem;
+  isOpen: boolean;
   onToggle: () => void;
 }) {
   return (
     <div>
-      {/* HEADER — click anywhere to toggle */}
       <button
         onClick={onToggle}
         aria-expanded={isOpen}
@@ -152,15 +188,10 @@ function AccordionRow({
         </span>
       </button>
 
-      {/*
-        PANEL — auto-height animation using the grid-template-rows trick.
-        grid-template-rows: 0fr (collapsed) ↔ 1fr (open). The inner div uses
-        overflow-hidden so content clips smoothly. No JS height measurement.
-      */}
       <div
         className="grid overflow-hidden transition-[grid-template-rows] ease-out"
         style={{
-          gridTemplateRows:   isOpen ? "1fr" : "0fr",
+          gridTemplateRows: isOpen ? "1fr" : "0fr",
           transitionDuration: `${EXPAND_DURATION_MS}ms`,
         }}
       >
@@ -178,8 +209,6 @@ function AccordionRow({
     </div>
   );
 }
-
-/* ─── Sub-rows inside the expanded panel ─────────────────────────────── */
 
 function HoursRow({ day, range }: { day: string; range: string }) {
   return (
@@ -228,21 +257,33 @@ function ContactRowLine({ row }: { row: ContactRow }) {
   );
 }
 
-/* ─── Icons ──────────────────────────────────────────────────────────── */
-
 function RowIcon({ kind }: { kind: IconKind }) {
   switch (kind) {
     case "phone":
-    case "mobile":  return <PhoneIcon />;
-    case "email":   return <EmailIcon />;
-    case "online":  return <MenuIcon />;
-    case "clock":   return <ClockIcon />;
+    case "mobile":
+      return <PhoneIcon />;
+    case "email":
+      return <EmailIcon />;
+    case "online":
+      return <MenuIcon />;
+    case "clock":
+      return <ClockIcon />;
   }
 }
 
 function ChevronDown() {
   return (
-    <svg className="w-[1rem] h-[1rem]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1rem] h-[1rem]"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );
@@ -250,7 +291,15 @@ function ChevronDown() {
 
 function ClockIcon() {
   return (
-    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+    <svg
+      className="w-[1.375rem] h-[1.375rem]"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -259,7 +308,17 @@ function ClockIcon() {
 
 function PhoneIcon() {
   return (
-    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.375rem] h-[1.375rem]"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.36 1.85.59 2.81.72A2 2 0 0 1 22 16.92z" />
     </svg>
   );
@@ -267,7 +326,17 @@ function PhoneIcon() {
 
 function EmailIcon() {
   return (
-    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.375rem] h-[1.375rem]"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="M3 7l9 6 9-6" />
     </svg>
@@ -276,8 +345,17 @@ function EmailIcon() {
 
 function MenuIcon() {
   return (
-    <svg className="w-[1.375rem] h-[1.375rem]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
-      <line x1="4" y1="7"  x2="20" y2="7"  />
+    <svg
+      className="w-[1.375rem] h-[1.375rem]"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    >
+      <line x1="4" y1="7" x2="20" y2="7" />
       <line x1="4" y1="12" x2="20" y2="12" />
       <line x1="4" y1="17" x2="20" y2="17" />
     </svg>

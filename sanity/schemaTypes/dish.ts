@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity";
 
-// "Non Veg" is deliberately absent — it must not be selectable in the Studio.
 export const DIETARY_TAGS = [
   { title: "Veg", value: "veg" },
   { title: "Jain", value: "jain" },
@@ -31,7 +30,8 @@ export default defineType({
       name: "subtitle",
       title: "Subtitle",
       type: "string",
-      description: 'Small line under the name, e.g. “Aloo Bukhara / Plum Juice”.',
+      description:
+        "Small line under the name, e.g. “Aloo Bukhara / Plum Juice”.",
     }),
     defineField({
       name: "description",
@@ -65,7 +65,8 @@ export default defineType({
       title: "Categories",
       type: "array",
       of: [{ type: "reference", to: [{ type: "category" }] }],
-      description: "Section(s) this dish appears under. The first one is its display section.",
+      description:
+        "Section(s) this dish appears under. The first one is its display section.",
     }),
     defineField({
       name: "dietaryTags",
@@ -78,12 +79,17 @@ export default defineType({
       name: "isActive",
       title: "Active",
       type: "boolean",
-      description: "Uncheck to hide this dish from the site without deleting it.",
+      description:
+        "Uncheck to hide this dish from the site without deleting it.",
       initialValue: true,
     }),
   ],
   orderings: [
-    { title: "Name A→Z", name: "nameAsc", by: [{ field: "name", direction: "asc" }] },
+    {
+      title: "Name A→Z",
+      name: "nameAsc",
+      by: [{ field: "name", direction: "asc" }],
+    },
   ],
   preview: {
     select: { title: "name", subtitle: "subtitle", media: "image" },

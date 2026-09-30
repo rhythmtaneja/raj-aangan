@@ -1,16 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/about/AboutHero.tsx
-// ══════════════════════════════════════════════════════════════════
-// CHANGES vs previous version:
-//   • Down-arrow CircleButton now smooth-scrolls to #story instead of
-//     browser-default instant jump. Uses window.lenis.scrollTo if the
-//     Lenis instance is exposed globally (see SmoothScroll.tsx setup
-//     notes at the bottom of this file), else falls back to native
-//     scrollIntoView({ behavior: "smooth" }).
-//   • Same pattern already in use on VenueHero — see that file if you
-//     want to change the smooth-scroll duration in one place.
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useRef } from "react";
@@ -25,21 +12,12 @@ gsap.registerPlugin(useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const BG_IMAGE = "/images/about-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
-// ─ Bottom fade — blends hero photo INTO AboutStorySection's bg colour ──
-// MUST match SECTION_BG in AboutStorySection.tsx. If they diverge, a colour
-// seam appears where the hero ends and the next section begins.
-const HERO_BLEND_TO_COLOR = "#081b24"; // ← keep in sync with AboutStorySection.SECTION_BG
-const HERO_BLEND_HEIGHT = "30vh";    // ↑ for longer, gentler blend
+const HERO_BLEND_TO_COLOR = "#081b24";
+const HERO_BLEND_HEIGHT = "30vh";
 
-// ─ Title ──
-// The section heading uses the same large, Cormorant treatment as VenueHero.
 const SECTION_TITLE_TEXT = "About Us";
 const SECTION_TITLE_FONT_SIZE = "clamp(3rem, 7vw, 6.3125rem)";
 const TITLE_FIRST_LINE = "One of the most premium resort for";
@@ -48,26 +26,15 @@ const TITLE_FONT_SIZE = "clamp(2rem, 4.5vw, 4.0625rem)";
 const TITLE_MAX_W = "75rem";
 const TITLE_HEADER_TO_TAGLINE_GAP = "2rem";
 
-// ─ Decorative logo ──
-const LOGO_TOP = "clamp(18rem, 33vh, 23rem)";
-const LOGO_SIZE = "clamp(11.25rem, 34vw, 13.75rem)";
-const LOGO_CROP_HEIGHT = `calc(${LOGO_SIZE} * 0.327)`;
-const LOGO_CROP_OFFSET = `calc(${LOGO_SIZE} * -0.314)`;
-
-// ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.03;
 const LETTER_DURATION = 0.9;
 const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
-// ─ Down-arrow CTA ──
 const CTA_DELAY = 1.5;
 
-// ─ Smooth-scroll target + timing when the down arrow is clicked ──
 const SCROLL_TARGET_ID = "story";
-const SCROLL_DURATION = 2.5;   // seconds — used only when Lenis is available
-
-// ═══════════════════════════════════════════════════════════════════════════
+const SCROLL_DURATION = 2.5;
 
 function Letters({ text }: { text: string }) {
   return (
@@ -91,23 +58,14 @@ function Letters({ text }: { text: string }) {
   );
 }
 
-/**
- * Intercepts the click on the down-arrow and smooth-scrolls to #story.
- *   1. If Lenis is exposed on window.lenis → use its scrollTo (buttery,
- *      matches the site's overall scroll feel).
- *   2. Otherwise fall back to native scrollIntoView({ behavior: "smooth" }).
- *
- * TIP: For (1) to work, expose Lenis globally from your SmoothScroll.tsx:
- *          (window as any).lenis = lenis;
- *      (See notes at the bottom of this file for the full one-time fix
- *       that makes ALL "#anchor" links across the site smooth-scroll.)
- */
 function handleDownClick(e: React.MouseEvent) {
   e.preventDefault();
   const target = document.getElementById(SCROLL_TARGET_ID);
   if (!target) return;
 
-  const w = window as unknown as { lenis?: { scrollTo: (t: HTMLElement, o?: { duration?: number }) => void } };
+  const w = window as unknown as {
+    lenis?: { scrollTo: (t: HTMLElement, o?: { duration?: number }) => void };
+  };
   if (w.lenis && typeof w.lenis.scrollTo === "function") {
     w.lenis.scrollTo(target, { duration: SCROLL_DURATION });
   } else {
@@ -122,7 +80,8 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
     () => {
       if (prefersReducedMotion()) return;
 
-      const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
+      const letters =
+        root.current?.querySelectorAll<HTMLElement>(".hero-letter");
       const cta = root.current?.querySelector<HTMLElement>(".about-hero-cta");
 
       if (letters && letters.length > 0) {
@@ -147,12 +106,11 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
         });
       }
     },
-    { scope: root }
+    { scope: root },
   );
 
   return (
     <section ref={root} className="relative h-screen w-full overflow-hidden">
-      {/* Background photo */}
       <div className="absolute inset-0">
         <Image
           src={bgImage ?? BG_IMAGE}
@@ -164,16 +122,11 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
         />
       </div>
 
-      {/* Dark overlay */}
       <div
         className="absolute inset-0"
         style={{ backgroundColor: `rgba(25, 25, 25, ${OVERLAY_OPACITY})` }}
       />
 
-      {/*
-        BOTTOM BLEND — dissolves the hero photo into AboutStorySection's dark
-        navy so the transition is seamless.
-      */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0"
@@ -186,11 +139,6 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
 
       <SiteHeader />
 
-
-      {/* `hero-stack` / `hero-display` / `hero-tagline` are phone-only hooks —
-          see the PHONE-ONLY OVERRIDES block in globals.css. They cap the
-          measure, balance the wrapping and drop the desktop <br> below 768px;
-          above it they have no rules at all, so desktop is untouched. */}
       <div className="hero-stack relative z-10 flex h-full flex-col items-center justify-center px-6 pt-65 text-center text-white">
         <h1
           style={{ ...serif, fontSize: SECTION_TITLE_FONT_SIZE }}
@@ -200,7 +148,12 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
         </h1>
 
         <h2
-          style={{ ...serif, fontSize: TITLE_FONT_SIZE, maxWidth: TITLE_MAX_W, marginTop: TITLE_HEADER_TO_TAGLINE_GAP }}
+          style={{
+            ...serif,
+            fontSize: TITLE_FONT_SIZE,
+            maxWidth: TITLE_MAX_W,
+            marginTop: TITLE_HEADER_TO_TAGLINE_GAP,
+          }}
           className="hero-tagline font-medium leading-[1.1]"
         >
           <Letters text={TITLE_FIRST_LINE} />{" "}
@@ -229,7 +182,17 @@ export default function AboutHero({ bgImage }: { bgImage?: string }) {
 
 function DownArrowIcon() {
   return (
-    <svg className="w-[1.25rem] h-[1.25rem]" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.25rem] h-[1.25rem]"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );

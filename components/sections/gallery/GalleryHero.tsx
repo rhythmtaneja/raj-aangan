@@ -12,48 +12,29 @@ gsap.registerPlugin(useGSAP);
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const BG_IMAGE = "/images/gallery-hero.jpg";
 const OVERLAY_OPACITY = 0.5;
 
-// ─ Bottom fade — blends hero photo INTO the page bg colour ──
-// MUST match PAGE_BG in app/gallery/page.tsx exactly. If they diverge, you'll
-// see a colour seam where the gradient ends and the next section begins.
 const HERO_BLEND_TO_COLOR = "#0a1e26";
 
-// How tall the fade region is. Bigger = longer, gentler blend.
-// Smaller = shorter, more abrupt.
 const HERO_BLEND_HEIGHT = "25vh";
 
-// Where the fade STARTS being visible inside its own container. 0% = fade
-// begins immediately (softest start); 25% = fade area's top ¼ stays fully
-// transparent (harder cutoff before the blend kicks in).
 const HERO_BLEND_START = "0%";
 
-// ─ Title ──
 const TITLE_TEXT = "Resort Gallery";
 const TITLE_FONT_SIZE = "clamp(2.5rem, 6vw, 5.375rem)";
 
-// ─ Letter-by-letter reveal ──
 const LETTER_STAGGER = 0.05;
 const LETTER_DURATION = 0.9;
 const LETTER_INITIAL_Y = 28;
 const LETTER_START_DELAY = 0.4;
 
-// ─ Down-arrow CTA (appears after the title finishes) ──
 const CTA_DELAY = 1;
-// Kept deliberately identical to VenueHero's down CTA — same pill size, same
-// split between layout and glass chrome, same ball size/magnet below. The two
-// heroes read as one component to a visitor, so they should behave as one.
+
 const GLASS_DOWN_BUTTON_CLASS =
   "min-h-[clamp(2.75rem,12vw,4rem)] w-[clamp(6.5rem,29vw,9.375rem)] px-5 py-2 text-white md:px-7 md:py-2.5";
 const GLASS_DOWN_PILL_CLASS =
   "rounded-full border-[0.5px] border-white/55 bg-[rgba(255,255,255,0.10)] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-1px_0_rgba(255,255,255,0.06),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-md";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 function Letters({ text }: { text: string }) {
   return (
@@ -84,7 +65,8 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
     () => {
       if (prefersReducedMotion()) return;
 
-      const letters = root.current?.querySelectorAll<HTMLElement>(".hero-letter");
+      const letters =
+        root.current?.querySelectorAll<HTMLElement>(".hero-letter");
       const cta = root.current?.querySelector<HTMLElement>(".gallery-hero-cta");
 
       if (letters && letters.length > 0) {
@@ -109,12 +91,11 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
         });
       }
     },
-    { scope: root }
+    { scope: root },
   );
 
   return (
     <section ref={root} className="relative h-screen w-full overflow-hidden">
-      {/* Background photo */}
       <div className="absolute inset-0">
         <Image
           src={bgImage ?? BG_IMAGE}
@@ -126,17 +107,11 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
         />
       </div>
 
-      {/* Dark overlay — dims the photo overall */}
       <div
         className="absolute inset-0"
         style={{ backgroundColor: `rgba(25, 25, 25, ${OVERLAY_OPACITY})` }}
       />
 
-      {/*
-        BOTTOM BLEND — the gradient that fades the hero into the next section.
-        Sits above the overlay but below the header/content. This creates the
-        seamless transition seen in the reference (image 4).
-      */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0"
@@ -147,10 +122,8 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
         }}
       />
 
-      {/* Navbar */}
       <SiteHeader />
 
-      {/* Centered title + down-arrow CTA */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
         <h1
           style={{ ...serif, fontSize: TITLE_FONT_SIZE }}
@@ -180,7 +153,17 @@ export default function GalleryHero({ bgImage }: { bgImage?: string }) {
 
 function DownArrowIcon() {
   return (
-    <svg className="w-[1.25rem] h-[1.25rem]" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className="w-[1.25rem] h-[1.25rem]"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );

@@ -1,28 +1,10 @@
 "use client";
 
-/**
- * useHideOnScrollDown.ts
- * ---------------------------------------------------------------------------
- * Sticky-nav behaviour from the reference site (PAGE_SCROLL_DOWN hides the
- * header, PAGE_SCROLL_UP shows it). Returns a ref to attach to your fixed
- * Navbar; the hook slides it out of view when scrolling down and back in when
- * scrolling up.
- *
- * Use this when you extract the shared sticky Navbar
- * (components/layout/Navbar.tsx). Works with Lenis since it reads
- * window.scrollY which Lenis keeps in sync.
- *
- *   const navRef = useHideOnScrollDown<HTMLElement>();
- *   return <header ref={navRef} className="fixed top-0 ...">...</header>;
- * ---------------------------------------------------------------------------
- */
-
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { DUR, EASE, prefersReducedMotion } from "./anim.config";
 
 export function useHideOnScrollDown<T extends HTMLElement>(opts?: {
-  /** Don't start hiding until scrolled past this many px (default 120). */
   threshold?: number;
 }) {
   const ref = useRef<T>(null);

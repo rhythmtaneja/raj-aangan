@@ -6,35 +6,28 @@ import Reveal from "@/components/anim/Reveal";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const TOP_BG    = "#ffffff";
-const MIDDLE_BG = "#0f2f3b"; // dark navy — matches VenuePackagesSection
+const TOP_BG = "#ffffff";
+const MIDDLE_BG = "#0f2f3b";
 
 const TITLE_COLOR = "#191919";
 
-const TOP_PAD    = "py-12 md:py-14";
+const TOP_PAD = "py-12 md:py-14";
 const MIDDLE_PAD = "py-14 md:py-16";
 
 const CARD_ASPECT = "aspect-square";
 const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.55)";
 
-// ═══════════════════════════════════════════════════════════════════════════
-
 export type PackageOverview = {
-  name:  string;
+  name: string;
   image: string;
-  /** Optional anchor / route the card should link to. */
+
   href?: string;
 };
 
 type PackagesOverviewSectionProps = {
-  /** Section title, e.g. "Raj Aangan Package" / "Raj Gharana Package". */
-  title:    string;
-  /** 2-4 packages. Renders as a horizontal grid. */
+  title: string;
+
   packages: PackageOverview[];
 };
 
@@ -46,7 +39,6 @@ export default function PackagesOverviewSection({
 
   return (
     <section className="relative w-full">
-      {/* TOP — white title band */}
       <div className={`w-full ${TOP_PAD}`} style={{ backgroundColor: TOP_BG }}>
         <Reveal>
           <h2
@@ -58,12 +50,13 @@ export default function PackagesOverviewSection({
         </Reveal>
       </div>
 
-      {/* MIDDLE — navy card strip */}
       <div
         className={`w-full ${MIDDLE_PAD} px-6 md:px-12`}
         style={{ backgroundColor: MIDDLE_BG }}
       >
-        <div className={`mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 ${cols}`}>
+        <div
+          className={`mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 ${cols}`}
+        >
           {packages.map((p) => (
             <Reveal key={p.name}>
               <OverviewCard {...p} />

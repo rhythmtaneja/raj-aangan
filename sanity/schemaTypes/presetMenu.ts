@@ -1,7 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-// A preset menu (e.g. "Maharaja Vyanjan") encodes the "choose any N" rules as
-// real data: each section names how many dishes the guest may pick.
 export default defineType({
   name: "presetMenu",
   title: "Preset Menu",
@@ -11,7 +9,7 @@ export default defineType({
       name: "name",
       title: "Name",
       type: "string",
-      description: 'e.g. “Maharaja Vyanjan”.',
+      description: "e.g. “Maharaja Vyanjan”.",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -31,7 +29,7 @@ export default defineType({
       name: "priceNote",
       title: "Price Note",
       type: "string",
-      description: 'e.g. “per plate, min 300 guests”.',
+      description: "e.g. “per plate, min 300 guests”.",
     }),
     defineField({
       name: "coverImage",
@@ -64,14 +62,15 @@ export default defineType({
               name: "sectionName",
               title: "Section Name",
               type: "string",
-              description: 'e.g. “Snacks”, “Soups”, “Main Course”.',
+              description: "e.g. “Snacks”, “Soups”, “Main Course”.",
               validation: (r) => r.required(),
             }),
             defineField({
               name: "chooseCount",
               title: "Choose Count",
               type: "number",
-              description: 'How many dishes the guest may pick from this section (e.g. 5 for “choose any 5 snacks”). 0 = all included.',
+              description:
+                "How many dishes the guest may pick from this section (e.g. 5 for “choose any 5 snacks”). 0 = all included.",
               initialValue: 0,
               validation: (r) => r.min(0),
             }),
@@ -83,7 +82,11 @@ export default defineType({
             }),
           ],
           preview: {
-            select: { title: "sectionName", chooseCount: "chooseCount", dishes: "dishes" },
+            select: {
+              title: "sectionName",
+              chooseCount: "chooseCount",
+              dishes: "dishes",
+            },
             prepare({ title, chooseCount, dishes }) {
               const count = Array.isArray(dishes) ? dishes.length : 0;
               return {
@@ -99,7 +102,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Sort order", name: "sortOrderAsc", by: [{ field: "sortOrder", direction: "asc" }] },
+    {
+      title: "Sort order",
+      name: "sortOrderAsc",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
   ],
   preview: {
     select: { title: "name", subtitle: "priceNote", media: "coverImage" },

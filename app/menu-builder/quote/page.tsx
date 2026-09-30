@@ -1,13 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: app/menu-builder/quote/page.tsx
-// ══════════════════════════════════════════════════════════════════
-// One Quote route, two layouts:
-//   • venue-event (set-menu OR cuisine) → <VenueEventQuote>  (quote-page.png)
-//   • outdoor                            → <OutdoorQuote>     (outdoor-quote.png)
-// The two venue-event sub-flows share the exact same quote design; only the
-// pricing inputs differ. Discount code is placeholder-only (no valid codes).
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -54,27 +44,18 @@ import {
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
+const CARD_BG = MB_COLORS.card;
+const INK = MB_COLORS.ink;
+const INK_MUTED = MB_COLORS.inkMuted;
+const GOLD = MB_COLORS.gold;
+const CARD_PADDING = "p-5 md:p-10";
 
-const CARD_BG        = MB_COLORS.card;
-const INK            = MB_COLORS.ink;
-const INK_MUTED      = MB_COLORS.inkMuted;
-const GOLD           = MB_COLORS.gold;
-const CARD_PADDING   = "p-5 md:p-10";  // matches every other builder step
-
-// Every enquiry raised from the Review screen lands on this WhatsApp number.
-// 10-digit local form is fine — whatsAppUrl() prefixes +91.
 const WHATSAPP_NUMBER = "9829012815";
 
 const DISCOUNT_PLACEHOLDER = "Enter discount code";
-const START_OVER_CONFIRM   = "Start over? All your selections will be cleared.";
+const START_OVER_CONFIRM = "Start over? All your selections will be cleared.";
 
-// Shown after the quote has been written into the guest's Booking History.
 const SAVED_TOAST = "Saved to your Booking History.";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function QuotePage() {
   const { state, hydrated } = useBooking();
@@ -87,14 +68,23 @@ export default function QuotePage() {
 
   if (!hydrated || !state.cateringType) return null;
 
-  return state.cateringType === "outdoor" ? <OutdoorQuote /> : <VenueEventQuote />;
+  return state.cateringType === "outdoor" ? (
+    <OutdoorQuote />
+  ) : (
+    <VenueEventQuote />
+  );
 }
-
-// ─── Venue-event quote (set package + custom builder share this) ───────────
 
 function VenueEventQuote() {
   const { state, dispatch } = useBooking();
-  const { venues, occasions, presentation, getSetMenu, getCustomItem, pricing } = useCatalog();
+  const {
+    venues,
+    occasions,
+    presentation,
+    getSetMenu,
+    getCustomItem,
+    pricing,
+  } = useCatalog();
   const pricingData = usePricingData();
   const router = useRouter();
   const { toast, showToast } = useToast();
@@ -102,16 +92,22 @@ function VenueEventQuote() {
 
   const customMenu = state.menuMode === "custom";
   const steps = getSteps(state);
-  const venue = state.venueId ? venues.find((v) => v.id === state.venueId) : null;
+  const venue = state.venueId
+    ? venues.find((v) => v.id === state.venueId)
+    : null;
   const occasion =
     state.occasions.length > 0
-      ? state.occasions.map((id) => occasions.find((o) => o.id === id)?.label).filter(Boolean).join(", ")
+      ? state.occasions
+          .map((id) => occasions.find((o) => o.id === id)?.label)
+          .filter(Boolean)
+          .join(", ")
       : "—";
   const setMenu = getSetMenu(state.selectedSetMenuId);
 
-  // Per-head basis differs by menu mode; the breakdown shape is identical.
   const addOnCount = customMenu ? 0 : getSetMenuAddOnCount(state, pricingData);
-  const addOnPerHead = customMenu ? 0 : getSetMenuAddOnPerHead(state, pricingData);
+  const addOnPerHead = customMenu
+    ? 0
+    : getSetMenuAddOnPerHead(state, pricingData);
   const perHeadBase = getVenueEventPerHead(state, pricingData);
   const packageBase = perHeadBase - addOnPerHead;
   const venueLogistic = getVenueLogisticsPerHead(state, venues);
@@ -123,13 +119,10 @@ function VenueEventQuote() {
   const gst = getGstAmount(subtotal, pricing);
   const total = subtotal + gst;
 
-  // Presentation summary — one block per chosen live counter.
   const counters = counterSummaries(state, presentation);
 
   const handleStartOver = () => startOver(dispatch, router);
 
-  // The same content the screen shows, in the shape the WhatsApp / PDF /
-  // Share actions consume.
   const doc: QuoteDoc = {
     title: pricing.quoteHeading,
     subtitle: pricing.quoteSubheading,
@@ -141,18 +134,33 @@ function VenueEventQuote() {
           { label: "Contact", value: state.contactPhone || "—" },
           { label: "Occasion", value: occasion },
           { label: "Date", value: state.eventDate || "—" },
-          { label: "Duration", value: `${state.eventDays} Day${state.eventDays > 1 ? "s" : ""}` },
+          {
+            label: "Duration",
+            value: `${state.eventDays} Day${state.eventDays > 1 ? "s" : ""}`,
+          },
           { label: "Guests", value: String(state.guests) },
           { label: "Meal Type", value: state.mealTypes.join(", ") || "—" },
-          { label: "Dietary", value: state.dietaryPreferences.join(", ") || "—" },
+          {
+            label: "Dietary",
+            value: state.dietaryPreferences.join(", ") || "—",
+          },
         ],
       },
       {
         title: "Venue & Menu",
         lines: [
-          { label: "Venue", value: venue?.name || state.customVenueAddress || "—" },
-          { label: "Menu", value: customMenu ? "Custom menu" : setMenu?.name || "—" },
-          { label: "Pricing", value: venue?.pricingNote || `${formatINR(perHeadBase)} / head` },
+          {
+            label: "Venue",
+            value: venue?.name || state.customVenueAddress || "—",
+          },
+          {
+            label: "Menu",
+            value: customMenu ? "Custom menu" : setMenu?.name || "—",
+          },
+          {
+            label: "Pricing",
+            value: venue?.pricingNote || `${formatINR(perHeadBase)} / head`,
+          },
         ],
       },
       {
@@ -174,7 +182,12 @@ function VenueEventQuote() {
         lines: [
           { label: "Per head base", value: formatINR(packageBase) },
           ...(addOnCount > 0
-            ? [{ label: `Add-ons / head (${addOnCount})`, value: formatINR(addOnPerHead) }]
+            ? [
+                {
+                  label: `Add-ons / head (${addOnCount})`,
+                  value: formatINR(addOnPerHead),
+                },
+              ]
             : []),
           { label: "Venue logistic / head", value: formatINR(venueLogistic) },
           {
@@ -199,12 +212,9 @@ function VenueEventQuote() {
     contact: contactLine(pricing),
   };
 
-  // ─── Booking History ──────────────────────────────────────────────────
-  // Reaching this screen IS "completed all the steps", so the finished
-  // quotation is written to the guest's Booking History without them asking.
-  // The guard is what keeps junk out: a guest who deep-links to /quote with an
-  // empty wizard has no menu, and an entry with no menu is not a booking.
-  const hasMenu = customMenu ? state.selectedDishes.length > 0 : Boolean(state.selectedSetMenuId);
+  const hasMenu = customMenu
+    ? state.selectedDishes.length > 0
+    : Boolean(state.selectedSetMenuId);
   const saveBooking = useAutoSaveBooking(
     hasMenu
       ? {
@@ -217,7 +227,7 @@ function VenueEventQuote() {
           eventDays: state.eventDays,
           summary: customMenu
             ? `Custom menu · ${state.selectedDishes.length} dish${state.selectedDishes.length === 1 ? "" : "es"}`
-            : setMenu?.name ?? "Set menu",
+            : (setMenu?.name ?? "Set menu"),
           total: formatINR(total),
           doc,
         }
@@ -232,22 +242,40 @@ function VenueEventQuote() {
       showBookingSummary={false}
     >
       <div className={CARD_PADDING} style={{ backgroundColor: CARD_BG }}>
-        <QuoteHeader title={pricing.quoteHeading} subtitle={pricing.quoteSubheading} />
+        <QuoteHeader
+          title={pricing.quoteHeading}
+          subtitle={pricing.quoteSubheading}
+        />
 
         <SectionTitle>Client &amp; Event</SectionTitle>
-        <KV label="Client"    value={state.clientName || "—"} />
-        <KV label="Contact"   value={state.contactPhone || "—"} />
-        <KV label="Occasion"  value={occasion} />
-        <KV label="Date"      value={state.eventDate || "—"} />
-        <KV label="Duration"  value={`${state.eventDays} Day${state.eventDays > 1 ? "s" : ""}`} />
-        <KV label="Guests"    value={String(state.guests)} />
+        <KV label="Client" value={state.clientName || "—"} />
+        <KV label="Contact" value={state.contactPhone || "—"} />
+        <KV label="Occasion" value={occasion} />
+        <KV label="Date" value={state.eventDate || "—"} />
+        <KV
+          label="Duration"
+          value={`${state.eventDays} Day${state.eventDays > 1 ? "s" : ""}`}
+        />
+        <KV label="Guests" value={String(state.guests)} />
         <KV label="Meal Type" value={state.mealTypes.join(", ") || "—"} />
-        <KV label="Dietary"   value={state.dietaryPreferences.join(", ") || "—"} />
+        <KV
+          label="Dietary"
+          value={state.dietaryPreferences.join(", ") || "—"}
+        />
 
         <SectionTitle>Venue</SectionTitle>
-        <KV label="Select"  value={venue?.name || state.customVenueAddress || "—"} />
-        <KV label="Menu"    value={customMenu ? "Custom menu" : setMenu?.name || "—"} />
-        <KV label="Pricing" value={venue?.pricingNote || `${formatINR(perHeadBase)} / head`} />
+        <KV
+          label="Select"
+          value={venue?.name || state.customVenueAddress || "—"}
+        />
+        <KV
+          label="Menu"
+          value={customMenu ? "Custom menu" : setMenu?.name || "—"}
+        />
+        <KV
+          label="Pricing"
+          value={venue?.pricingNote || `${formatINR(perHeadBase)} / head`}
+        />
 
         <SectionTitle>Presentation &amp; Live Counters</SectionTitle>
         {counters.length === 0 ? (
@@ -257,7 +285,10 @@ function VenueEventQuote() {
         ) : (
           counters.map((counter, i) => (
             <div key={counter.name} className={i === 0 ? "" : "mt-5"}>
-              <p style={{ ...serif, color: GOLD }} className="text-base font-semibold">
+              <p
+                style={{ ...serif, color: GOLD }}
+                className="text-base font-semibold"
+              >
                 {i + 1}. {counter.name}
               </p>
               {counter.lines.map((line) => (
@@ -288,7 +319,10 @@ function VenueEventQuote() {
               value={formatINR(addOnPerHead)}
             />
           )}
-          <KVRow label="Venue logistic / head" value={formatINR(venueLogistic)} />
+          <KVRow
+            label="Venue logistic / head"
+            value={formatINR(venueLogistic)}
+          />
           <KVRow
             label={`x ${state.guests} guest x ${state.eventDays} day${state.eventDays > 1 ? "s" : ""}`}
             value={formatINR(gross)}
@@ -299,7 +333,10 @@ function VenueEventQuote() {
               value={`- ${formatINR(discountAmount)}`}
             />
           )}
-          <KVRow label={`GST (${pricing.gstPercent}%)`} value={formatINR(gst)} />
+          <KVRow
+            label={`GST (${pricing.gstPercent}%)`}
+            value={formatINR(gst)}
+          />
         </div>
         <EstimatedTotalRow value={formatINR(total)} />
 
@@ -311,8 +348,6 @@ function VenueEventQuote() {
     </BuilderLayout>
   );
 }
-
-// ─── Outdoor quote ─────────────────────────────────────────────────────────
 
 function OutdoorQuote() {
   const { state, dispatch } = useBooking();
@@ -382,8 +417,6 @@ function OutdoorQuote() {
     contact: contactLine(pricing),
   };
 
-  // See the note in VenueEventQuote — same contract, different guard: an
-  // outdoor order with no boxes in the cart is not a booking.
   const saveBooking = useAutoSaveBooking(
     lineItems.length > 0
       ? {
@@ -392,8 +425,7 @@ function OutdoorQuote() {
           clientName: state.clientName,
           contactPhone: state.contactPhone,
           eventDate: state.eventDate,
-          // Outdoor is priced per box, not per head — the card hides both rows
-          // rather than printing a meaningless guest count.
+
           guests: null,
           eventDays: null,
           summary: `${lineItems.length} item${lineItems.length === 1 ? "" : "s"}${
@@ -419,11 +451,11 @@ function OutdoorQuote() {
         />
 
         <SectionTitle>Client &amp; Delivery</SectionTitle>
-        <KV label="Client"        value={state.clientName || "—"} />
-        <KV label="Contact"       value={state.contactPhone || "—"} />
+        <KV label="Client" value={state.clientName || "—"} />
+        <KV label="Contact" value={state.contactPhone || "—"} />
         <KV label="Delivery Date" value={state.eventDate || "—"} />
-        <KV label="Address"       value={state.deliveryAddress || "—"} />
-        <KV label="Packaging"     value={packaging?.label || "—"} />
+        <KV label="Address" value={state.deliveryAddress || "—"} />
+        <KV label="Packaging" value={packaging?.label || "—"} />
 
         <SectionTitle>Order Items</SectionTitle>
         {lineItems.length === 0 ? (
@@ -431,30 +463,43 @@ function OutdoorQuote() {
             No items selected yet.
           </p>
         ) : (
-          <ul className="divide-y" style={{ borderColor: MB_COLORS.borderLight }}>
-            {lineItems.map(({ item, variant, label, unitPrice, qty, lineTotal }) => (
-              <li
-                key={variant?.id ?? item.id}
-                className="flex items-start justify-between gap-4 py-2 text-sm"
-              >
-                <div className="min-w-0">
-                  <p style={{ color: INK }} className="font-medium">{label}</p>
-                  <p style={{ color: INK_MUTED }} className="text-xs">
-                    {unitPrice == null
-                      ? `${qty} × on request`
-                      : `${qty} × ${formatINR(unitPrice)} ${item.unit}`}
-                  </p>
-                  {variant && variant.contents.length > 0 && (
-                    <p style={{ color: INK_MUTED }} className="mt-0.5 text-xs">
-                      {variant.contents.join(", ")}
+          <ul
+            className="divide-y"
+            style={{ borderColor: MB_COLORS.borderLight }}
+          >
+            {lineItems.map(
+              ({ item, variant, label, unitPrice, qty, lineTotal }) => (
+                <li
+                  key={variant?.id ?? item.id}
+                  className="flex items-start justify-between gap-4 py-2 text-sm"
+                >
+                  <div className="min-w-0">
+                    <p style={{ color: INK }} className="font-medium">
+                      {label}
                     </p>
-                  )}
-                </div>
-                <span style={{ color: GOLD }} className="shrink-0 font-medium">
-                  {unitPrice == null ? "On request" : formatINR(lineTotal)}
-                </span>
-              </li>
-            ))}
+                    <p style={{ color: INK_MUTED }} className="text-xs">
+                      {unitPrice == null
+                        ? `${qty} × on request`
+                        : `${qty} × ${formatINR(unitPrice)} ${item.unit}`}
+                    </p>
+                    {variant && variant.contents.length > 0 && (
+                      <p
+                        style={{ color: INK_MUTED }}
+                        className="mt-0.5 text-xs"
+                      >
+                        {variant.contents.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    style={{ color: GOLD }}
+                    className="shrink-0 font-medium"
+                  >
+                    {unitPrice == null ? "On request" : formatINR(lineTotal)}
+                  </span>
+                </li>
+              ),
+            )}
           </ul>
         )}
 
@@ -479,7 +524,10 @@ function OutdoorQuote() {
               value={`- ${formatINR(discountAmount)}`}
             />
           )}
-          <KVRow label={`GST (${pricing.gstPercent}%)`} value={formatINR(gst)} />
+          <KVRow
+            label={`GST (${pricing.gstPercent}%)`}
+            value={formatINR(gst)}
+          />
         </div>
         <EstimatedTotalRow value={formatINR(total)} />
 
@@ -492,12 +540,6 @@ function OutdoorQuote() {
   );
 }
 
-// ─── Shared behaviour ──────────────────────────────────────────────────────
-
-/**
- * Discount-code box state. Codes, their rules and the rejection message all
- * come from Sanity (Pricing & Quote Settings → Discounts).
- */
 function useDiscount(
   state: BookingState,
   pricing: PricingSettings,
@@ -520,23 +562,6 @@ function useDiscount(
   return { code, setCode, applied, apply };
 }
 
-/**
- * Writes the finished quotation into the guest's Booking History, and hands
- * back a `save` the "Save Booking" button can call again by hand.
- *
- * Pass `null` while the wizard has nothing worth saving — the hook then does
- * nothing at all, so a deep-linked empty /quote never creates an entry.
- *
- * WHY THE FINGERPRINT. `draft` is a fresh object literal on every render, so
- * it cannot be an effect dependency directly — the effect would re-run (and
- * re-write localStorage) on every keystroke anywhere on the page. Serialising
- * it means the effect fires exactly when the CONTENT of the quote changes,
- * which is the condition we actually want.
- *
- * `id` and `savedAt` are resolved INSIDE the callback, never during render:
- * `activeBookingId()` touches localStorage, which does not exist during SSR
- * and must not run as a render side effect.
- */
 function useAutoSaveBooking(draft: BookingDraft | null) {
   const fingerprint = draft ? JSON.stringify(draft) : null;
 
@@ -544,8 +569,7 @@ function useAutoSaveBooking(draft: BookingDraft | null) {
     if (!fingerprint) return false;
     upsertBooking({
       ...(JSON.parse(fingerprint) as BookingDraft),
-      // Stable for the whole wizard run, so editing guest count on this screen
-      // UPDATES the guest's booking instead of adding a near-duplicate.
+
       id: activeBookingId(),
       savedAt: new Date().toISOString(),
     });
@@ -559,7 +583,6 @@ function useAutoSaveBooking(draft: BookingDraft | null) {
   return save;
 }
 
-/** A SavedBooking minus the two fields useAutoSaveBooking fills in itself. */
 type BookingDraft = Omit<SavedBooking, "id" | "savedAt">;
 
 function useToast() {
@@ -575,20 +598,14 @@ function startOver(
   dispatch: ReturnType<typeof useBooking>["dispatch"],
   router: ReturnType<typeof useRouter>,
 ) {
-  if (typeof window !== "undefined" && !window.confirm(START_OVER_CONFIRM)) return;
+  if (typeof window !== "undefined" && !window.confirm(START_OVER_CONFIRM))
+    return;
   dispatch({ type: "RESET_WIZARD" });
-  // Ends the wizard RUN, not the history: the booking already saved stays in
-  // /booking, and the next run gets an id of its own rather than overwriting
-  // it. Dropping this line is what would make Booking History hold exactly one
-  // entry forever.
+
   clearActiveBookingId();
   router.push("/menu-builder/client");
 }
 
-/**
- * One entry per selected live counter, in the order the guest picked them,
- * with that counter's own cutlery / style / stall / design names resolved.
- */
 function counterSummaries(
   state: BookingState,
   presentation: ReturnType<typeof useCatalog>["presentation"],
@@ -604,21 +621,31 @@ function counterSummaries(
       .filter(Boolean)
       .join(", ");
     return {
-      name: presentation.liveCounterTiles.find((t) => t.id === counterId)?.name ?? counterId,
+      name:
+        presentation.liveCounterTiles.find((t) => t.id === counterId)?.name ??
+        counterId,
       lines: [
-        { label: "Cutlery", value: nameOf(presentation.cutlery, config?.cutlery ?? null) },
+        {
+          label: "Cutlery",
+          value: nameOf(presentation.cutlery, config?.cutlery ?? null),
+        },
         {
           label: "Presentation Style",
-          value: nameOf(presentation.presentationStyles, config?.presentationStyle ?? null),
+          value: nameOf(
+            presentation.presentationStyles,
+            config?.presentationStyle ?? null,
+          ),
         },
-        { label: "Stall Theme", value: nameOf(presentation.stallThemes, config?.stallTheme ?? null) },
+        {
+          label: "Stall Theme",
+          value: nameOf(presentation.stallThemes, config?.stallTheme ?? null),
+        },
         { label: "Counter Design", value: designs || "—" },
       ],
     };
   });
 }
 
-/** Dish names for the WhatsApp / PDF copy — set-menu picks or à-la-carte. */
 function selectedDishNames(
   state: BookingState,
   setMenu: ReturnType<ReturnType<typeof useCatalog>["getSetMenu"]>,
@@ -642,7 +669,6 @@ function selectedDishNames(
   return out.length ? out : ["No dishes selected yet."];
 }
 
-/** Validity / deposit / custom terms, shared by the screen and the exports. */
 function termLines(pricing: PricingSettings): string[] {
   const lines: string[] = [];
   if (pricing.quoteValidityDays > 0) {
@@ -660,16 +686,19 @@ function termLines(pricing: PricingSettings): string[] {
 }
 
 function contactLine(pricing: PricingSettings): string | undefined {
-  const contact = [pricing.contactPhone, pricing.contactEmail].filter(Boolean).join(" · ");
+  const contact = [pricing.contactPhone, pricing.contactEmail]
+    .filter(Boolean)
+    .join(" · ");
   return contact ? `Questions? ${contact}` : undefined;
 }
-
-// ─── Shared UI ─────────────────────────────────────────────────────────────
 
 function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <>
-      <h2 style={{ ...serif, color: INK }} className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold">
+      <h2
+        style={{ ...serif, color: INK }}
+        className="text-[clamp(1.6rem,2.3vw,2.0625rem)] font-semibold"
+      >
         {title}
       </h2>
       <p style={{ color: INK_MUTED }} className="mt-1 text-sm">
@@ -682,7 +711,10 @@ function QuoteHeader({ title, subtitle }: { title: string; subtitle: string }) {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-8 mb-3 flex items-center gap-4">
-      <h3 style={{ ...serif, color: INK }} className="text-[clamp(1.1rem,1.35vw,1.1875rem)] font-semibold">
+      <h3
+        style={{ ...serif, color: INK }}
+        className="text-[clamp(1.1rem,1.35vw,1.1875rem)] font-semibold"
+      >
         {children}
       </h3>
       <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
@@ -697,7 +729,9 @@ function KV({ label, value }: { label: string; value: string }) {
       style={{ borderColor: MB_COLORS.borderLight }}
     >
       <span style={{ color: INK_MUTED }}>{label}</span>
-      <span style={{ color: INK }} className="text-right">{value}</span>
+      <span style={{ color: INK }} className="text-right">
+        {value}
+      </span>
     </div>
   );
 }
@@ -706,18 +740,29 @@ function KVRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between">
       <span style={{ color: INK_MUTED }}>{label}</span>
-      <span style={{ color: INK }} className="font-medium">{value}</span>
+      <span style={{ color: INK }} className="font-medium">
+        {value}
+      </span>
     </div>
   );
 }
 
 function EstimatedTotalRow({ value }: { value: string }) {
   return (
-    <div className="mt-4 flex items-baseline justify-between border-t pt-4" style={{ borderColor: MB_COLORS.border }}>
-      <span style={{ ...serif, color: INK }} className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold">
+    <div
+      className="mt-4 flex items-baseline justify-between border-t pt-4"
+      style={{ borderColor: MB_COLORS.border }}
+    >
+      <span
+        style={{ ...serif, color: INK }}
+        className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold"
+      >
         Estimated total
       </span>
-      <span style={{ ...serif, color: GOLD }} className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold">
+      <span
+        style={{ ...serif, color: GOLD }}
+        className="text-[clamp(1.2rem,1.6vw,1.4375rem)] font-semibold"
+      >
         {value}
       </span>
     </div>
@@ -756,11 +801,6 @@ function DiscountCode({
   );
 }
 
-/**
- * Validity, deposit, terms and contact details — every line optional and
- * editable in Studio (Pricing & Quote Settings → Quote Page). Renders nothing
- * when the client hasn't filled any of them in.
- */
 function QuoteTerms({ pricing }: { pricing: PricingSettings }) {
   const lines = termLines(pricing);
   const contact = contactLine(pricing);
@@ -772,7 +812,11 @@ function QuoteTerms({ pricing }: { pricing: PricingSettings }) {
       {lines.length > 0 && (
         <ul className="space-y-1.5">
           {lines.map((line, i) => (
-            <li key={i} style={{ color: INK_MUTED }} className="flex gap-2 text-sm">
+            <li
+              key={i}
+              style={{ color: INK_MUTED }}
+              className="flex gap-2 text-sm"
+            >
               <span style={{ color: GOLD }} aria-hidden>
                 •
               </span>
@@ -790,15 +834,6 @@ function QuoteTerms({ pricing }: { pricing: PricingSettings }) {
   );
 }
 
-/**
- * The three export actions, all driven off the same QuoteDoc:
- *   • Generate PDF — prints <QuotePrintable> (the browser's "Save as PDF"
- *     destination is the PDF step; see the @media print block in globals.css).
- *   • Share — the Web Share sheet where the browser has it (mobile), else the
- *     quote text + link go to the clipboard.
- *   • WhatsApp — opens a wa.me chat with WHATSAPP_NUMBER, pre-filled with the
- *     whole enquiry.
- */
 function ActionRow({
   doc,
   showToast,
@@ -806,14 +841,15 @@ function ActionRow({
 }: {
   doc: QuoteDoc;
   showToast: (msg: string) => void;
-  /** Re-saves this quote to Booking History; false when there is nothing to save. */
+
   onSave: () => boolean;
 }) {
-  const pageUrl = () => (typeof window === "undefined" ? "" : window.location.href);
+  const pageUrl = () =>
+    typeof window === "undefined" ? "" : window.location.href;
 
   const generatePdf = () => {
     showToast("Opening your print dialog — choose \u201cSave as PDF\u201d.");
-    // Let the toast paint before print() blocks the main thread.
+
     setTimeout(() => window.print(), 150);
   };
 
@@ -824,25 +860,19 @@ function ActionRow({
       try {
         await navigator.share({ title: doc.title, text, url });
         return;
-      } catch {
-        // Dismissed or unsupported payload — fall through to the clipboard.
-      }
+      } catch {}
     }
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(text);
         showToast("Quote copied to clipboard.");
         return;
-      } catch {
-        // Clipboard blocked (insecure origin / permission) — tell the guest.
-      }
+      } catch {}
     }
     showToast("Sharing isn\u2019t available in this browser.");
   };
 
   const sendWhatsApp = () => {
-    // No page link: the quote lives in this guest's localStorage, so the URL
-    // restores nothing on the other end.
     window.open(
       whatsAppUrl(WHATSAPP_NUMBER, whatsAppText(doc)),
       "_blank",
@@ -872,19 +902,7 @@ function ActionRow({
   );
 }
 
-/**
- * Print-only rendering of the quote. Hidden on screen; globals.css' @media
- * print block hides everything else and reveals this, so "Generate PDF" needs
- * no PDF library.
- *
- * PORTALLED TO <body> ON PURPOSE. The print rule hides the rest of the app
- * with `display: none` (a `visibility: hidden` node still occupies its full
- * height, which pushed 2 blank pages onto the PDF), and `display: none` can
- * only be applied to body's own children without taking this node down too.
- */
 function QuotePrintable({ doc }: { doc: QuoteDoc }) {
-  // Portals need the DOM, so mount on the client only — the printable has no
-  // job during SSR.
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -900,7 +918,8 @@ function QuotePrintable({ doc }: { doc: QuoteDoc }) {
       {doc.subtitle && <p className="mt-1 text-sm">{doc.subtitle}</p>}
 
       {doc.sections.map((section: QuoteSection) => {
-        const hasContent = (section.lines?.length ?? 0) + (section.notes?.length ?? 0) > 0;
+        const hasContent =
+          (section.lines?.length ?? 0) + (section.notes?.length ?? 0) > 0;
         if (!hasContent) return null;
         return (
           <div key={section.title} className="mt-5">
@@ -911,7 +930,10 @@ function QuotePrintable({ doc }: { doc: QuoteDoc }) {
               {section.title}
             </h2>
             {section.lines?.map((line) => (
-              <div key={line.label} className="flex justify-between gap-4 py-0.5 text-sm">
+              <div
+                key={line.label}
+                className="flex justify-between gap-4 py-0.5 text-sm"
+              >
                 <span>{line.label}</span>
                 <span className="text-right">{line.value}</span>
               </div>
@@ -935,7 +957,13 @@ function QuotePrintable({ doc }: { doc: QuoteDoc }) {
   );
 }
 
-function SecondaryButton({ label, onClick }: { label: string; onClick: () => void }) {
+function SecondaryButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
@@ -947,7 +975,13 @@ function SecondaryButton({ label, onClick }: { label: string; onClick: () => voi
   );
 }
 
-function PrimaryButton({ label, onClick }: { label: string; onClick: () => void }) {
+function PrimaryButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}

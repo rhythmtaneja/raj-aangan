@@ -9,15 +9,28 @@ import BackToVenueNav from "@/components/sections/venue/BackToVenueNav";
 import FooterSection from "@/components/sections/FooterSection";
 
 const OVERVIEW: PackageOverview[] = [
-  { name: "Half Day Packages", image: "/images/pkg-gharana-halfday.jpg", href: "#half-day" },
-  { name: "Full Day Packages", image: "/images/pkg-gharana-fullday.jpg", href: "#full-day" },
-  { name: "Multi - day Package", image: "/images/pkg-gharana-multiday.jpg", href: "#multi-day" },
+  {
+    name: "Half Day Packages",
+    image: "/images/pkg-gharana-halfday.jpg",
+    href: "#half-day",
+  },
+  {
+    name: "Full Day Packages",
+    image: "/images/pkg-gharana-fullday.jpg",
+    href: "#full-day",
+  },
+  {
+    name: "Multi - day Package",
+    image: "/images/pkg-gharana-multiday.jpg",
+    href: "#multi-day",
+  },
 ];
 
 const DETAILS: PackageDetail[] = [
   {
     title: "HALF-DAY CELEBRATION PACKAGE",
-    description: "Perfect for intimate gatherings, engagement ceremonies, bridal showers, anniversaries, mehendi functions, and corporate events. Package Inclusions:",
+    description:
+      "Perfect for intimate gatherings, engagement ceremonies, bridal showers, anniversaries, mehendi functions, and corporate events. Package Inclusions:",
     inclusions: [
       "Exclusive venue access for up to 6 hours",
       "Elegant seating and table arrangements",
@@ -35,7 +48,8 @@ const DETAILS: PackageDetail[] = [
   },
   {
     title: "FULL-DAY WEDDING PACKAGE",
-    description: "A complete wedding experience crafted for couples seeking a seamless and memorable celebration.",
+    description:
+      "A complete wedding experience crafted for couples seeking a seamless and memorable celebration.",
     inclusions: [
       "Exclusive access to the venue from morning till midnight",
       "Separate spaces for wedding ceremony and reception",
@@ -55,7 +69,8 @@ const DETAILS: PackageDetail[] = [
   },
   {
     title: "MULTI-DAY DESTINATION WEDDING PACKAGE",
-    description: "An immersive wedding experience designed for couples dreaming of a royal destination celebration.",
+    description:
+      "An immersive wedding experience designed for couples dreaming of a royal destination celebration.",
     inclusions: [
       "Exclusive venue access for 2–4 days",
       "Accommodation options for wedding guests",
@@ -83,7 +98,10 @@ export default function RajGharanaPackagesPage() {
       <SiteHeader variant="minimal" colorScheme="dark" />
 
       <div className="pt-28 md:pt-32">
-        <PackagesOverviewSection title="Raj Gharana Package" packages={OVERVIEW} />
+        <PackagesOverviewSection
+          title="Raj Gharana Package"
+          packages={OVERVIEW}
+        />
 
         <div className="mt-16 md:mt-24">
           <PackagesDetailSection
@@ -94,7 +112,6 @@ export default function RajGharanaPackagesPage() {
         </div>
       </div>
 
-      {/* Back button above the footer */}
       <BackToVenueNav />
 
       <FooterSection />

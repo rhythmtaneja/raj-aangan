@@ -21,21 +21,39 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      gsap.set(".hero-bg", { scale: 1, x: MOVE.heroDrift, transformOrigin: "center center" });
+      gsap.set(".hero-bg", {
+        scale: 1,
+        x: MOVE.heroDrift,
+        transformOrigin: "center center",
+      });
       gsap.set([".hero-logo", ".hero-cta", ".hero-sub"], { opacity: 0, y: 30 });
       gsap.set(".hero-title", { yPercent: 100 });
 
-      // BG ken-burns + drift — plays ONCE.
       const tlIn = gsap.timeline({ defaults: { ease: "power3.out" } });
       tlIn
-        .to(".hero-bg", { scale: 1.3, duration: DUR.heroZoom, ease: EASE.inOutCirc }, 0)
-        .to(".hero-bg", { x: -MOVE.heroDrift, duration: DUR.heroDrift, ease: EASE.inOutCubic }, 0);
+        .to(
+          ".hero-bg",
+          { scale: 1.3, duration: DUR.heroZoom, ease: EASE.inOutCirc },
+          0,
+        )
+        .to(
+          ".hero-bg",
+          {
+            x: -MOVE.heroDrift,
+            duration: DUR.heroDrift,
+            ease: EASE.inOutCubic,
+          },
+          0,
+        );
 
-      // Logo + headline + CTA + subline — REPLAYS on scroll-back.
       const tlText = gsap.timeline({ defaults: { ease: "power2.out" } });
       tlText
         .to(".hero-logo", { opacity: 1, y: 0, duration: 1.2 }, 0.2)
-        .to(".hero-title", { yPercent: 0, duration: 1.8, ease: "expo.out" }, 0.45)
+        .to(
+          ".hero-title",
+          { yPercent: 0, duration: 1.8, ease: "expo.out" },
+          0.45,
+        )
         .to(".hero-cta", { opacity: 1, y: 0, duration: 1.1 }, 1.3)
         .to(".hero-sub", { opacity: 1, y: 0, duration: 1.1 }, 1.45);
 
@@ -45,21 +63,14 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
         onEnterBack: () => tlText.restart(),
       });
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
-    <section ref={container} className="relative h-dvh w-full overflow-hidden md:h-screen">
-      {/*
-        Background photo.
-        BLEED (-inset-x-[30px]): the ken-burns tween drifts this layer
-        horizontally by MOVE.heroDrift (20px) each way while it starts at
-        scale 1 — with a flush `inset-0` that drift exposed a bare strip down
-        the left edge until the zoom caught up. 30px of fixed-px bleed on each
-        side always covers the 20px drift. Fixed px is correct here: the drift
-        it compensates for is itself a fixed px value, and this is a bleeding
-        background, not layout.
-      */}
+    <section
+      ref={container}
+      className="relative h-dvh w-full overflow-hidden md:h-screen"
+    >
       <div className="hero-bg absolute inset-y-0 -inset-x-[30px]">
         <Image
           src={bgImage ?? HERO_BG_FALLBACK}
@@ -73,37 +84,9 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
 
       <div className="absolute inset-0 bg-[rgba(25,25,25,0.5)]" />
 
-      {/* Navbar — animates in on first homepage load.
-          `revealPillsOnReturn`: the Menu Builder / Booking pills start as bare
-          white text and only gain their dark fill once the visitor has been
-          down the page and come back to the top. */}
       <SiteHeader animateEntrance revealPillsOnReturn hideCenterLogoOnPhone />
 
-      {/*
-        RAEC wordmark. The replacement artwork is a wide logo (rather than
-        the previous square asset), so render the complete image at the old
-        mark's visible width. `h-auto` preserves its native proportions and
-        prevents the strapline from being stretched or cropped.
-      */}
-      {/*
-        The phone `top` is the desktop 24vh MINUS the height the round mark
-        adds above the wordmark (3.25rem logo + 0.75rem margin = 4rem, plus a
-        0.25rem breath). Anchoring on the lockup's BOTTOM rather than its top
-        keeps the wordmark exactly where it already sat, so it still clears the
-        headline below instead of being pushed down onto it. Desktop is
-        untouched — `md:top-...` overrides this entirely.
-      */}
       <div className="hero-logo absolute inset-x-0 top-[calc(24vh-4.25rem)] z-10 flex flex-col items-center md:top-[clamp(15rem,27vh,20rem)]">
-        {/*
-          PHONE ONLY — the round mark, stacked directly above the wordmark.
-          It normally lives in the header bar between the two pills; on a
-          phone the client wants the two marks read as one centred lockup
-          here instead, so SiteHeader is told to drop its copy
-          (`hideCenterLogoOnPhone`) and this one takes over below 1024px.
-          `md:hidden` + the header's `hidden md:block` are exact complements,
-          so exactly one round logo exists at every width and the desktop
-          composition is untouched.
-        */}
         <Link href="/" aria-label="Home" className="mb-3 md:hidden">
           <Image
             src="/images/logo-round.png"
@@ -126,14 +109,6 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
         />
       </div>
 
-      {/*
-        Center content.
-        Phone: the desktop `pt-[16.25rem]` existed only to clear the absolutely
-        positioned wordmark above, and at a fixed 16px mobile root it pushed the
-        whole block off a 844px-tall screen. Phones get a much smaller clearance
-        and a capped content width so the layout still reads as "phone" at 767px
-        (200% zoom) rather than sprawling.
-      */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-40 text-center md:pt-[calc(16.25rem+1rem)]">
         <div className="overflow-hidden">
           <h1 className="hero-title mx-auto max-w-[min(32rem,78vw)] font-medium leading-[1.12] text-white text-[1.9rem] md:max-w-275 md:leading-[1.03] md:text-[clamp(2.75rem,6.25vw,5.625rem)]">
@@ -141,14 +116,10 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           </h1>
         </div>
 
-        {/*
-          The <br/> is a desktop line-break; on phones it would strand a single
-          word, so it is hidden and the paragraph wraps naturally.
-        */}
         <p className="hero-sub mx-auto mt-5 max-w-[min(34rem,82vw)] text-center font-medium leading-relaxed text-white text-[0.9375rem] md:mt-10 md:max-w-4xl md:text-[clamp(1.125rem,1.56vw,1.375rem)]">
           Where ancient architecture
-          <br className="hidden md:inline" />{" "}
-          meets modern comfort to create unforgettable royal experience
+          <br className="hidden md:inline" /> meets modern comfort to create
+          unforgettable royal experience
         </p>
 
         <CircleButton
@@ -156,9 +127,7 @@ export default function Hero({ bgImage }: { bgImage?: string }) {
           circleColor="#6c7c7b"
           arrowColor="#ffffff"
           circleSize="9.375rem"
-          // 0.6 was an outlier (every other CTA is 0.3–0.4) and let the ball
-          // drift ~45px off centre, which is what made it look like it was
-          // "popping over" the label rather than growing behind it.
+
           magnet={0.4}
           className="hero-cta mt-7 rounded-full border border-white px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-white md:mt-12 md:px-8 md:py-3.75 md:text-[0.75rem]"
         >

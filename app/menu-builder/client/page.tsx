@@ -1,14 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: app/menu-builder/client/page.tsx
-// ══════════════════════════════════════════════════════════════════
-// Step 1 — Client / Event. Now the shared entry point for all three
-// sub-flows. Adds a "Catering Type" section (first) that picks the flow and
-// controls which fields show, plus branches the Next button:
-//   • venue-event → /menu-builder/venue
-//   • outdoor     → /menu-builder/catalog
-// "Non Veg" removed from Dietary Preference (see DIETARY_PREFERENCES).
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import Image from "next/image";
@@ -29,37 +18,22 @@ import {
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
 const CARD_BG = MB_COLORS.card;
 const INK = MB_COLORS.ink;
 const INK_MUTED = MB_COLORS.inkMuted;
 const GOLD = MB_COLORS.gold;
-// PHONE PADDING (Sep 2026). Was `p-8 md:p-10`, i.e. 32px of panel padding on
-// each side of a 390px screen. Every other builder step already used
-// `p-5 md:p-10`; this page and the quote page were the two stragglers, and
-// with the two-column card grid inside them the result was ~127px-wide cards
-// (phone-changes/padding-menu-builder.jpeg). Desktop keeps p-10.
+
 const CARD_PADDING = "p-5 md:p-10";
 const SECTION_GAP = "mt-8";
-// Card sizing and spacing knobs. The desktop measurements match the Figma cards.
-// Tailwind gap steps: gap-4 = 16px, gap-6 = 24px, gap-8 = 32px.
+
 const CARD_DESKTOP_WIDTH = "15.25rem";
-// The desktop gaps are generous because the cards are a fixed 15.25rem wide
-// there. On a phone the same two columns share whatever is left of the screen,
-// so every px of gap is taken straight out of the cards — hence the much
-// tighter phone value. Vertical gap stays a little larger than horizontal so
-// the rows still read as rows.
+
 const CATERING_CARD_GAP = "gap-x-3 gap-y-5 md:gap-10";
 const OCCASION_CARD_GAP = "gap-x-3 gap-y-5 md:gap-12";
-const CATERING_IMAGE_ASPECT = "aspect-[1.43/1]"; // 244px card x 223px total height
-const OCCASION_IMAGE_ASPECT = "aspect-[1.58/1]"; // 244px card x 206px total height
+const CATERING_IMAGE_ASPECT = "aspect-[1.43/1]";
+const OCCASION_IMAGE_ASPECT = "aspect-[1.58/1]";
 const MIN_GUESTS = 100;
 const GUEST_STEP = 50;
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function Step1ClientPage() {
   const { state, dispatch, hydrated } = useBooking();
@@ -68,8 +42,10 @@ export default function Step1ClientPage() {
   const steps = getSteps(state);
   const outdoor = state.cateringType === "outdoor";
 
-  const setField = <K extends keyof typeof state>(field: K, value: (typeof state)[K]) =>
-    dispatch({ type: "SET_FIELD", field, value });
+  const setField = <K extends keyof typeof state>(
+    field: K,
+    value: (typeof state)[K],
+  ) => dispatch({ type: "SET_FIELD", field, value });
 
   const chooseCateringType = (id: CateringType) => setField("cateringType", id);
 
@@ -83,9 +59,9 @@ export default function Step1ClientPage() {
     dispatch({ type: "TOGGLE_ARRAY", field: "dietaryPreferences", value: d });
 
   const incGuests = () => setField("guests", state.guests + GUEST_STEP);
-  const decGuests = () => setField("guests", Math.max(MIN_GUESTS, state.guests - GUEST_STEP));
+  const decGuests = () =>
+    setField("guests", Math.max(MIN_GUESTS, state.guests - GUEST_STEP));
 
-  // Next button routes by catering type; disabled until a type is chosen.
   const nextHref =
     state.cateringType === "outdoor"
       ? "/menu-builder/catalog"
@@ -108,11 +84,13 @@ export default function Step1ClientPage() {
         >
           Menu Builder
         </h2>
-        <p style={{ color: INK_MUTED }} className="mt-1 text-xs uppercase tracking-widest">
+        <p
+          style={{ color: INK_MUTED }}
+          className="mt-1 text-xs uppercase tracking-widest"
+        >
           Craft your event experience
         </p>
 
-        {/* ─── Catering Type (first section) ─────────────────────────────── */}
         <Divider label="Catering Type" />
         <div
           className={`grid grid-cols-2 md:grid-cols-[repeat(2,minmax(0,var(--card-width)))] ${CATERING_CARD_GAP}`}
@@ -130,7 +108,6 @@ export default function Step1ClientPage() {
           ))}
         </div>
 
-        {/* ─── Occasion (venue-event only) ───────────────────────────────── */}
         {!outdoor && (
           <>
             <Divider label="Occasion Type" />
@@ -153,7 +130,6 @@ export default function Step1ClientPage() {
           </>
         )}
 
-        {/* ─── Client + Contact (always) ─────────────────────────────────── */}
         <div className={`${SECTION_GAP} grid grid-cols-1 gap-6 md:grid-cols-2`}>
           <TextInput
             label="Client"
@@ -169,7 +145,6 @@ export default function Step1ClientPage() {
           />
         </div>
 
-        {/* ─── Meal Type (venue-event only) ──────────────────────────────── */}
         {!outdoor && (
           <div className={SECTION_GAP}>
             <Label>Meal Type</Label>
@@ -187,7 +162,6 @@ export default function Step1ClientPage() {
           </div>
         )}
 
-        {/* ─── Date (+ Event Days for venue-event) ───────────────────────── */}
         <div className={`${SECTION_GAP} grid grid-cols-1 gap-6 md:grid-cols-2`}>
           <TextInput
             label={outdoor ? "Delivery Date" : "Event Date"}
@@ -201,13 +175,14 @@ export default function Step1ClientPage() {
               label="No. of Event Days"
               placeholder="1"
               value={hydrated ? String(state.eventDays) : "1"}
-              onChange={(v) => setField("eventDays", Math.max(1, parseInt(v) || 1))}
+              onChange={(v) =>
+                setField("eventDays", Math.max(1, parseInt(v) || 1))
+              }
               type="number"
             />
           )}
         </div>
 
-        {/* ─── Guests (venue-event only) ─────────────────────────────────── */}
         {!outdoor && (
           <div className={SECTION_GAP}>
             <Label>Number of Guests</Label>
@@ -227,7 +202,6 @@ export default function Step1ClientPage() {
           </div>
         )}
 
-        {/* ─── Dietary Preference (always) ───────────────────────────────── */}
         <div className={SECTION_GAP}>
           <Label>Dietary Preference</Label>
           <div className="mt-3 flex flex-wrap gap-3">
@@ -253,10 +227,6 @@ export default function Step1ClientPage() {
   );
 }
 
-// ─── Inline UI primitives ──────────────────────────────────────────────────
-
-// Shared image card — photo on top, cream footer with a gold serif label.
-// Used for both the Catering Type and Occasion Type grids (figma reference).
 function MediaCard({
   label,
   image,
@@ -278,11 +248,15 @@ function MediaCard({
       className="group overflow-hidden rounded-[0.625rem] border text-left transition-all"
       style={{
         borderColor: selected ? GOLD : MB_COLORS.border,
-        boxShadow: selected ? `0 0 0 1px ${GOLD}` : "0 1px 3px rgba(0,0,0,0.06)",
+        boxShadow: selected
+          ? `0 0 0 1px ${GOLD}`
+          : "0 1px 3px rgba(0,0,0,0.06)",
         backgroundColor: MB_COLORS.cardCream,
       }}
     >
-      <div className={`relative w-full overflow-hidden bg-[#f4f0e8] ${imageAspect}`}>
+      <div
+        className={`relative w-full overflow-hidden bg-[#f4f0e8] ${imageAspect}`}
+      >
         <Image
           src={image}
           alt={label}
@@ -305,7 +279,8 @@ function MediaCard({
             style={{ backgroundColor: GOLD }}
           >
             <svg
-              className="w-[0.8125rem] h-[0.8125rem]" width="13"
+              className="w-[0.8125rem] h-[0.8125rem]"
+              width="13"
               height="13"
               viewBox="0 0 24 24"
               fill="none"
@@ -332,14 +307,20 @@ function Divider({ label }: { label: string }) {
       >
         {label}
       </h3>
-      <div className="h-px flex-1" style={{ backgroundColor: MB_COLORS.border }} />
+      <div
+        className="h-px flex-1"
+        style={{ backgroundColor: MB_COLORS.border }}
+      />
     </div>
   );
 }
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ ...serif, color: INK }} className="text-[0.9375rem] font-semibold">
+    <p
+      style={{ ...serif, color: INK }}
+      className="text-[0.9375rem] font-semibold"
+    >
       {children}
     </p>
   );
@@ -389,7 +370,9 @@ function Pill({
       style={{
         backgroundColor: selected ? GOLD : "transparent",
         color: selected ? "#ffffff" : INK,
-        border: selected ? `1px solid ${GOLD}` : `1px solid ${MB_COLORS.border}`,
+        border: selected
+          ? `1px solid ${GOLD}`
+          : `1px solid ${MB_COLORS.border}`,
       }}
     >
       {children}

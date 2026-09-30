@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity";
 
-// Step 1 occasion cards (Wedding, Sangeet, Haldi…).
 export default defineType({
   name: "occasion",
   title: "Occasion",
@@ -35,7 +34,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Sort order", name: "sortOrderAsc", by: [{ field: "sortOrder", direction: "asc" }] },
+    {
+      title: "Sort order",
+      name: "sortOrderAsc",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
   ],
   preview: {
     select: { title: "label", media: "image" },

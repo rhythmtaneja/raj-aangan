@@ -7,35 +7,24 @@ import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Three horizontal bands ──
-// Layout: white title strip → navy card strip → white CTA strip.
 const TOP_BG = "#ffffff";
-const MIDDLE_BG = "#0f2f3b"; // dark navy — same family as ContactForm bg
+const MIDDLE_BG = "#0f2f3b";
 const BOTTOM_BG = "#ffffff";
 
 const TITLE_COLOR = "#191919";
 
-// ─ Vertical padding per band ──
 const TOP_PAD = "py-16";
 const MIDDLE_PAD = "py-14";
 const BOTTOM_PAD = "py-12";
 
-// ─ Card grid ──
 const CARD_TRACK_SIZE = "clamp(9.5rem, 19vw, 14.25rem)";
 const CARD_GRID_ROW_GAP = "gap-y-10";
 
-// ─ Card image ──
 const CARD_ASPECT = "aspect-[4/5]";
 const IMAGE_BASE_SCALE = "scale-[1.05]";
 const IMAGE_HOVER_SCALE = "group-hover:scale-[1.1]";
 const FRAME_INSET = "0.625rem";
 const FRAME_COLOR = "rgba(255,255,255,0.88)";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type Pkg = { name: string; image: string };
 
@@ -49,7 +38,6 @@ const PACKAGES: Pkg[] = [
 export default function WeddingPackagesSection() {
   return (
     <section className="relative w-full">
-      {/* TOP — white with title */}
       <div className={`w-full ${TOP_PAD}`} style={{ backgroundColor: TOP_BG }}>
         <Reveal>
           <h2
@@ -61,8 +49,10 @@ export default function WeddingPackagesSection() {
         </Reveal>
       </div>
 
-      {/* MIDDLE — dark navy with 4 package cards in a row */}
-      <div className={`w-full ${MIDDLE_PAD}`} style={{ backgroundColor: MIDDLE_BG }}>
+      <div
+        className={`w-full ${MIDDLE_PAD}`}
+        style={{ backgroundColor: MIDDLE_BG }}
+      >
         <div
           className={`grid w-full grid-cols-[repeat(2,minmax(0,var(--pkg-card-size)))] justify-evenly md:grid-cols-[repeat(4,minmax(0,var(--pkg-card-size)))] ${CARD_GRID_ROW_GAP}`}
           style={{ "--pkg-card-size": CARD_TRACK_SIZE } as CSSProperties}
@@ -75,17 +65,16 @@ export default function WeddingPackagesSection() {
         </div>
       </div>
 
-      {/* BOTTOM — white with two CTA buttons */}
-      <div className={`w-full ${BOTTOM_PAD} px-6`} style={{ backgroundColor: BOTTOM_BG }}>
+      <div
+        className={`w-full ${BOTTOM_PAD} px-6`}
+        style={{ backgroundColor: BOTTOM_BG }}
+      >
         <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 md:flex-row md:gap-10">
           <CircleButton
             href="#plan-wedding"
             circleColor="#191919"
             arrowColor="#ffffff"
-            // The white CTA strip is only py-12 tall, so a 9.375rem ball
-            // (reach 101px from the pill's centre, against 73px of room)
-            // punched through the navy band above and was clipped below.
-            // 50 x 1.25 = 63px fits with ~10px to spare on both sides.
+
             circleSize="6.25rem"
             magnet={0.25}
             arrowDirection="right"
@@ -98,7 +87,7 @@ export default function WeddingPackagesSection() {
             href="/brochure.pdf"
             circleColor="#191919"
             arrowColor="#ffffff"
-            circleSize="6.25rem"   // matched to "Plan Your wedding" above
+            circleSize="6.25rem"
             magnet={0.25}
             arrowDirection="down"
             className="rounded-full border border-[#191919] px-8 py-3.5 text-[#191919] text-[clamp(0.95rem,1.05vw,0.9375rem)]"

@@ -1,11 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: sanity/schemaTypes/outdoorCatalogItem.ts
-// ══════════════════════════════════════════════════════════════════
-// A line item in the Outdoor Catering / Bulk Orders catalog
-// (/menu-builder/catalog) — sweet boxes, meal boxes, bulk mithai, etc.
-// Mirrors `CatalogItem` in lib/menu-builder/types.ts.
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { defineField, defineType } from "sanity";
 
 export const CATALOG_CATEGORIES = [
@@ -46,7 +38,8 @@ export default defineType({
       name: "description",
       title: "Description",
       type: "string",
-      description: 'One line under the name, e.g. “Assorted mithai, festive packaging”.',
+      description:
+        "One line under the name, e.g. “Assorted mithai, festive packaging”.",
     }),
     defineField({
       name: "price",
@@ -58,7 +51,7 @@ export default defineType({
       name: "unit",
       title: "Unit",
       type: "string",
-      description: 'e.g. “per box”, “per kg”, “per packet”, “per day”.',
+      description: "e.g. “per box”, “per kg”, “per packet”, “per day”.",
       initialValue: "per box",
       validation: (r) => r.required(),
     }),
@@ -89,10 +82,21 @@ export default defineType({
     },
   ],
   preview: {
-    select: { title: "name", price: "price", unit: "unit", media: "image", isActive: "isActive" },
+    select: {
+      title: "name",
+      price: "price",
+      unit: "unit",
+      media: "image",
+      isActive: "isActive",
+    },
     prepare({ title, price, unit, media, isActive }) {
-      const label = `₹${(price ?? 0).toLocaleString("en-IN")} ${unit ?? ""}`.trim();
-      return { title, subtitle: isActive === false ? `${label} · hidden` : label, media };
+      const label =
+        `₹${(price ?? 0).toLocaleString("en-IN")} ${unit ?? ""}`.trim();
+      return {
+        title,
+        subtitle: isActive === false ? `${label} · hidden` : label,
+        media,
+      };
     },
   },
 });

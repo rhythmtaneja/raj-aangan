@@ -1,22 +1,3 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/menu-builder/CustomMenuStep.tsx
-// ══════════════════════════════════════════════════════════════════
-// The from-scratch custom builder. Shows the à-la-carte master menu
-// (CUSTOM_MENU_SECTIONS, generated from RAEC_master_menu.csv) as an accordion —
-// same interaction as the set-menu step: section headings collapsed by
-// default, click to expand into the dishes (grouped by subsection where the
-// source has them), each an add-to-cart row with its price.
-//
-// Only the sections belonging to the cuisines picked on the previous step
-// (/menu-builder/cuisine) are listed — pick Drinks + Chaat + Soup and just
-// those three cuisines' sections show up. No cuisine picked (deep link) → the
-// full master menu, so the screen is never empty.
-//
-// No "choose N" limits here — add as many as you like. Continue unlocks once
-// at least one dish is chosen. Selections reuse the shared ADD_DISH/REMOVE_DISH
-// reducer (state.selectedDishes), keyed by the master item id.
-// ═══════════════════════════════════════════════════════════════════════════
-
 "use client";
 
 import Link from "next/link";
@@ -26,21 +7,19 @@ import { useBooking } from "@/lib/menu-builder/context";
 import { useCatalog } from "@/lib/menu-builder/catalog";
 import { getSteps, menuStepIndex } from "@/lib/menu-builder/flow";
 import { formatINR } from "@/lib/menu-builder/pricing";
-import { MB_COLORS, type CustomMenuItem, type CustomMenuSection } from "@/lib/menu-builder/types";
+import {
+  MB_COLORS,
+  type CustomMenuItem,
+  type CustomMenuSection,
+} from "@/lib/menu-builder/types";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-const CARD_BG      = MB_COLORS.card;
-const INK          = MB_COLORS.ink;
-const INK_MUTED    = MB_COLORS.inkMuted;
-const GOLD         = MB_COLORS.gold;
+const CARD_BG = MB_COLORS.card;
+const INK = MB_COLORS.ink;
+const INK_MUTED = MB_COLORS.inkMuted;
+const GOLD = MB_COLORS.gold;
 const CARD_PADDING = "p-5 md:p-10";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 export default function CustomMenuStep() {
   const { state, dispatch, hydrated } = useBooking();
@@ -48,10 +27,9 @@ export default function CustomMenuStep() {
   const steps = getSteps(state);
 
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const toggleSection = (id: string) => setOpen((p) => ({ ...p, [id]: !p[id] }));
+  const toggleSection = (id: string) =>
+    setOpen((p) => ({ ...p, [id]: !p[id] }));
 
-  // Only the cuisines picked on the previous step (all of them pre-hydration,
-  // so server and first client render agree).
   const cuisineIds = useMemo(
     () => (hydrated ? state.selectedCuisineCategories : []),
     [hydrated, state.selectedCuisineCategories],
@@ -109,7 +87,8 @@ export default function CustomMenuStep() {
 
         {cuisineNames.length > 0 && (
           <p style={{ color: INK_MUTED }} className="mt-3 text-xs">
-            <span style={{ color: INK }}>Cuisines:</span> {cuisineNames.join(" · ")}{" "}
+            <span style={{ color: INK }}>Cuisines:</span>{" "}
+            {cuisineNames.join(" · ")}{" "}
             <Link
               href="/menu-builder/cuisine"
               className="underline underline-offset-2"
@@ -130,11 +109,12 @@ export default function CustomMenuStep() {
                 className="overflow-hidden rounded-lg border"
                 style={{ borderColor: isOpen ? GOLD : MB_COLORS.border }}
               >
-                {/* Heading — click to expand / collapse */}
                 <button
                   onClick={() => toggleSection(section.id)}
                   className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-colors md:px-5"
-                  style={{ backgroundColor: isOpen ? `${GOLD}12` : "transparent" }}
+                  style={{
+                    backgroundColor: isOpen ? `${GOLD}12` : "transparent",
+                  }}
                   aria-expanded={isOpen}
                 >
                   <div className="flex min-w-0 items-center gap-3">
@@ -156,9 +136,11 @@ export default function CustomMenuStep() {
                   )}
                 </button>
 
-                {/* Items — only when expanded */}
                 {isOpen && (
-                  <div className="border-t px-4 md:px-5" style={{ borderColor: MB_COLORS.borderLight }}>
+                  <div
+                    className="border-t px-4 md:px-5"
+                    style={{ borderColor: MB_COLORS.borderLight }}
+                  >
                     {section.subsections.map((sub, i) => (
                       <div key={i}>
                         {sub.label && (
@@ -169,7 +151,10 @@ export default function CustomMenuStep() {
                             {sub.label}
                           </p>
                         )}
-                        <ul className="divide-y" style={{ borderColor: MB_COLORS.borderLight }}>
+                        <ul
+                          className="divide-y"
+                          style={{ borderColor: MB_COLORS.borderLight }}
+                        >
                           {sub.items.map((it) => (
                             <ItemRow
                               key={it.id}
@@ -198,8 +183,6 @@ export default function CustomMenuStep() {
   );
 }
 
-// ─── Sub-components ────────────────────────────────────────────────────────
-
 function ItemRow({
   item,
   selected,
@@ -213,11 +196,17 @@ function ItemRow({
   return (
     <li className="flex items-center justify-between gap-4 py-3">
       <div className="min-w-0">
-        <p style={{ ...serif, color: INK }} className="text-lg font-medium leading-tight">
+        <p
+          style={{ ...serif, color: INK }}
+          className="text-lg font-medium leading-tight"
+        >
           {item.name}
         </p>
         {sub && (
-          <p style={{ color: INK_MUTED }} className="mt-0.5 line-clamp-1 text-xs">
+          <p
+            style={{ color: INK_MUTED }}
+            className="mt-0.5 line-clamp-1 text-xs"
+          >
             {sub}
           </p>
         )}
@@ -234,7 +223,13 @@ function ItemRow({
   );
 }
 
-function AddToCartToggle({ selected, onClick }: { selected: boolean; onClick: () => void }) {
+function AddToCartToggle({
+  selected,
+  onClick,
+}: {
+  selected: boolean;
+  onClick: () => void;
+}) {
   if (selected) {
     return (
       <button
@@ -242,7 +237,15 @@ function AddToCartToggle({ selected, onClick }: { selected: boolean; onClick: ()
         className="flex items-center gap-1.5 rounded border px-4 py-1.5 text-sm transition-colors"
         style={{ borderColor: GOLD, backgroundColor: `${GOLD}22`, color: INK }}
       >
-        <svg className="w-[0.875rem] h-[0.875rem]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={3}>
+        <svg
+          className="w-[0.875rem] h-[0.875rem]"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={GOLD}
+          strokeWidth={3}
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
         <span>Added</span>

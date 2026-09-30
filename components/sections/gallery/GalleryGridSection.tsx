@@ -6,33 +6,20 @@ import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ─ Section title ──
 const TITLE_FONT_SIZE = "clamp(2rem, 3.6vw, 3.25rem)";
 const TITLE_COLOR = "#ffffff";
 const TITLE_TRACKING = "0.02em";
 const TITLE_MARGIN_BOT = "3.5rem";
 
-// ─ Image grid ──
 const IMAGE_ASPECT = "aspect-[4/3]";
-const IMAGE_GAP = "gap-10"; // ↑ from gap-8 — slightly more breathing room between photos
+const IMAGE_GAP = "gap-10";
 const RIGHT_COLUMN_OFFSET = "md:mt-24";
 
-// ─ Inner outline frame (inside each image) ──
-// Thin white line inset from the image edges, matches figma image 1.
-// FRAME_INSET bigger = frame sits further inside the image.
-// FRAME_COLOR opacity — 0.5 is subtle; push to 0.7 for stronger, 0.35 for whisper-soft.
 const FRAME_INSET = "0.875rem";
 const FRAME_COLOR = "rgba(255, 255, 255, 0.55)";
 
-// ─ Hover zoom ──
 const HOVER_SCALE = "group-hover:scale-105";
 const HOVER_TRANSITION = "transition-transform duration-[800ms] ease-out";
-
-// ═══════════════════════════════════════════════════════════════════════════
 
 type GalleryGridSectionProps = {
   title: string;
@@ -67,7 +54,9 @@ export default function GalleryGridSection({
         </h2>
       </Reveal>
 
-      <div className={`mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-2 ${IMAGE_GAP}`}>
+      <div
+        className={`mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-2 ${IMAGE_GAP}`}
+      >
         <div className={`flex flex-col ${IMAGE_GAP}`}>
           {leftImages.map((src, i) => (
             <Reveal key={`l-${i}`}>
@@ -114,12 +103,6 @@ function GalleryImage({ src, alt }: { src: string; alt: string }) {
         sizes="(max-width: 768px) 100vw, 50vw"
       />
 
-      {/*
-        Inner outline frame — thin white line inset from the image edges.
-        Sits ABOVE the image (z-10) so it stays visible when the image
-        zooms on hover (the image scales inside overflow-hidden; the
-        frame stays fixed to the container).
-      */}
       <div
         aria-hidden
         className="pointer-events-none absolute z-10"

@@ -10,22 +10,16 @@ export default async function VenuePage() {
   const siteImages = await getSiteImages();
   return (
     <main className="bg-white">
-      {/* 1. Hero — "Venue" letter reveal + down arrow */}
       <VenueHero bgImage={siteImages.venueHeroImage ?? undefined} />
 
-      {/* 2. Two property cards + Our Venue Partners CTA */}
       <VenuePropertiesSection />
 
-      {/* 3. RAEC x Aurette collaboration slide */}
       <CollaborationSection />
 
-      {/* 4. Pinned scroll collage — 10 detail cards (same pattern as Events) */}
       <VenueDetailsCollage />
 
-      {/* 5. Venue packages — 2 property cards on navy */}
       <VenuePackagesSection />
 
-      {/* 6. Shared footer */}
       <FooterSection />
     </main>
   );

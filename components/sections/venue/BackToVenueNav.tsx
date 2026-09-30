@@ -1,34 +1,15 @@
-// ══════════════════════════════════════════════════════════════════
-// PATH IN REPO: components/sections/venue/BackToVenueNav.tsx
-// ══════════════════════════════════════════════════════════════════
-
 "use client";
 
 import CircleButton from "@/components/anim/CircleButton";
 
 const serif = { fontFamily: "var(--font-cormorant-garamond)" } as const;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ─── TUNE THESE KNOBS ──────────────────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════════════════
-//
-// Sits at the bottom of every /venue sub-page, above the Footer.
-// Same 3-column pattern as GalleryBackNav on /gallery:
-//   COL 1 (left)   → Back CircleButton (arrowDirection="left") → /venue
-//   COL 2 (center) → "Back to Venue" heading (or custom via prop)
-//   COL 3 (right)  → empty (for horizontal balance)
-//
-// ═══════════════════════════════════════════════════════════════════════════
-
 const SECTION_BG = "#ffffff";
 const SECTION_PAD = "py-16 md:py-20";
 const TEXT_COLOR = "#191919";
-const BACK_HREF = "/venue"; // where the button navigates
-
-// ═══════════════════════════════════════════════════════════════════════════
+const BACK_HREF = "/venue";
 
 type BackToVenueNavProps = {
-  /** Optional heading shown in the centre column. Defaults to "Back to Venue". */
   heading?: string;
 };
 
@@ -41,7 +22,6 @@ export default function BackToVenueNav({
       style={{ backgroundColor: SECTION_BG }}
     >
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 md:grid md:grid-cols-3 md:items-center">
-        {/* LEFT — Back CircleButton */}
         <div className="flex justify-start">
           <CircleButton
             href={BACK_HREF}
@@ -56,7 +36,6 @@ export default function BackToVenueNav({
           </CircleButton>
         </div>
 
-        {/* CENTER — heading, truly centered in the row */}
         <h2
           style={{ ...serif, color: TEXT_COLOR }}
           className="text-center font-medium text-[clamp(1.2rem,1.8vw,1.625rem)]"
@@ -64,7 +43,6 @@ export default function BackToVenueNav({
           {heading}
         </h2>
 
-        {/* RIGHT — empty for balance */}
         <div />
       </div>
     </section>
